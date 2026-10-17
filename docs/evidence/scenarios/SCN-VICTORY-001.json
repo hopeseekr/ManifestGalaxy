@@ -39,7 +39,7 @@
   ],
   "setup": {
     "baseline": "Advanced New Game step 3.",
-    "variable": "One victory condition and the must-meet count."
+    "variable": "The set of enabled victory conditions (one for single-condition trials, overlapping for must-meet counts above one) and the must-meet count."
   },
   "procedure": [
     "Record each condition type, its parameter range and default.",
