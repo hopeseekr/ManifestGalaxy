@@ -99,7 +99,7 @@ The prerequisite for each PR after PR1 is its predecessor's authorized integrati
 
 | Done | PR prompt | Principal deliverable |
 |---|---|---|
-| [ ] | [PR1: binary evidence](PLAN-pr1-description.md) | Established the binary evidence inventory and extraction tools. |
+| [x] | [PR1: binary evidence](PLAN-pr1-description.md) | Established the binary evidence inventory and extraction tools. |
 | [ ] | [PR2: rules specification](PLAN-pr2-description.md) | Documented recovered rules and reference scenarios. |
 | [ ] | [PR3: rust foundation](PLAN-pr3-description.md) | Added the Rust workspace and desktop application foundation. |
 | [ ] | [PR4: simulation contracts](PLAN-pr4-description.md) | Added deterministic game state and turn-processing contracts. |

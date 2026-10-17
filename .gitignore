@@ -1,0 +1,24 @@
+# Private analysis output (decoded help, inventories, raw observations).
+# Anchored so the committed tools/analysis source is not ignored.
+/analysis/
+
+# Original game payloads supplied for inspection; never committed.
+/stars26i.exe
+/Stars! - RIP/
+
+# Private decoded/extracted material and disassembly workspace.
+/decoded/
+/extracted/
+/disassembly/
+/screenshots/
+*.decoded
+*.extracted
+*.dump
+
+# Python caches and local test output.
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
