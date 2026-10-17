@@ -14,7 +14,7 @@ merge.
 | `docs/rules/rule-index.json` | 83 machine-readable rules with stable IDs, status, downstream PRs and scenarios |
 | `docs/rules/rule-ledger.md` | Narrative evidence ledger, including all 10 primary and 14 lesser traits |
 | `docs/rules/turn-order.md` | Known intra-phase constraints, unresolved cross-phase edges, RNG caveats and measurement matrix |
-| `docs/rules/gap-ledger.md` | 21 tracked gaps with impact, resolution and feature gate |
+| `docs/rules/gap-ledger.md` | 22 tracked gaps with impact, resolution and feature gate |
 | `docs/rules/README.md` | Status/citation conventions and reproducible static checks |
 | `docs/evidence/scenarios/*.json` | 59 controlled scenario records |
 | `docs/evidence/scenarios/README.md` | Scenario schema and operator rules |
