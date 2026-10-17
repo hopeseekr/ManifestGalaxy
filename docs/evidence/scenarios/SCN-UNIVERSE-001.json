@@ -115,6 +115,7 @@
     "Create a new advanced game with fixed settings and record every field range and default.",
     "Generate one universe for each size and record planet count, span and opponent count.",
     "For each density, record planet counts across at least three seeds/settings.",
+    "For each player-position option, record the resulting home-world placement and the minimum starting separation between players.",
     "Toggle clumping and compare nearest-neighbor distances.",
     "Record the effect of every advanced checkbox and player-slot type.",
     "Verify the year 2400 start and common home-world inventory in a generated game."
