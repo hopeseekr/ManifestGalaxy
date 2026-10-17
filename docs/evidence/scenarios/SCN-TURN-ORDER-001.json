@@ -58,11 +58,13 @@
   ],
   "downstream_prs": [
     "PR4",
+    "PR6",
     "PR8",
     "PR9",
     "PR10",
     "PR11",
     "PR12",
+    "PR14",
     "PR15"
   ],
   "notes": "This scenario is a measurement plan; it does not prescribe an order."
