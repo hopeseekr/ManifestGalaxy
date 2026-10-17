@@ -38,13 +38,12 @@
   "expected": {
     "documented": [
       "Only half of research resources apply to the current field (documented-only).",
-      "15% of total research resources apply to each of the five fields other than the current field; with half to the current field this totals 125%, matching the help's explicit 'adds up to 125%' statement (documented-only). The help wording 'each of the fields' is ambiguous but its 125% parenthetical fixes the intended allocation."
+      "15% of total research resources apply to each of the five fields other than the current field; with half to the current field this totals 125%, matching the help's explicit 'adds up to 125%' statement (documented-only)."
     ]
   },
   "observed": null,
   "unresolved": [
     "Exact advantage-point cost is unknown.",
-    "The help wording 'each of the fields' could be read as including the current field; the 125% parenthetical implies 15% to each of the five non-current fields. The exact per-field allocation and resource base must still be runtime-verified.",
     "Rounding and overflow behavior across fields are unknown."
   ],
   "downstream_prs": [
