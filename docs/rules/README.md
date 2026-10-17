@@ -75,8 +75,9 @@ Example:
 stars!.hlp, TOPICPOS 1736867 (0x001a80a3), HLP file offset 437912 (0x0006ae98), topic 258 'Hyper-Expansion'
 ```
 
-The exact locations are also stored in each scenario's `provenance` array and
-checked against the known input hashes.
+The exact locations are also stored in each scenario's `provenance` array. The
+validator checks the cited input hashes and citation format, but it does not
+resolve the offsets or topic positions in the source files.
 
 ## Reproducing the static checks
 
