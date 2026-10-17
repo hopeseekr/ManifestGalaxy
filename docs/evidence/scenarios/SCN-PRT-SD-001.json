@@ -41,7 +41,7 @@
       "Exclusive mine dispenser, hull and Energy Dampener entries are documented (documented-only).",
       "Minefields act as non-penetrating scanners for this race, and cloaks act as an absolute percentage against mine scans (documented-only).",
       "Travels through opponent minefields at two warp speeds faster, can remotely detonate standard minefields, and learns exact designs of ships that detonate its mines (documented-only).",
-      "Own minefields decay at 1% per enclosed planet per year; other players' fields decay at 4% (documented-only)."
+      "Own minefields decay at 1% per enclosed planet per year; other players' fields decay at 4% per enclosed planet per year (documented-only)."
     ]
   },
   "observed": null,
