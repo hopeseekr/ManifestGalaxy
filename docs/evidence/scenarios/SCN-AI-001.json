@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "id": "SCN-AI-001",
+  "title": "AI advantage-point tiers",
+  "rule_ids": [
+    "RULE-AI-ADVANTAGE-001"
+  ],
+  "status": "documented-only",
+  "confidence": "help-only",
+  "provenance": [
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 2313671 (0x00234dc7), HLP file offset 584636 (0x0008ebbc), topic 347 'AIs'",
+      "note": "AIs are computer players."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 2313925 (0x00234ec5), HLP file offset 584890 (0x0008ecba), topic 348 'AIs and Advantage Points'",
+      "note": "Easy AIs get fewer points; expert AIs more; standard/hard in between."
+    }
+  ],
+  "setup": {
+    "baseline": "Single-player game with one AI at each difficulty.",
+    "variable": "Difficulty level."
+  },
+  "procedure": [
+    "Record the AI race configuration and advantage-point total at each difficulty.",
+    "Record AI starting technology, planets and fleets.",
+    "Compare Easy, Standard, Harder and Expert across at least three games."
+  ],
+  "expected": {
+    "documented": [
+      "AI advantage points vary by difficulty: Easy substantially fewer, Expert more, Standard/Harder in between (documented-only)."
+    ]
+  },
+  "observed": null,
+  "unresolved": [
+    "Exact AI point totals and race configurations are unknown.",
+    "AI decision policy is not documented here."
+  ],
+  "downstream_prs": [
+    "PR14"
+  ],
+  "notes": ""
+}

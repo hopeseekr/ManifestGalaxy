@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "id": "SCN-RACE-LEFTOVER-001",
+  "title": "Leftover advantage-point conversions",
+  "rule_ids": [
+    "RULE-RACE-LEFTOVER-001"
+  ],
+  "status": "documented-only",
+  "confidence": "help-only",
+  "provenance": [
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 1721047 (0x001a42d7), HLP file offset 434380 (0x0006a0cc), topic 251 'Leftover Advantage Points -- Surface Minerals'",
+      "note": "Surface minerals: 10 kT per leftover point."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 1721534 (0x001a44be), HLP file offset 434867 (0x0006a2b3), topic 252 'Leftover Advantage Points -- Mines'",
+      "note": "Mines: one per two leftover points."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 1721842 (0x001a45f2), HLP file offset 435175 (0x0006a3e7), topic 253 'Leftover Advantage Points -- Factories'",
+      "note": "Factories: one per five leftover points."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 1722159 (0x001a472f), HLP file offset 435492 (0x0006a524), topic 254 'Leftover Advantage Points -- Defenses'",
+      "note": "Defenses: one per ten leftover points."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 1722489 (0x001a4879), HLP file offset 435822 (0x0006a66e), topic 255 'Leftover Advantage Points \u2013 Mineral Concentration'",
+      "note": "Poorest home-world mineral concentration: +1% per three points."
+    }
+  ],
+  "setup": {
+    "baseline": "A saved custom race with a controlled positive leftover balance.",
+    "variable": "Leftover-point target and chosen conversion."
+  },
+  "procedure": [
+    "Set a known leftover balance on step 1.",
+    "Select each conversion in turn and record the resulting home-world minerals, mines, factories, defenses or concentration.",
+    "Test boundary balances (0, 1, 2, 3, 4, 5, 9, 10, 49, 50).",
+    "Repeat with Low Starting Population, Hyper-Expansion and Advanced Remote Mining to detect interactions."
+  ],
+  "expected": {
+    "documented": [
+      "10 kT of surface minerals per leftover point, distributed in favor of rarer minerals (documented-only).",
+      "One mine per two points, one factory per five, one defense per ten (documented-only).",
+      "The poorest home-world mineral concentration improves by 1% per three points (documented-only)."
+    ]
+  },
+  "observed": null,
+  "unresolved": [
+    "Exact rounding at boundaries is unknown.",
+    "How the mineral distribution is weighted is unknown.",
+    "Whether the 50-point template caption is a hard cap or only a caption is unknown."
+  ],
+  "downstream_prs": [
+    "PR5",
+    "PR6"
+  ],
+  "notes": ""
+}

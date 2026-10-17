@@ -1,0 +1,1259 @@
+{
+  "schema_version": 1,
+  "description": "PR2 machine-readable rule index. Detailed evidence and caveats are in docs/rules/rule-ledger.md.",
+  "source_hashes": {
+    "stars26i.exe": "5770dade2db0e11918631d5c128c0bf7ab48e371f7b2267a4ff02531bb8e198e",
+    "stars!.hlp": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1"
+  },
+  "rules": [
+    {
+      "id": "RULE-RACE-PRT-HE",
+      "title": "Hyper-Expansion",
+      "kind": "trait",
+      "trait": {
+        "type": "primary",
+        "name": "Hyper-Expansion",
+        "abbreviation": "HE"
+      },
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR5",
+        "PR6",
+        "PR8",
+        "PR9",
+        "PR10",
+        "PR13"
+      ],
+      "scenario_ids": [
+        "SCN-PRT-HE-001"
+      ]
+    },
+    {
+      "id": "RULE-RACE-PRT-SS",
+      "title": "Super-Stealth",
+      "kind": "trait",
+      "trait": {
+        "type": "primary",
+        "name": "Super-Stealth",
+        "abbreviation": "SS"
+      },
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR5",
+        "PR6",
+        "PR9",
+        "PR10",
+        "PR11",
+        "PR12",
+        "PR13"
+      ],
+      "scenario_ids": [
+        "SCN-PRT-SS-001"
+      ]
+    },
+    {
+      "id": "RULE-RACE-PRT-WM",
+      "title": "War Monger",
+      "kind": "trait",
+      "trait": {
+        "type": "primary",
+        "name": "War Monger",
+        "abbreviation": "WM"
+      },
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR5",
+        "PR6",
+        "PR9",
+        "PR10",
+        "PR12",
+        "PR13"
+      ],
+      "scenario_ids": [
+        "SCN-PRT-WM-001"
+      ]
+    },
+    {
+      "id": "RULE-RACE-PRT-CA",
+      "title": "Claim Adjuster",
+      "kind": "trait",
+      "trait": {
+        "type": "primary",
+        "name": "Claim Adjuster",
+        "abbreviation": "CA"
+      },
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR5",
+        "PR6",
+        "PR8",
+        "PR9",
+        "PR13"
+      ],
+      "scenario_ids": [
+        "SCN-PRT-CA-001"
+      ]
+    },
+    {
+      "id": "RULE-RACE-PRT-IS",
+      "title": "Inner-Strength",
+      "kind": "trait",
+      "trait": {
+        "type": "primary",
+        "name": "Inner-Strength",
+        "abbreviation": "IS"
+      },
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR5",
+        "PR6",
+        "PR9",
+        "PR10",
+        "PR12",
+        "PR13"
+      ],
+      "scenario_ids": [
+        "SCN-PRT-IS-001"
+      ]
+    },
+    {
+      "id": "RULE-RACE-PRT-SD",
+      "title": "Space Demolition",
+      "kind": "trait",
+      "trait": {
+        "type": "primary",
+        "name": "Space Demolition",
+        "abbreviation": "SD"
+      },
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR5",
+        "PR6",
+        "PR9",
+        "PR10",
+        "PR11",
+        "PR12",
+        "PR13"
+      ],
+      "scenario_ids": [
+        "SCN-PRT-SD-001"
+      ]
+    },
+    {
+      "id": "RULE-RACE-PRT-PP",
+      "title": "Packet Physics",
+      "kind": "trait",
+      "trait": {
+        "type": "primary",
+        "name": "Packet Physics",
+        "abbreviation": "PP"
+      },
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR5",
+        "PR6",
+        "PR8",
+        "PR9",
+        "PR10",
+        "PR11",
+        "PR12",
+        "PR13"
+      ],
+      "scenario_ids": [
+        "SCN-PRT-PP-001"
+      ]
+    },
+    {
+      "id": "RULE-RACE-PRT-IT",
+      "title": "Interstellar Traveller",
+      "kind": "trait",
+      "trait": {
+        "type": "primary",
+        "name": "Interstellar Traveller",
+        "abbreviation": "IT"
+      },
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR5",
+        "PR6",
+        "PR9",
+        "PR10",
+        "PR11",
+        "PR12",
+        "PR13"
+      ],
+      "scenario_ids": [
+        "SCN-PRT-IT-001"
+      ]
+    },
+    {
+      "id": "RULE-RACE-PRT-AR",
+      "title": "Alternate Reality",
+      "kind": "trait",
+      "trait": {
+        "type": "primary",
+        "name": "Alternate Reality",
+        "abbreviation": "AR"
+      },
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR5",
+        "PR6",
+        "PR8",
+        "PR9",
+        "PR10",
+        "PR11",
+        "PR13"
+      ],
+      "scenario_ids": [
+        "SCN-PRT-AR-001"
+      ]
+    },
+    {
+      "id": "RULE-RACE-PRT-JOAT",
+      "title": "Jack of All Trades",
+      "kind": "trait",
+      "trait": {
+        "type": "primary",
+        "name": "Jack of All Trades",
+        "abbreviation": "JOAT"
+      },
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR5",
+        "PR6",
+        "PR8",
+        "PR9",
+        "PR11",
+        "PR13"
+      ],
+      "scenario_ids": [
+        "SCN-PRT-JOAT-001"
+      ]
+    },
+    {
+      "id": "RULE-RACE-LRT-IFE",
+      "title": "Improved Fuel Efficiency",
+      "kind": "trait",
+      "trait": {
+        "type": "lesser",
+        "name": "Improved Fuel Efficiency",
+        "abbreviation": "IFE"
+      },
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR5",
+        "PR6",
+        "PR9",
+        "PR10",
+        "PR13"
+      ],
+      "scenario_ids": [
+        "SCN-LRT-IFE-001"
+      ]
+    },
+    {
+      "id": "RULE-RACE-LRT-TT",
+      "title": "Total Terraforming",
+      "kind": "trait",
+      "trait": {
+        "type": "lesser",
+        "name": "Total Terraforming",
+        "abbreviation": "TT"
+      },
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR5",
+        "PR6",
+        "PR8",
+        "PR13"
+      ],
+      "scenario_ids": [
+        "SCN-LRT-TT-001"
+      ]
+    },
+    {
+      "id": "RULE-RACE-LRT-ARM",
+      "title": "Advanced Remote Mining",
+      "kind": "trait",
+      "trait": {
+        "type": "lesser",
+        "name": "Advanced Remote Mining",
+        "abbreviation": "ARM"
+      },
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR5",
+        "PR6",
+        "PR8",
+        "PR9",
+        "PR13"
+      ],
+      "scenario_ids": [
+        "SCN-LRT-ARM-001"
+      ]
+    },
+    {
+      "id": "RULE-RACE-LRT-ISB",
+      "title": "Improved Starbases",
+      "kind": "trait",
+      "trait": {
+        "type": "lesser",
+        "name": "Improved Starbases",
+        "abbreviation": "ISB"
+      },
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR5",
+        "PR6",
+        "PR9",
+        "PR12",
+        "PR13"
+      ],
+      "scenario_ids": [
+        "SCN-LRT-ISB-001"
+      ]
+    },
+    {
+      "id": "RULE-RACE-LRT-GR",
+      "title": "Generalized Research",
+      "kind": "trait",
+      "trait": {
+        "type": "lesser",
+        "name": "Generalized Research",
+        "abbreviation": "GR"
+      },
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR5",
+        "PR6",
+        "PR9",
+        "PR13"
+      ],
+      "scenario_ids": [
+        "SCN-LRT-GR-001"
+      ]
+    },
+    {
+      "id": "RULE-RACE-LRT-UR",
+      "title": "Ultimate Recycling",
+      "kind": "trait",
+      "trait": {
+        "type": "lesser",
+        "name": "Ultimate Recycling",
+        "abbreviation": "UR"
+      },
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR5",
+        "PR6",
+        "PR9",
+        "PR10",
+        "PR13"
+      ],
+      "scenario_ids": [
+        "SCN-LRT-UR-001"
+      ]
+    },
+    {
+      "id": "RULE-RACE-LRT-MA",
+      "title": "Mineral Alchemy",
+      "kind": "trait",
+      "trait": {
+        "type": "lesser",
+        "name": "Mineral Alchemy",
+        "abbreviation": "MA"
+      },
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR5",
+        "PR6",
+        "PR8",
+        "PR13"
+      ],
+      "scenario_ids": [
+        "SCN-LRT-MA-001"
+      ]
+    },
+    {
+      "id": "RULE-RACE-LRT-NRSE",
+      "title": "No Ramscoop Engines",
+      "kind": "trait",
+      "trait": {
+        "type": "lesser",
+        "name": "No Ramscoop Engines",
+        "abbreviation": "NRSE"
+      },
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR5",
+        "PR6",
+        "PR9",
+        "PR10",
+        "PR13"
+      ],
+      "scenario_ids": [
+        "SCN-LRT-NRSE-001"
+      ]
+    },
+    {
+      "id": "RULE-RACE-LRT-CE",
+      "title": "Cheap Engines",
+      "kind": "trait",
+      "trait": {
+        "type": "lesser",
+        "name": "Cheap Engines",
+        "abbreviation": "CE"
+      },
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR5",
+        "PR6",
+        "PR9",
+        "PR10",
+        "PR13"
+      ],
+      "scenario_ids": [
+        "SCN-LRT-CE-001"
+      ]
+    },
+    {
+      "id": "RULE-RACE-LRT-OBRM",
+      "title": "Only Basic Remote Mining",
+      "kind": "trait",
+      "trait": {
+        "type": "lesser",
+        "name": "Only Basic Remote Mining",
+        "abbreviation": "OBRM"
+      },
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR5",
+        "PR6",
+        "PR8",
+        "PR9",
+        "PR13"
+      ],
+      "scenario_ids": [
+        "SCN-LRT-OBRM-001"
+      ]
+    },
+    {
+      "id": "RULE-RACE-LRT-NAS",
+      "title": "No Advanced Scanners",
+      "kind": "trait",
+      "trait": {
+        "type": "lesser",
+        "name": "No Advanced Scanners",
+        "abbreviation": "NAS"
+      },
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR5",
+        "PR6",
+        "PR9",
+        "PR11",
+        "PR13"
+      ],
+      "scenario_ids": [
+        "SCN-LRT-NAS-001"
+      ]
+    },
+    {
+      "id": "RULE-RACE-LRT-LSP",
+      "title": "Low Starting Population",
+      "kind": "trait",
+      "trait": {
+        "type": "lesser",
+        "name": "Low Starting Population",
+        "abbreviation": "LSP"
+      },
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR5",
+        "PR6",
+        "PR8",
+        "PR13"
+      ],
+      "scenario_ids": [
+        "SCN-LRT-LSP-001"
+      ]
+    },
+    {
+      "id": "RULE-RACE-LRT-BET",
+      "title": "Bleeding Edge Technology",
+      "kind": "trait",
+      "trait": {
+        "type": "lesser",
+        "name": "Bleeding Edge Technology",
+        "abbreviation": "BET"
+      },
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR5",
+        "PR6",
+        "PR9",
+        "PR13"
+      ],
+      "scenario_ids": [
+        "SCN-LRT-BET-001"
+      ]
+    },
+    {
+      "id": "RULE-RACE-LRT-RS",
+      "title": "Regenerating Shields",
+      "kind": "trait",
+      "trait": {
+        "type": "lesser",
+        "name": "Regenerating Shields",
+        "abbreviation": "RS"
+      },
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR5",
+        "PR6",
+        "PR9",
+        "PR12",
+        "PR13"
+      ],
+      "scenario_ids": [
+        "SCN-LRT-RS-001"
+      ]
+    },
+    {
+      "id": "RULE-RACE-WIZARD-DIALOGS-001",
+      "title": "Custom-race wizard dialog layout and control styles",
+      "kind": "subsystem",
+      "status": "statically-derived",
+      "downstream_prs": [
+        "PR5"
+      ],
+      "scenario_ids": [
+        "SCN-RACE-WIZARD-001"
+      ]
+    },
+    {
+      "id": "RULE-RACE-PRT-SELECTION-001",
+      "title": "At most one primary racial trait in dialog #149 radio group; exactly one is a product requirement",
+      "kind": "subsystem",
+      "status": "statically-derived",
+      "downstream_prs": [
+        "PR5"
+      ],
+      "scenario_ids": [
+        "SCN-RACE-WIZARD-001"
+      ]
+    },
+    {
+      "id": "RULE-RACE-LRT-SELECTION-001",
+      "title": "Zero or more lesser traits via dialog #150 independent checkboxes",
+      "kind": "subsystem",
+      "status": "statically-derived",
+      "downstream_prs": [
+        "PR5"
+      ],
+      "scenario_ids": [
+        "SCN-RACE-WIZARD-001"
+      ]
+    },
+    {
+      "id": "RULE-RACE-WIZARD-STEPS-001",
+      "title": "Six-step custom-race wizard and finish/save flow",
+      "kind": "subsystem",
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR5"
+      ],
+      "scenario_ids": [
+        "SCN-RACE-WIZARD-002"
+      ]
+    },
+    {
+      "id": "RULE-RACE-NAME-001",
+      "title": "Race name, plural name, password and emblem fields",
+      "kind": "subsystem",
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR5"
+      ],
+      "scenario_ids": [
+        "SCN-RACE-WIZARD-002"
+      ]
+    },
+    {
+      "id": "RULE-RACE-IMMUNITY-001",
+      "title": "Optional immunity to gravity, temperature or radiation",
+      "kind": "subsystem",
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR5"
+      ],
+      "scenario_ids": [
+        "SCN-RACE-WIZARD-002"
+      ]
+    },
+    {
+      "id": "RULE-RACE-POP-EFF-001",
+      "title": "Population efficiency controls: colonists, factories, mines and defenses",
+      "kind": "subsystem",
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR5"
+      ],
+      "scenario_ids": [
+        "SCN-RACE-WIZARD-002"
+      ]
+    },
+    {
+      "id": "RULE-RACE-PREDEFINED-001",
+      "title": "Predefined races preset wizard choices in the original help",
+      "kind": "subsystem",
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR5"
+      ],
+      "scenario_ids": [
+        "SCN-RACE-WIZARD-002"
+      ]
+    },
+    {
+      "id": "RULE-RACE-FINISH-001",
+      "title": "Finish validates the race, re-prompts for a password and saves a race file",
+      "kind": "subsystem",
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR5"
+      ],
+      "scenario_ids": [
+        "SCN-RACE-WIZARD-002"
+      ]
+    },
+    {
+      "id": "RULE-RACE-POINTS-GATE-001",
+      "title": "Advantage-point balance must be zero or greater before Finish",
+      "kind": "subsystem",
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR5"
+      ],
+      "scenario_ids": [
+        "SCN-RACE-POINTS-001"
+      ]
+    },
+    {
+      "id": "RULE-RACE-POINTS-COST-001",
+      "title": "Exact trait, field-range and population-efficiency advantage-point costs",
+      "kind": "subsystem",
+      "status": "unknown",
+      "downstream_prs": [
+        "PR5"
+      ],
+      "scenario_ids": [
+        "SCN-RACE-POINTS-COST-001"
+      ]
+    },
+    {
+      "id": "RULE-RACE-TRAIT-EXCLUSIONS-001",
+      "title": "Trait exclusions and forced combinations",
+      "kind": "subsystem",
+      "status": "unknown",
+      "downstream_prs": [
+        "PR5",
+        "PR13"
+      ],
+      "scenario_ids": [
+        "SCN-RACE-POINTS-COST-001"
+      ]
+    },
+    {
+      "id": "RULE-RACE-COMPAT-001",
+      "title": "Valid lesser-trait combinations and their runtime enforcement",
+      "kind": "subsystem",
+      "status": "unknown",
+      "downstream_prs": [
+        "PR5",
+        "PR13"
+      ],
+      "scenario_ids": [
+        "SCN-RACE-POINTS-COST-001"
+      ]
+    },
+    {
+      "id": "RULE-RACE-LEFTOVER-001",
+      "title": "Leftover advantage points convert to minerals, mines, factories, defenses or mineral concentration",
+      "kind": "subsystem",
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR5",
+        "PR6"
+      ],
+      "scenario_ids": [
+        "SCN-RACE-LEFTOVER-001"
+      ]
+    },
+    {
+      "id": "RULE-RACE-GROWTH-001",
+      "title": "Habitability range, growth rate and maximum population",
+      "kind": "subsystem",
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR5",
+        "PR8"
+      ],
+      "scenario_ids": [
+        "SCN-RACE-GROWTH-001"
+      ]
+    },
+    {
+      "id": "RULE-RACE-RESEARCH-COST-001",
+      "title": "Research cost choices and the All Costs 75% Extra starting-tech box",
+      "kind": "subsystem",
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR5",
+        "PR9"
+      ],
+      "scenario_ids": [
+        "SCN-RACE-RESEARCH-001"
+      ]
+    },
+    {
+      "id": "RULE-RACE-TURINDRONES-NAMES-001",
+      "title": "Opponent-name string sequence includes Turindrones",
+      "kind": "subsystem",
+      "status": "statically-derived",
+      "downstream_prs": [
+        "PR14"
+      ],
+      "scenario_ids": [
+        "SCN-TURINDRONES-LIST-001"
+      ]
+    },
+    {
+      "id": "RULE-RACE-TURINDRONES-CONFIG-001",
+      "title": "Turindrones race and AI configuration",
+      "kind": "subsystem",
+      "status": "unknown",
+      "downstream_prs": [
+        "PR14"
+      ],
+      "scenario_ids": [
+        "SCN-TURINDRONES-001"
+      ]
+    },
+    {
+      "id": "RULE-UNIVERSE-SIZE-001",
+      "title": "Universe size choices and light-year spans",
+      "kind": "subsystem",
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR6"
+      ],
+      "scenario_ids": [
+        "SCN-UNIVERSE-001"
+      ]
+    },
+    {
+      "id": "RULE-UNIVERSE-DENSITY-001",
+      "title": "Planet density choices and approximate planet spacing",
+      "kind": "subsystem",
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR6"
+      ],
+      "scenario_ids": [
+        "SCN-UNIVERSE-001"
+      ]
+    },
+    {
+      "id": "RULE-UNIVERSE-POSITIONS-001",
+      "title": "Starting player positions",
+      "kind": "subsystem",
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR6"
+      ],
+      "scenario_ids": [
+        "SCN-UNIVERSE-001"
+      ]
+    },
+    {
+      "id": "RULE-UNIVERSE-CLUMPING-001",
+      "title": "Galaxy clumping option",
+      "kind": "subsystem",
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR6"
+      ],
+      "scenario_ids": [
+        "SCN-UNIVERSE-001"
+      ]
+    },
+    {
+      "id": "RULE-UNIVERSE-OPTIONS-001",
+      "title": "Advanced setup options: maximum minerals, slow tech, BBS play, random events, alliances, public scores",
+      "kind": "subsystem",
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR6"
+      ],
+      "scenario_ids": [
+        "SCN-UNIVERSE-001"
+      ]
+    },
+    {
+      "id": "RULE-UNIVERSE-PLAYERS-001",
+      "title": "Player slot types, computer opponents and difficulty selection",
+      "kind": "subsystem",
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR6",
+        "PR14"
+      ],
+      "scenario_ids": [
+        "SCN-UNIVERSE-001"
+      ]
+    },
+    {
+      "id": "RULE-UNIVERSE-START-001",
+      "title": "Common home-world starting inventory and year 2400 start",
+      "kind": "subsystem",
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR6",
+        "PR15"
+      ],
+      "scenario_ids": [
+        "SCN-UNIVERSE-001"
+      ]
+    },
+    {
+      "id": "RULE-UNIVERSE-DIFFICULTY-001",
+      "title": "Difficulty level controls opponent count/skill",
+      "kind": "subsystem",
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR6",
+        "PR14"
+      ],
+      "scenario_ids": [
+        "SCN-UNIVERSE-001"
+      ]
+    },
+    {
+      "id": "RULE-VICTORY-CONDITIONS-001",
+      "title": "Configurable victory conditions and must-meet count",
+      "kind": "subsystem",
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR15"
+      ],
+      "scenario_ids": [
+        "SCN-VICTORY-001"
+      ]
+    },
+    {
+      "id": "RULE-VICTORY-SCORE-001",
+      "title": "Empire score components and history graph",
+      "kind": "subsystem",
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR15"
+      ],
+      "scenario_ids": [
+        "SCN-SCORE-001"
+      ]
+    },
+    {
+      "id": "RULE-TURN-CYCLE-001",
+      "title": "Host generates a new year after all active players submit",
+      "kind": "subsystem",
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR4",
+        "PR15"
+      ],
+      "scenario_ids": [
+        "SCN-TURN-CYCLE-001"
+      ]
+    },
+    {
+      "id": "RULE-TURN-ORDER-001",
+      "title": "Cross-phase turn-generation order",
+      "kind": "subsystem",
+      "status": "unknown",
+      "downstream_prs": [
+        "PR4",
+        "PR8",
+        "PR9",
+        "PR10",
+        "PR11",
+        "PR12",
+        "PR15"
+      ],
+      "scenario_ids": [
+        "SCN-TURN-ORDER-001"
+      ]
+    },
+    {
+      "id": "RULE-TURN-CONSTRAINTS-001",
+      "title": "Known intra-phase ordering constraints",
+      "kind": "subsystem",
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR4",
+        "PR10",
+        "PR12"
+      ],
+      "scenario_ids": [
+        "SCN-TURN-CONSTRAINTS-001"
+      ]
+    },
+    {
+      "id": "RULE-RNG-001",
+      "title": "Random-number algorithm, seed and consumption order",
+      "kind": "subsystem",
+      "status": "unknown",
+      "downstream_prs": [
+        "PR4",
+        "PR6",
+        "PR14"
+      ],
+      "scenario_ids": [
+        "SCN-TURN-ORDER-001"
+      ]
+    },
+    {
+      "id": "RULE-TECH-FIELDS-001",
+      "title": "Six research fields and levels 0-26",
+      "kind": "subsystem",
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR9"
+      ],
+      "scenario_ids": [
+        "SCN-RACE-RESEARCH-001"
+      ]
+    },
+    {
+      "id": "RULE-TECH-COST-001",
+      "title": "Research cost progression and added cost per field/level",
+      "kind": "subsystem",
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR9"
+      ],
+      "scenario_ids": [
+        "SCN-RACE-RESEARCH-001"
+      ]
+    },
+    {
+      "id": "RULE-TECH-MINI-001",
+      "title": "Miniaturization and production-cost reduction",
+      "kind": "subsystem",
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR9"
+      ],
+      "scenario_ids": [
+        "SCN-RACE-RESEARCH-001"
+      ]
+    },
+    {
+      "id": "RULE-TECH-CATALOG-001",
+      "title": "Technology, hull and component catalog contents and stats",
+      "kind": "subsystem",
+      "status": "unknown",
+      "downstream_prs": [
+        "PR9"
+      ],
+      "scenario_ids": [
+        "SCN-TECH-CATALOG-001"
+      ]
+    },
+    {
+      "id": "RULE-PLANET-POP-001",
+      "title": "Population capacity and annual growth",
+      "kind": "subsystem",
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR8"
+      ],
+      "scenario_ids": [
+        "SCN-RACE-GROWTH-001"
+      ]
+    },
+    {
+      "id": "RULE-PLANET-MINES-001",
+      "title": "Mine production and mineral-concentration depletion",
+      "kind": "subsystem",
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR8"
+      ],
+      "scenario_ids": [
+        "SCN-PLANET-MINES-001"
+      ]
+    },
+    {
+      "id": "RULE-PLANET-FACTORIES-001",
+      "title": "Factory resource output and build cost",
+      "kind": "subsystem",
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR8"
+      ],
+      "scenario_ids": [
+        "SCN-PLANET-FACTORIES-001"
+      ]
+    },
+    {
+      "id": "RULE-PLANET-DEFENSES-001",
+      "title": "Planetary defenses and their effect on bombing and invasion",
+      "kind": "subsystem",
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR8",
+        "PR12"
+      ],
+      "scenario_ids": [
+        "SCN-PLANET-DEFENSES-001"
+      ]
+    },
+    {
+      "id": "RULE-PLANET-SCANNER-001",
+      "title": "Planet-based scanner coverage and upgrade behavior",
+      "kind": "subsystem",
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR11"
+      ],
+      "scenario_ids": [
+        "SCN-PLANET-SCANNER-001"
+      ]
+    },
+    {
+      "id": "RULE-PLANET-TERRAFORM-001",
+      "title": "Terraforming technology, resource cost and limits",
+      "kind": "subsystem",
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR8",
+        "PR13"
+      ],
+      "scenario_ids": [
+        "SCN-PLANET-TERRAFORM-001"
+      ]
+    },
+    {
+      "id": "RULE-PLANET-REMOTE-MINING-001",
+      "title": "Remote mining of uninhabited worlds",
+      "kind": "subsystem",
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR8",
+        "PR10"
+      ],
+      "scenario_ids": [
+        "SCN-PLANET-REMOTE-MINING-001"
+      ]
+    },
+    {
+      "id": "RULE-PLANET-PRODUCTION-001",
+      "title": "Production queue order and mineral blocking",
+      "kind": "subsystem",
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR8"
+      ],
+      "scenario_ids": [
+        "SCN-PLANET-PRODUCTION-001"
+      ]
+    },
+    {
+      "id": "RULE-PLANET-STARBASE-001",
+      "title": "Starbase construction, shipyard role and defense",
+      "kind": "subsystem",
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR9",
+        "PR12"
+      ],
+      "scenario_ids": [
+        "SCN-PLANET-STARBASE-001"
+      ]
+    },
+    {
+      "id": "RULE-PLANET-STARGATE-001",
+      "title": "Stargate travel, range, capacity and cargo limits",
+      "kind": "subsystem",
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR10"
+      ],
+      "scenario_ids": [
+        "SCN-PLANET-STARGATE-001"
+      ]
+    },
+    {
+      "id": "RULE-PLANET-MASSDRIVER-001",
+      "title": "Mass-driver packet launch, catch and impact",
+      "kind": "subsystem",
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR8",
+        "PR10"
+      ],
+      "scenario_ids": [
+        "SCN-PLANET-MASSDRIVER-001"
+      ]
+    },
+    {
+      "id": "RULE-FLEET-MOVEMENT-001",
+      "title": "Warp speed, distance and waypoint movement",
+      "kind": "subsystem",
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR10"
+      ],
+      "scenario_ids": [
+        "SCN-FLEET-MOVEMENT-001"
+      ]
+    },
+    {
+      "id": "RULE-FLEET-FUEL-001",
+      "title": "Fleet fuel capacity, use and free speed",
+      "kind": "subsystem",
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR10"
+      ],
+      "scenario_ids": [
+        "SCN-FLEET-FUEL-001"
+      ]
+    },
+    {
+      "id": "RULE-SCAN-RANGE-001",
+      "title": "Additive scanner range and penetration classes",
+      "kind": "subsystem",
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR11"
+      ],
+      "scenario_ids": [
+        "SCN-SCAN-RANGE-001"
+      ]
+    },
+    {
+      "id": "RULE-SCAN-CLOAK-001",
+      "title": "Cloak percentage and effective scanner range",
+      "kind": "subsystem",
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR11"
+      ],
+      "scenario_ids": [
+        "SCN-SCAN-CLOAK-001"
+      ]
+    },
+    {
+      "id": "RULE-COMBAT-ROUNDS-001",
+      "title": "Battle rounds, movement and firing phases",
+      "kind": "subsystem",
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR12"
+      ],
+      "scenario_ids": [
+        "SCN-COMBAT-001"
+      ]
+    },
+    {
+      "id": "RULE-COMBAT-TARGETING-001",
+      "title": "Primary/secondary targeting and disengagement",
+      "kind": "subsystem",
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR12"
+      ],
+      "scenario_ids": [
+        "SCN-COMBAT-001"
+      ]
+    },
+    {
+      "id": "RULE-COMBAT-DAMAGE-001",
+      "title": "Shield, armor, damage and repair arithmetic",
+      "kind": "subsystem",
+      "status": "unknown",
+      "downstream_prs": [
+        "PR12",
+        "PR13"
+      ],
+      "scenario_ids": [
+        "SCN-COMBAT-DAMAGE-001"
+      ]
+    },
+    {
+      "id": "RULE-COMBAT-BOMB-001",
+      "title": "Orbital bombing and population estimates",
+      "kind": "subsystem",
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR12"
+      ],
+      "scenario_ids": [
+        "SCN-COMBAT-BOMB-001"
+      ]
+    },
+    {
+      "id": "RULE-COMBAT-GROUND-001",
+      "title": "Ground combat and planetary-defense interaction",
+      "kind": "subsystem",
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR12"
+      ],
+      "scenario_ids": [
+        "SCN-COMBAT-BOMB-001"
+      ]
+    },
+    {
+      "id": "RULE-MINEFIELD-001",
+      "title": "Minefield decay, sweeping, laying and detonation",
+      "kind": "subsystem",
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR10",
+        "PR12",
+        "PR13"
+      ],
+      "scenario_ids": [
+        "SCN-MINEFIELD-001"
+      ]
+    },
+    {
+      "id": "RULE-AI-ADVANTAGE-001",
+      "title": "AI advantage-point tiers by difficulty",
+      "kind": "subsystem",
+      "status": "documented-only",
+      "downstream_prs": [
+        "PR14"
+      ],
+      "scenario_ids": [
+        "SCN-AI-001"
+      ]
+    },
+    {
+      "id": "RULE-AI-TURINDRONES-001",
+      "title": "Turindrones planning policy and memory",
+      "kind": "subsystem",
+      "status": "unknown",
+      "downstream_prs": [
+        "PR14"
+      ],
+      "scenario_ids": [
+        "SCN-TURINDRONES-001"
+      ]
+    }
+  ]
+}

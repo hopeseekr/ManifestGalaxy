@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "id": "SCN-RACE-GROWTH-001",
+  "title": "Habitability, population capacity and growth",
+  "rule_ids": [
+    "RULE-RACE-GROWTH-001",
+    "RULE-PLANET-POP-001"
+  ],
+  "status": "documented-only",
+  "confidence": "help-only",
+  "provenance": [
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 1837221 (0x001c08a5), HLP file offset 464538 (0x0007169a), topic 284 'Growth Conditions'",
+      "note": "Habitable ranges and immunity."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 1853471 (0x001c481f), HLP file offset 468500 (0x00072614), topic 285 'Maximum Population Growth'",
+      "note": "Growth rate 1%-20%; value scales growth."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 344288 (0x000540e0), HLP file offset 89813 (0x00015ed5), topic 42 'Population'",
+      "note": "Maximum population from habitability; 100% supports 1,000,000; plateau after 25% capacity."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 2326597 (0x00238045), HLP file offset 585274 (0x0008ee3a), topic 349 'Annual Growth Rate'",
+      "note": "Annual growth = habitability value x maximum growth rate."
+    }
+  ],
+  "setup": {
+    "baseline": "A planet with known gravity, temperature and radiation inside the race range.",
+    "variable": "Habitability value, population and growth rate."
+  },
+  "procedure": [
+    "Record the home world environment, habitability value, population and growth rate.",
+    "Colonize a controlled planet and record population each year until the cap.",
+    "Repeat with races at minimum, middle and maximum growth rates.",
+    "Test negative habitability, immunity to one factor, and Hyper-Expansion.",
+    "Record deaths and growth separately from terraforming changes."
+  ],
+  "expected": {
+    "documented": [
+      "Maximum population is proportional to habitability value; 100% supports 1,000,000 (documented-only).",
+      "Annual growth is the habitability value times the maximum growth rate, and plateaus after 25% capacity (documented-only).",
+      "Planets with negative habitability kill colonists at habitability/10 percent per year (documented-only)."
+    ]
+  },
+  "observed": null,
+  "unresolved": [
+    "Exact growth-curve shape after the 25% plateau is not stated.",
+    "Rounding and cap application with Hyper-Expansion are unknown.",
+    "The help does not establish whether immunity makes the factor exactly 100% for all calculations."
+  ],
+  "downstream_prs": [
+    "PR5",
+    "PR8"
+  ],
+  "notes": ""
+}

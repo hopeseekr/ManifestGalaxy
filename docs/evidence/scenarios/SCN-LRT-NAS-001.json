@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "id": "SCN-LRT-NAS-001",
+  "title": "No Advanced Scanners trait evidence and controlled observation",
+  "rule_ids": [
+    "RULE-RACE-LRT-NAS"
+  ],
+  "status": "documented-only",
+  "confidence": "help-only",
+  "provenance": [
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 1822437 (0x001bcee5), HLP file offset 462042 (0x00070cda), topic 279 'No Advanced Scanners'",
+      "note": "Decoded help topic for No Advanced Scanners; documented-only claim, not a runtime observation."
+    },
+    {
+      "source": "stars26i.exe",
+      "sha256": "5770dade2db0e11918631d5c128c0bf7ab48e371f7b2267a4ff02531bb8e198e",
+      "kind": "executable",
+      "location": "dialog #150 resource at file offset 0x2fab00, candidate control 301 (caption empty; position-based lead only); no literal 'No Advanced Scanners' ASCII string was found in the executable by exact-byte search",
+      "note": "Executable location of the trait name/control is a lead; it does not prove runtime mechanics."
+    }
+  ],
+  "setup": {
+    "baseline": "A custom race with no other selected trait and otherwise identical wizard choices.",
+    "variable": "Select only No Advanced Scanners and record the advantage-point balance and observable effects.",
+    "universe": "Single-player, fixed small universe with one Turindrones opponent if the runtime exposes it (otherwise record the actual opponent), fixed difficulty, no random events; keep the same seed/settings across trials."
+  },
+  "procedure": [
+    "Create the baseline race and record the step 1-6 settings and advantage-point balance.",
+    "Create the same race with only No Advanced Scanners changed; record the exact advantage-point balance and any disabled controls.",
+    "Start the game and record starting technology, planets, fleets, installations and available catalog entries.",
+    "Run a controlled comparison for each documented effect, varying one input at a time and repeating at least three trials where randomness may apply.",
+    "Record the observed result, game year, settings and any discrepancy from the documented claim."
+  ],
+  "expected": {
+    "documented": [
+      "No standard scanners can scan planets from a distance or see fleets hiding behind planets (documented-only).",
+      "All conventional scanner ranges are doubled (documented-only)."
+    ]
+  },
+  "observed": null,
+  "unresolved": [
+    "Exact advantage-point cost is unknown.",
+    "The scanner catalog exclusion set and the doubling order are unknown.",
+    "Interaction with Super-Stealth, Jack of All Trades and Alternate Reality scanners is unknown."
+  ],
+  "downstream_prs": [
+    "PR5",
+    "PR6",
+    "PR9",
+    "PR11",
+    "PR13"
+  ],
+  "notes": "The help is dated January 1998 and its applicability to stars26i.exe is unverified. No original-game execution is claimed by PR2."
+}

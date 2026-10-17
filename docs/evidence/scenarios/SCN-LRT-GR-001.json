@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "id": "SCN-LRT-GR-001",
+  "title": "Generalized Research trait evidence and controlled observation",
+  "rule_ids": [
+    "RULE-RACE-LRT-GR"
+  ],
+  "status": "documented-only",
+  "confidence": "help-only",
+  "provenance": [
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 1819839 (0x001bc4bf), HLP file offset 459444 (0x000702b4), topic 273 'Generalized Research'",
+      "note": "Decoded help topic for Generalized Research; documented-only claim, not a runtime observation."
+    },
+    {
+      "source": "stars26i.exe",
+      "sha256": "5770dade2db0e11918631d5c128c0bf7ab48e371f7b2267a4ff02531bb8e198e",
+      "kind": "executable",
+      "location": "dialog #150 resource at file offset 0x2fab00, candidate control 295 (caption empty; position-based lead only); no literal 'Generalized Research' ASCII string was found in the executable by exact-byte search",
+      "note": "Executable location of the trait name/control is a lead; it does not prove runtime mechanics."
+    }
+  ],
+  "setup": {
+    "baseline": "A custom race with no other selected trait and otherwise identical wizard choices.",
+    "variable": "Select only Generalized Research and record the advantage-point balance and observable effects.",
+    "universe": "Single-player, fixed small universe with one Turindrones opponent if the runtime exposes it (otherwise record the actual opponent), fixed difficulty, no random events; keep the same seed/settings across trials."
+  },
+  "procedure": [
+    "Create the baseline race and record the step 1-6 settings and advantage-point balance.",
+    "Create the same race with only Generalized Research changed; record the exact advantage-point balance and any disabled controls.",
+    "Start the game and record starting technology, planets, fleets, installations and available catalog entries.",
+    "Run a controlled comparison for each documented effect, varying one input at a time and repeating at least three trials where randomness may apply.",
+    "Record the observed result, game year, settings and any discrepancy from the documented claim."
+  ],
+  "expected": {
+    "documented": [
+      "Only half of research resources apply to the current field (documented-only).",
+      "15% of total research resources apply to each of the six fields; the help notes this sums to 125% (documented-only)."
+    ]
+  },
+  "observed": null,
+  "unresolved": [
+    "Exact advantage-point cost is unknown.",
+    "The base for the percentages (gross resources versus post-allocation resources) is unknown.",
+    "Rounding and overflow behavior across fields are unknown."
+  ],
+  "downstream_prs": [
+    "PR5",
+    "PR6",
+    "PR9",
+    "PR13"
+  ],
+  "notes": "The help is dated January 1998 and its applicability to stars26i.exe is unverified. No original-game execution is claimed by PR2."
+}

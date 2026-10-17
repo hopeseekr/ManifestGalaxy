@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "id": "SCN-TURN-ORDER-001",
+  "title": "Cross-phase turn-generation order and RNG consumption",
+  "rule_ids": [
+    "RULE-TURN-ORDER-001",
+    "RULE-RNG-001"
+  ],
+  "status": "unknown",
+  "confidence": "unknown",
+  "provenance": [
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 2361467 (0x0024087b), HLP file offset 595568 (0x00091670), topic 376 'Round of Battle'",
+      "note": "Battle rounds last up to 16 and are divided into token phases."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 1117052 (0x00110b7c), HLP file offset 285041 (0x00045971), topic 131 'Sweeping Minefields'",
+      "note": "Sweeping occurs before movement."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 429930 (0x00068f6a), HLP file offset 114015 (0x0001bd5f), topic 50 'Stargates'",
+      "note": "Stargate travel is single-year."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 1033026 (0x000fc342), HLP file offset 262455 (0x00040137), topic 122 'Flinging Mass Packets'",
+      "note": "Packet first-year travel is half normal and packets decay in launch/arrival years."
+    }
+  ],
+  "setup": {
+    "baseline": "A deterministic test game with one human and one AI, fixed seed if recoverable, no random events.",
+    "variable": "One interacting pair of phases per trial (for example production versus movement, or combat versus colonization)."
+  },
+  "procedure": [
+    "Record the full visible state at the start and end of a year.",
+    "Construct two orders whose outcome differs depending on phase order (for example, a fleet arriving at a planet the same year a starbase completes).",
+    "Repeat each trial at least five times with the same save and settings.",
+    "Record the year, order, outcome and any message ordering.",
+    "Do not claim a phase order from a single ambiguous result; use a matrix of discriminating trials."
+  ],
+  "expected": {},
+  "observed": null,
+  "unresolved": [
+    "The overall order of production, research, construction completion, fleet movement, colonization, combat, bombing, mine decay, packet arrival, scanning, terraforming and AI planning is not recovered.",
+    "The RNG algorithm, seed and consumption order are unknown.",
+    "The help gives intra-phase constraints but not a global pipeline."
+  ],
+  "downstream_prs": [
+    "PR4",
+    "PR8",
+    "PR9",
+    "PR10",
+    "PR11",
+    "PR12",
+    "PR15"
+  ],
+  "notes": "This scenario is a measurement plan; it does not prescribe an order."
+}

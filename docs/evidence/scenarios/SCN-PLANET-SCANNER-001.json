@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "id": "SCN-PLANET-SCANNER-001",
+  "title": "Planet-based scanner range and upgrades",
+  "rule_ids": [
+    "RULE-PLANET-SCANNER-001"
+  ],
+  "status": "documented-only",
+  "confidence": "help-only",
+  "provenance": [
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 395195 (0x000607bb), HLP file offset 103856 (0x000195b0), topic 47 'Planet-based Scanners'",
+      "note": "Planet scanner types, fixed cost, automatic upgrades."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 1215545 (0x00128c39), HLP file offset 309806 (0x0004ba2e), topic 147 'Scanner Technology'",
+      "note": "Penetrating versus non-penetrating scanners; minefields cloaked 82% from non-penetrating."
+    }
+  ],
+  "setup": {
+    "baseline": "An owned planet with a known scanner and a target at controlled distance.",
+    "variable": "Scanner type, target orbit and cloak."
+  },
+  "procedure": [
+    "Record scanner type/range and detection at each distance.",
+    "Place a fleet in orbit and in deep space; record detection.",
+    "Research an upgrade and record automatic replacement and cost.",
+    "Test a minefield and a cloaked fleet."
+  ],
+  "expected": {
+    "documented": [
+      "Planet scanners have fixed build cost and upgrade automatically when better technology is available (documented-only).",
+      "Planet-penetrating scanners see fleets in orbit and planetary statistics; non-penetrating scanners cannot (documented-only).",
+      "Minefields are 82% cloaked from non-penetrating scanners (documented-only)."
+    ]
+  },
+  "observed": null,
+  "unresolved": [
+    "Exact scanner range values are in the undecoded table.",
+    "Upgrade timing relative to production is unknown."
+  ],
+  "downstream_prs": [
+    "PR9",
+    "PR11"
+  ],
+  "notes": ""
+}

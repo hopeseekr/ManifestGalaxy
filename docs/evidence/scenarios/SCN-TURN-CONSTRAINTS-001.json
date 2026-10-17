@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "id": "SCN-TURN-CONSTRAINTS-001",
+  "title": "Known intra-phase ordering constraints",
+  "rule_ids": [
+    "RULE-TURN-CONSTRAINTS-001"
+  ],
+  "status": "documented-only",
+  "confidence": "help-only",
+  "provenance": [
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 1117052 (0x00110b7c), HLP file offset 285041 (0x00045971), topic 131 'Sweeping Minefields'",
+      "note": "Sweeping occurs before movement."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 429930 (0x00068f6a), HLP file offset 114015 (0x0001bd5f), topic 50 'Stargates'",
+      "note": "Stargates move ships in a single year."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 1033026 (0x000fc342), HLP file offset 262455 (0x00040137), topic 122 'Flinging Mass Packets'",
+      "note": "Packet first-year travel and decay."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 2361467 (0x0024087b), HLP file offset 595568 (0x00091670), topic 376 'Round of Battle'",
+      "note": "Battle round phases."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 558530 (0x000885c2), HLP file offset 144311 (0x000233b7), topic 59 'How Production Works'",
+      "note": "Production queue is top-down and stops without minerals."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 657715 (0x000a0933), HLP file offset 169768 (0x00029728), topic 73 'Fields of Study'",
+      "note": "Research resources are taken off the top unless leftover-only is checked."
+    }
+  ],
+  "setup": {
+    "baseline": "Any game with controllable fleets and production.",
+    "variable": "One documented ordering constraint at a time."
+  },
+  "procedure": [
+    "Create a minefield and a fleet that both starts in it and moves out; record sweeping.",
+    "Move a fleet through a stargate and record arrival year.",
+    "Launch a packet at a known distance and record first-year travel and decay.",
+    "Run a battle and record round phases and disengagement.",
+    "Block a production queue with missing minerals and record later items."
+  ],
+  "expected": {
+    "documented": [
+      "Minesweeping happens before movement, so a fleet sweeps in the year it leaves a field (documented-only).",
+      "Stargate travel is fuel-free and completes in the same year (documented-only).",
+      "Packets travel half the normal distance in their first year and decay in launch/arrival years (documented-only).",
+      "Battles last up to 16 rounds; a round is each token moving and firing, split into token phases (documented-only).",
+      "Production is processed top-down and halts if the planet runs out of minerals (documented-only).",
+      "Research resources are taken off the top of the resource heap unless Contribute Only Leftover Resources is checked (documented-only)."
+    ]
+  },
+  "observed": null,
+  "unresolved": [
+    "These constraints do not establish their order relative to one another.",
+    "The version applicability of each help statement is unverified."
+  ],
+  "downstream_prs": [
+    "PR4",
+    "PR8",
+    "PR10",
+    "PR12"
+  ],
+  "notes": ""
+}

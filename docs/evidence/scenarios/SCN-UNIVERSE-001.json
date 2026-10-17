@@ -1,0 +1,143 @@
+{
+  "schema_version": 1,
+  "id": "SCN-UNIVERSE-001",
+  "title": "Universe setup: size, density, positions, clumping and options",
+  "rule_ids": [
+    "RULE-UNIVERSE-SIZE-001",
+    "RULE-UNIVERSE-DENSITY-001",
+    "RULE-UNIVERSE-POSITIONS-001",
+    "RULE-UNIVERSE-CLUMPING-001",
+    "RULE-UNIVERSE-OPTIONS-001",
+    "RULE-UNIVERSE-PLAYERS-001",
+    "RULE-UNIVERSE-START-001",
+    "RULE-UNIVERSE-DIFFICULTY-001"
+  ],
+  "status": "documented-only",
+  "confidence": "help-only",
+  "provenance": [
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 1625464 (0x0018cd78), HLP file offset 412525 (0x00064b6d), topic 224 'New Game Setup (Basic)'",
+      "note": "Basic New Game dialog."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 1639242 (0x0019034a), HLP file offset 414015 (0x0006513f), topic 226 'Difficulty Level'",
+      "note": "Difficulty level."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 1639677 (0x001904fd), HLP file offset 414450 (0x000652f2), topic 227 'Tiny Universe'",
+      "note": "Tiny 400 ly."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 1639968 (0x00190620), HLP file offset 414741 (0x00065415), topic 228 'Small Universe'",
+      "note": "Small 800 ly."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 1640319 (0x0019077f), HLP file offset 415092 (0x00065574), topic 229 'Medium Universe'",
+      "note": "Medium 1200 ly."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 1640743 (0x00190927), HLP file offset 415516 (0x0006571c), topic 230 'Large Universe'",
+      "note": "Large 1600 ly."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 1641068 (0x00190a6c), HLP file offset 415841 (0x00065861), topic 231 'Huge Universe'",
+      "note": "Huge 2000 ly, up to 1000 planets."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 1655537 (0x001942f1), HLP file offset 418022 (0x000660e6), topic 234 'Step 1: Specifying the Universe'",
+      "note": "Advanced setup options."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 1657682 (0x00194b52), HLP file offset 420167 (0x00066947), topic 236 'Density'",
+      "note": "Density: normal ~1/5000 ly^2, sparse ~1/6500, dense ~1/4000, packed +30% except Huge."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 1658448 (0x00194e50), HLP file offset 420933 (0x00066c45), topic 237 'Player Positions'",
+      "note": "Player positions."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 1675031 (0x00198f17), HLP file offset 425228 (0x00067d0c), topic 244 'Galaxy Clumping'",
+      "note": "Galaxy clumping."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 1687567 (0x0019c00f), HLP file offset 425476 (0x00067e04), topic 245 'Step 2: Specifying the Players'",
+      "note": "Player slot types."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 213741 (0x000342ed), HLP file offset 57570 (0x0000e0e2), topic 24 'Creating a Universe from the Command Line'",
+      "note": "game.def field ranges and sample."
+    }
+  ],
+  "setup": {
+    "baseline": "Advanced New Game wizard in the supplied executable.",
+    "variable": "One universe setting at a time."
+  },
+  "procedure": [
+    "Create a new advanced game with fixed settings and record every field range and default.",
+    "Generate one universe for each size and record planet count, span and opponent count.",
+    "For each density, record planet counts across at least three seeds/settings.",
+    "Toggle clumping and compare nearest-neighbor distances.",
+    "Record the effect of every advanced checkbox and player-slot type.",
+    "Verify the year 2400 start and common home-world inventory in a generated game."
+  ],
+  "expected": {
+    "documented": [
+      "Sizes: Tiny 400 ly, Small 800, Medium 1200, Large 1600, Huge 2000 (documented-only).",
+      "Normal density is about one planet per 5,000 ly^2; Sparse about one per 6,500; Dense about one per 4,000; Packed adds 30% over Dense except in Huge (documented-only).",
+      "Advanced options include Beginner: Maximum Minerals, Slower Tech Advances, Accelerated BBS Play, No Random Events, Computer Players Form Alliances, Public Player Scores and Galaxy Clumping (documented-only).",
+      "Player slots support predefined/custom/computer/no player, and difficulty affects opponent count and skill (documented-only).",
+      "All games start in year 2400; home worlds share a common starting inventory (documented-only)."
+    ]
+  },
+  "observed": null,
+  "unresolved": [
+    "Exact planet-count distributions and clumping geometry are unknown.",
+    "Whether Packed is identical to Dense in Huge is documented but unverified.",
+    "The command-line game.def ranges are documented-only."
+  ],
+  "downstream_prs": [
+    "PR6",
+    "PR14",
+    "PR15"
+  ],
+  "notes": ""
+}

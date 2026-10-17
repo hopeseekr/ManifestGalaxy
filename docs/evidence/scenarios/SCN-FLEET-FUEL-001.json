@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "id": "SCN-FLEET-FUEL-001",
+  "title": "Fleet fuel capacity and usage",
+  "rule_ids": [
+    "RULE-FLEET-FUEL-001"
+  ],
+  "status": "documented-only",
+  "confidence": "help-only",
+  "provenance": [
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 823238 (0x000c8fc6), HLP file offset 212411 (0x00033dbb), topic 95 'Using Fuel'",
+      "note": "Fuel shared; capacity summed; usage depends on mass and engine."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 790469 (0x000c0fc5), HLP file offset 204218 (0x00031dba), topic 90 'Warp Speed'",
+      "note": "Warp 1 free for standard engines; optimum speed."
+    }
+  ],
+  "setup": {
+    "baseline": "A fleet with known ships, mass and fuel.",
+    "variable": "Warp speed, distance and cargo."
+  },
+  "procedure": [
+    "Record capacity and usage at each warp speed.",
+    "Vary cargo and ship count.",
+    "Test free speed, ramscoop regeneration and fuel transfer.",
+    "Test IFE and Cheap Engines."
+  ],
+  "expected": {
+    "documented": [
+      "Fuel is shared by the fleet; capacity is the sum of ship capacities and usage is the sum of individual ship usage (documented-only).",
+      "Standard engines travel warp 1 without fuel; free/optimum speeds depend on engine type (documented-only)."
+    ]
+  },
+  "observed": null,
+  "unresolved": [
+    "Exact fuel-use tables and rounding are unknown.",
+    "Engine catalog values are not decoded."
+  ],
+  "downstream_prs": [
+    "PR10"
+  ],
+  "notes": ""
+}

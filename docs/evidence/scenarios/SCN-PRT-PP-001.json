@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "id": "SCN-PRT-PP-001",
+  "title": "Packet Physics trait evidence and controlled observation",
+  "rule_ids": [
+    "RULE-RACE-PRT-PP"
+  ],
+  "status": "documented-only",
+  "confidence": "help-only",
+  "provenance": [
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 1772802 (0x001b0d02), HLP file offset 449271 (0x0006daf7), topic 264 'Packet Physics'",
+      "note": "Decoded help topic for Packet Physics; documented-only claim, not a runtime observation."
+    },
+    {
+      "source": "stars26i.exe",
+      "sha256": "5770dade2db0e11918631d5c128c0bf7ab48e371f7b2267a4ff02531bb8e198e",
+      "kind": "executable",
+      "location": "dialog #149 resource at file offset 0x2fa900, control 277, caption 'Packet Physics'; style 0x50000009 (BS_AUTORADIOBUTTON)",
+      "note": "Executable location of the trait name/control is a lead; it does not prove runtime mechanics."
+    }
+  ],
+  "setup": {
+    "baseline": "A custom race with no other selected trait and otherwise identical wizard choices.",
+    "variable": "Select only Packet Physics and record the advantage-point balance and observable effects.",
+    "universe": "Single-player, fixed small universe with one Turindrones opponent if the runtime exposes it (otherwise record the actual opponent), fixed difficulty, no random events; keep the same seed/settings across trials."
+  },
+  "procedure": [
+    "Create the baseline race and record the step 1-6 settings and advantage-point balance.",
+    "Create the same race with only Packet Physics changed; record the exact advantage-point balance and any disabled controls.",
+    "Start the game and record starting technology, planets, fleets, installations and available catalog entries.",
+    "Run a controlled comparison for each documented effect, varying one input at a time and repeating at least three trials where randomness may apply.",
+    "Record the observed result, game year, settings and any discrepancy from the documented claim."
+  ],
+  "expected": {
+    "documented": [
+      "Starts with Energy tech 4, two shielded scouts, one colony ship and two starting planets in non-tiny universes (documented-only).",
+      "Exclusive Mass Driver 5, 6, 8, 9, 11, 12 and 13 entries; packets carry built-in penetrating scanners with range equal to warp speed squared (documented-only).",
+      "Packets are smaller and cheaper, and all players' packets in flight are sensed (documented-only).",
+      "Learns the exact design of an enemy starbase that receives a packet through its accelerator (documented-only).",
+      "A receiving planet has a 50% chance of a 1% environmental improvement; each 100 kT of uncaught mineral adds a 0.1% chance of a 1% planet-value improvement (documented-only)."
+    ]
+  },
+  "observed": null,
+  "unresolved": [
+    "Exact advantage-point cost is unknown.",
+    "Packet size/cost formulas are unknown.",
+    "Probability ordering and the definition of uncaught minerals are unknown.",
+    "The two-starting-planet rule in non-tiny universes needs runtime confirmation."
+  ],
+  "downstream_prs": [
+    "PR5",
+    "PR6",
+    "PR8",
+    "PR9",
+    "PR10",
+    "PR11",
+    "PR12",
+    "PR13"
+  ],
+  "notes": "The help is dated January 1998 and its applicability to stars26i.exe is unverified. No original-game execution is claimed by PR2."
+}

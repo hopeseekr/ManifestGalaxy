@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "id": "SCN-TURINDRONES-001",
+  "title": "Turindrones opponent and AI configuration",
+  "rule_ids": [
+    "RULE-RACE-TURINDRONES-CONFIG-001",
+    "RULE-AI-TURINDRONES-001"
+  ],
+  "status": "unknown",
+  "confidence": "unknown",
+  "provenance": [
+    {
+      "source": "stars26i.exe",
+      "sha256": "5770dade2db0e11918631d5c128c0bf7ab48e371f7b2267a4ff02531bb8e198e",
+      "kind": "executable",
+      "location": "Turindrones string at segment 35 relative 0xa06, file offset 0x55846",
+      "note": "Only the name is located; no race, ship, research or policy table is linked."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 1687567 (0x0019c00f), HLP file offset 425476 (0x00067e04), topic 245 'Step 2: Specifying the Players'",
+      "note": "Computer Player slot selection and proficiency level (generic, not Turindrones-specific)."
+    }
+  ],
+  "setup": {
+    "baseline": "Advanced New Game with one computer player slot.",
+    "variable": "Opponent type/proficiency."
+  },
+  "procedure": [
+    "Select Turindrones as the computer opponent if the runtime exposes it.",
+    "Record its race traits, advantage points, starting technology, planets, fleets and ships.",
+    "Record research, expansion and combat behavior over at least 30 turns.",
+    "Repeat with multiple Turindrones opponents and different difficulties.",
+    "Record all discrepancies from generic AI behavior."
+  ],
+  "expected": {},
+  "observed": null,
+  "unresolved": [
+    "No Turindrones race configuration or AI policy is recovered.",
+    "Whether the name is selectable at runtime is unknown.",
+    "No original game was executed."
+  ],
+  "downstream_prs": [
+    "PR14"
+  ],
+  "notes": "PR14 may disclose designed policy differences, but numerical gameplay formulas still require evidence."
+}

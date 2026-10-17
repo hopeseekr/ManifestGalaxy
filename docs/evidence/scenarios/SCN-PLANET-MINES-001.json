@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "id": "SCN-PLANET-MINES-001",
+  "title": "Mine output and mineral-concentration depletion",
+  "rule_ids": [
+    "RULE-PLANET-MINES-001"
+  ],
+  "status": "documented-only",
+  "confidence": "help-only",
+  "provenance": [
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 347880 (0x00054ee8), HLP file offset 93405 (0x00016cdd), topic 43 'Minerals'",
+      "note": "Three minerals; surface versus subsurface."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 362168 (0x000586b8), HLP file offset 95405 (0x000174ad), topic 44 'Mines'",
+      "note": "Concentration 0-200; home world never below 30%; 12,500/concentration approximation."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 969481 (0x000ecb09), HLP file offset 248062 (0x0003c8fe), topic 113 'Mining Colonized Worlds'",
+      "note": "Mining formula (potential productivity) x (concentration) = actual productivity."
+    }
+  ],
+  "setup": {
+    "baseline": "An owned planet with known mineral concentration and a controlled number of mines.",
+    "variable": "Mine count, concentration and mineral."
+  },
+  "procedure": [
+    "Record concentration and surface minerals at year start.",
+    "Add a known number of mines and record next-year output for each mineral.",
+    "Vary concentration and mine count independently.",
+    "Measure concentration depletion over multiple years.",
+    "Test home-world floor of 30% and the concentration=1 floor."
+  ],
+  "expected": {
+    "documented": [
+      "Actual productivity = potential productivity x mineral concentration (documented-only).",
+      "Mine years to reduce concentration by 1 are approximately 12,500 / concentration (documented-only).",
+      "Minerals never run out completely; concentration falls to 1 and home-world concentration never drops below 30% (documented-only)."
+    ]
+  },
+  "observed": null,
+  "unresolved": [
+    "Exact rounding of each mineral output is unknown.",
+    "The potential-productivity base per mine is race-dependent and not fully recovered."
+  ],
+  "downstream_prs": [
+    "PR8"
+  ],
+  "notes": ""
+}

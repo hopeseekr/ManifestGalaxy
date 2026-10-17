@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "id": "SCN-RACE-WIZARD-001",
+  "title": "Custom-race wizard control inventory and selection model",
+  "rule_ids": [
+    "RULE-RACE-WIZARD-DIALOGS-001",
+    "RULE-RACE-PRT-SELECTION-001",
+    "RULE-RACE-LRT-SELECTION-001"
+  ],
+  "status": "statically-derived",
+  "confidence": "static-only",
+  "provenance": [
+    {
+      "source": "stars26i.exe",
+      "sha256": "5770dade2db0e11918631d5c128c0bf7ab48e371f7b2267a4ff02531bb8e198e",
+      "kind": "executable",
+      "location": "dialogs #146-#151 at file offsets 0x2fa480, 0x2fa6c0, 0x2fa800, 0x2fa900, 0x2fab00, 0x2facc0; #209 at 0x2f9800",
+      "note": "Static dialog templates and Win16 control styles."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 1690878 (0x0019ccfe), HLP file offset 428787 (0x00068af3), topic 247 'Custom Race Wizard'",
+      "note": "Help describes the six-step wizard."
+    }
+  ],
+  "setup": {
+    "baseline": "Binary inspection of the supplied executable; no execution required for static findings.",
+    "variable": "Decode control class/style/caption for dialogs #146-#151 and #209."
+  },
+  "procedure": [
+    "Parse each dialog template with the PR1 checked parser.",
+    "List controls, captions, IDs and Win16 style bits.",
+    "Classify selection controls as auto-radio, auto-checkbox or other by style low word.",
+    "Compare candidate wizard dialogs with exported RACEWIZARDDLG1-6 names without assuming an ID mapping."
+  ],
+  "expected": {
+    "static": [
+      "#149 contains ten BS_AUTORADIOBUTTON controls with captions naming all ten primary traits; control 271 starts the group, so the dialog statically permits at most one selected primary trait. Exactly one is the PR5 product requirement; original required-selection behavior is unverified.",
+      "#150 contains fourteen BS_AUTOCHECKBOX controls with empty captions; independent checkboxes statically permit zero or more lesser selections, but their trait mapping is unresolved.",
+      "#151 contains six independent three-choice radio groups (18 controls) for research-cost choices, plus one auto-checkbox for the all-fields starting-tech option.",
+      "#146-#151 are contiguous wizard-style dialogs; #209 is the New Game dialog with Customize Race and Advanced Game controls.",
+      "Control styles are static evidence only; the runtime path from these dialogs to the race model is not established."
+    ]
+  },
+  "observed": null,
+  "unresolved": [
+    "The mapping of exported RACEWIZARDDLG1-6 to #146-#151 is unresolved.",
+    "The 14 lesser-trait checkbox positions are not yet mapped to trait identities.",
+    "Whether any radio/check style is changed at runtime is unknown."
+  ],
+  "downstream_prs": [
+    "PR5"
+  ],
+  "notes": "This scenario is statically derived from dialog templates; it is not an original-game observation."
+}

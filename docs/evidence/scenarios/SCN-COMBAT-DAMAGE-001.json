@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "id": "SCN-COMBAT-DAMAGE-001",
+  "title": "Shield, armor, damage and repair arithmetic",
+  "rule_ids": [
+    "RULE-COMBAT-DAMAGE-001"
+  ],
+  "status": "unknown",
+  "confidence": "unknown",
+  "provenance": [
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 2100596 (0x00200d74), HLP file offset 531305 (0x00081b69), topic 336 'Armor, Shields and Damage'",
+      "note": "Armor, shields and damage topic."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 2116438 (0x00204b56), HLP file offset 534859 (0x0008294b), topic 337 'Weapon Properties'",
+      "note": "Weapon properties topic."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 2150095 (0x0020cecf), HLP file offset 543940 (0x00084cc4), topic 338 'Damage Repair'",
+      "note": "Damage repair topic."
+    }
+  ],
+  "setup": {
+    "baseline": "A controlled one-on-one battle with known components.",
+    "variable": "One weapon, shield or armor value."
+  },
+  "procedure": [
+    "Record token components and displayed damage each round.",
+    "Vary one component value and repeat.",
+    "Record shield/armor depletion order and repair.",
+    "Use the VCR and battle report; do not infer from final survivors alone."
+  ],
+  "expected": {},
+  "observed": null,
+  "unresolved": [
+    "Exact damage allocation, shield/armor absorption, repair timing and rounding are not recovered.",
+    "Weapon and component stats are in undecoded tables.",
+    "Random targeting/damage effects require invariant or statistical tests, not fabricated exact outcomes."
+  ],
+  "downstream_prs": [
+    "PR12",
+    "PR13"
+  ],
+  "notes": "This gap scenario defines measurements; no combat formula is asserted."
+}

@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "id": "SCN-FLEET-MOVEMENT-001",
+  "title": "Warp speed and waypoint movement",
+  "rule_ids": [
+    "RULE-FLEET-MOVEMENT-001"
+  ],
+  "status": "documented-only",
+  "confidence": "help-only",
+  "provenance": [
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 790469 (0x000c0fc5), HLP file offset 204218 (0x00031dba), topic 90 'Warp Speed'",
+      "note": "Warp speed: distance is square of warp; absolute max 10."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 888443 (0x000d8e7b), HLP file offset 228464 (0x00037c70), topic 101 'Navigation'",
+      "note": "Navigation topic."
+    }
+  ],
+  "setup": {
+    "baseline": "A fleet with a known engine and fuel supply at a fixed waypoint.",
+    "variable": "Warp speed and distance."
+  },
+  "procedure": [
+    "Set a waypoint at a known distance and record arrival year.",
+    "Vary warp speed and record distance per year.",
+    "Push to warp 9/10 and record ship loss.",
+    "Test stargate routing and waypoint snapping."
+  ],
+  "expected": {
+    "documented": [
+      "Actual distance traveled per year is the square of warp speed; absolute maximum is warp 10 (documented-only).",
+      "Most ships are safe to warp 9; warp 10 risks a 10% chance of losing each ship unless the engine is warp-10 capable (documented-only)."
+    ]
+  },
+  "observed": null,
+  "unresolved": [
+    "The exact per-year jump/rounding is unknown.",
+    "Engine and fleet mass affect speed but the full formula is not recovered here."
+  ],
+  "downstream_prs": [
+    "PR10"
+  ],
+  "notes": ""
+}

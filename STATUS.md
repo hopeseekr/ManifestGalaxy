@@ -2,27 +2,30 @@
 
 ## Current
 
-PR1 (binary evidence inventory and extraction tools) is complete and locally
-validated. The scoped signed commit uses this exact message:
-`Established the binary evidence inventory and extraction tools.`
+PR2 (documented recovered rules and reference scenarios) is complete on branch
+`pr2-rules-specification`, created from the merged `trunk`. The scoped signed
+commit uses this exact message:
+`Documented recovered rules and reference scenarios.`
 
-A private local PDF converter is also available:
+PR1 (binary evidence inventory and extraction tools) is complete and previously
+integrated. A private local PDF converter is also available:
 `tools/analysis/hlp_to_pdf.py`. It generates
 `analysis/help/Stars-Player-Guide-1998.pdf` with 419 topics and 128 decoded
 bitmap images. The PDF and extracted images are ignored, private artifacts and
 must not be redistributed without permission.
 
-PR2 has not been started. Its prerequisite is PR1's authorized integration;
-the PR1 prompt does not authorize a push, merge, or PR2 work.
+PR2 has not been pushed or merged. Its prerequisite, PR1 integration, was
+already present on `trunk`.
 
 ## Scope
 
 - In scope (implemented): `tools/analysis/`, `tools/analysis/tests/`,
-  `docs/evidence/inventory.md`, `.gitignore` entries for private extraction
-  output and original game payloads, this status file, and the PR1 checklist
-  entry in `PLAN.md`.
-- Out of scope: Rust workspace, gameplay rules, original-program execution,
-  disassembly conclusions, Git initialization, push, or merge.
+  `tools/analysis/validate_scenarios.py`, `docs/evidence/inventory.md`,
+  `docs/evidence/scenarios/`, `docs/rules/`, `.gitignore` entries for private
+  extraction output and original game payloads, this status file, and the PR1
+  and PR2 checklist entries in `PLAN.md`.
+- Out of scope: Rust workspace, runtime gameplay code, original-program
+  execution, disassembly conclusions, Git initialization, push, or merge.
 
 ## Checklist
 
@@ -38,6 +41,16 @@ the PR1 prompt does not authorize a push, merge, or PR2 work.
 - [x] `python3 tools/analysis/inventory.py stars26i.exe --output analysis/inventory.json`
 - [x] `python3 tools/analysis/help.py 'Stars! - RIP/stars!.hlp' --output analysis/help/inventory.json --text-output analysis/help/topics.txt`
 - [x] PLAN.md PR1 checkbox, after acceptance
+- [x] PR2 rule index with stable IDs, statuses and source hashes
+- [x] PR2 rule ledger covering all 10 primary and 14 lesser traits
+- [x] PR2 ledger entries for race builder, universe setup, technologies,
+      hulls/components, planets, production, research, fleets, scanning,
+      combat, Turindrones/AI, victory and turn structure
+- [x] PR2 turn-order dependency specification with unresolved edges explicit
+- [x] PR2 gap ledger with downstream gates
+- [x] PR2 59 JSON controlled scenarios; no fabricated observed results
+- [x] PR2 scenario validator and focused tests
+- [x] PLAN.md PR2 checkbox, after acceptance
 
 ## Validation
 
@@ -57,6 +70,10 @@ python3 -m py_compile tools/analysis/ne.py tools/analysis/inventory.py \
   tools/analysis/tests/test_ne.py tools/analysis/tests/test_inventory.py \
   tools/analysis/tests/test_help.py tools/analysis/tests/test_hlp_to_pdf.py
 sha256sum stars26i.exe 'Stars! - RIP/stars!.hlp'
+python3 -m unittest discover -s tools/analysis/tests -v
+python3 tools/analysis/validate_scenarios.py docs/evidence/scenarios
+python3 -m py_compile tools/analysis/validate_scenarios.py \
+  tools/analysis/tests/test_validate_scenarios.py
 ```
 
 Results:
@@ -70,6 +87,11 @@ Results:
 - Malformed synthetic fixtures fail with actionable offsets and no output.
 - Reports contain no license-code contents and no bulk binary payloads.
 - No original program was executed and no disassembly was performed.
+- PR2: 86 unittest tests passed (69 PR1 tests plus 17 validator tests).
+- PR2: scenario validator accepted 59 scenarios against 83 rules.
+- PR2: 10 primary and 14 lesser traits each have a ledger entry and a scenario.
+- PR2: 5 unknown-status scenarios and 2 statically-derived scenarios; the
+  remainder are documented-only. No scenario contains an observed result.
 
 ## Evidence snapshot
 
@@ -82,6 +104,15 @@ Results:
 - Help generation time decodes to January 1998 (raw `884558967`); 419 topics,
   142 internal files, all titles decoded.
 - Body text is best-effort; six help topics are strings-only for 18 records.
+- PR2 statically established: `#149` has ten primary-trait auto-radio buttons
+  in one group (at most one selection); `#150` has 14 empty-caption
+  auto-checkboxes; `#151` has six three-choice research-cost radio groups plus
+  one checkbox.
+- PR2 exact-byte search found the ten primary-trait names in `#149`, but no
+  literal lesser-trait names in the executable. The `#150` checkbox-to-trait
+  mapping remains unresolved.
+- PR2 located the opponent-name sequence at file `0x55846`; Turindrones has no
+  recovered race or AI configuration.
 
 ## Log
 
@@ -107,11 +138,26 @@ Results:
   than PDF pages. Updated the test count to 69.
 - 2026-10-17: Remaining blocker: none inside PR1. PR2 remains gated on PR1
   integration by an authorized actor. No push, PR, or merge was performed.
+- 2026-10-17: PR2: created `pr2-rules-specification` from merged `trunk`.
+  Wrote the machine-readable rule index, narrative rule ledger, turn-order
+  dependency specification, gap ledger, 59 controlled scenarios and a
+  standard-library scenario validator. Added 17 validator tests. Ran the full
+  manifest (86 passed), the validator (59 scenarios, 83 rules, OK) and
+  `py_compile` on the new Python files. No original game was run; no runtime
+  gameplay code was added.
 
-## Known limitations carried into PR2
+## Known limitations carried into PR3
 
 - Exported procedure names are not yet linked to dialog IDs.
 - Control IDs are not yet mapped to the 24 trait identities.
 - `Turindrones` is a located string, not a recovered opponent/AI configuration.
 - The help is documentation and may not match this executable version.
 - No gameplay formula, turn order, combat rule, RNG, or AI policy is claimed.
+- PR2 recovered no advantage-point costs or exclusion matrix, no complete
+  technology/hull/component catalog, no global turn order or RNG algorithm, no
+  combat damage arithmetic and no Turindrones configuration. These are tracked
+  in `docs/rules/gap-ledger.md` with downstream gates.
+- The lesser-trait checkbox-to-trait mapping is unresolved. The executable has
+  14 unnamed checkbox controls and no literal lesser-trait ASCII names.
+- No PR2 scenario has an observed result. All 59 records are measurement plans
+  until an operator runs them.

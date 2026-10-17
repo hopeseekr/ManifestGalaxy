@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "id": "SCN-COMBAT-BOMB-001",
+  "title": "Bombing and ground combat",
+  "rule_ids": [
+    "RULE-COMBAT-BOMB-001",
+    "RULE-COMBAT-GROUND-001"
+  ],
+  "status": "documented-only",
+  "confidence": "help-only",
+  "provenance": [
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 1067963 (0x00104bbb), HLP file offset 272816 (0x000429b0), topic 126 'Bombing Planets'",
+      "note": "Bombing requires no starbase; population estimate +/-20%."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 1084468 (0x00108c34), HLP file offset 277033 (0x00043a29), topic 128 'Ground Combat'",
+      "note": "Ground combat and 75% defense effectiveness."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 1082803 (0x001085b3), HLP file offset 275368 (0x000433a8), topic 127 'Mineral Packet Bombardment'",
+      "note": "Mineral packet bombardment topic."
+    }
+  ],
+  "setup": {
+    "baseline": "An enemy planet without a starbase and a bomber fleet.",
+    "variable": "Bomb type, defense count and invading colonists."
+  },
+  "procedure": [
+    "Bomb with one design and record population/installation losses.",
+    "Add defenses and repeat.",
+    "Invade with a known colonist count and record losses and capture.",
+    "Confirm a starbase blocks both actions."
+  ],
+  "expected": {
+    "documented": [
+      "Bombing begins automatically when no starbase remains; each bomb slot drops that many bombs per year (documented-only).",
+      "Enemy population reports are estimates within +/-20% (documented-only).",
+      "Planetary defenses are 75% effective against enemy colonist drops; survivors fight until one side remains (documented-only)."
+    ]
+  },
+  "observed": null,
+  "unresolved": [
+    "Exact bomb damage and ground-combat formulas are unknown.",
+    "Capture retention of mines/factories and partial population behavior need measurement."
+  ],
+  "downstream_prs": [
+    "PR12"
+  ],
+  "notes": ""
+}

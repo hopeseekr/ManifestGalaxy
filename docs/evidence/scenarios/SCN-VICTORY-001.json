@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "id": "SCN-VICTORY-001",
+  "title": "Victory condition configuration",
+  "rule_ids": [
+    "RULE-VICTORY-CONDITIONS-001"
+  ],
+  "status": "documented-only",
+  "confidence": "help-only",
+  "provenance": [
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 1689698 (0x0019c862), HLP file offset 427607 (0x00068657), topic 246 'Step 3: Victory Conditions'",
+      "note": "Victory conditions and must-meet count."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 215440 (0x00034990), HLP file offset 59269 (0x0000e785), topic 25 'Winning'",
+      "note": "Multiple winners and continuation after victory."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 213741 (0x000342ed), HLP file offset 57570 (0x0000e0e2), topic 24 'Creating a Universe from the Command Line'",
+      "note": "game.def victory fields and ranges."
+    },
+    {
+      "source": "stars26i.exe",
+      "sha256": "5770dade2db0e11918631d5c128c0bf7ab48e371f7b2267a4ff02531bb8e198e",
+      "kind": "executable",
+      "location": "dialog #392 file offset 0x2f9d80, seven auto-checkbox controls 291-297 and a must-meet spinner",
+      "note": "Static condition count; labels empty in the decoded template."
+    }
+  ],
+  "setup": {
+    "baseline": "Advanced New Game step 3.",
+    "variable": "One victory condition and the must-meet count."
+  },
+  "procedure": [
+    "Record each condition type, its parameter range and default.",
+    "Enable one condition and run a game past its threshold; record the victory message and score sheet.",
+    "Test must-meet counts from 0 through 7 with overlapping conditions.",
+    "Test multiple simultaneous winners and continuing after victory."
+  ],
+  "expected": {
+    "documented": [
+      "Victory conditions are configurable, and more than one player can win at the same time (documented-only).",
+      "The documented command-line ranges are: planets 20-100%, tech level 8-26 with 2-6 fields, score 1000-20000, exceeds-nearest 20-300%, production capacity 10-500, capital ships 10-300, turns 30-900; must-meet 0-7; minimum years 30-500 (documented-only).",
+      "All players are notified when someone wins and may continue playing (documented-only)."
+    ]
+  },
+  "observed": null,
+  "unresolved": [
+    "The exact condition labels and default counts are not decoded.",
+    "Whether the must-meet count of 0 disables victory is unknown.",
+    "The score/threshold rounding is unknown."
+  ],
+  "downstream_prs": [
+    "PR15"
+  ],
+  "notes": ""
+}

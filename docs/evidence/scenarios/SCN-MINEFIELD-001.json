@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "id": "SCN-MINEFIELD-001",
+  "title": "Minefield laying, sweeping, decay and detonation",
+  "rule_ids": [
+    "RULE-MINEFIELD-001"
+  ],
+  "status": "documented-only",
+  "confidence": "help-only",
+  "provenance": [
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 1099234 (0x0010c5e2), HLP file offset 279511 (0x000443d7), topic 129 'Minefields'",
+      "note": "Minefields overview and visibility."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 1114285 (0x001100ad), HLP file offset 282274 (0x00044ea2), topic 130 'Laying Minefields'",
+      "note": "Laying minefields and minefield decay (2%/1% base plus 4% per enclosed planet, 50% cap)."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 1117052 (0x00110b7c), HLP file offset 285041 (0x00045971), topic 131 'Sweeping Minefields'",
+      "note": "Sweeping occurs before movement."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 1131533 (0x0011440d), HLP file offset 287234 (0x00046202), topic 132 'Remotely Detonating Minefields'",
+      "note": "Remote detonation."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 2215426 (0x0021ce02), HLP file offset 560119 (0x00088bf7), topic 341 'The Guts of Minefields'",
+      "note": "Minefield guts."
+    }
+  ],
+  "setup": {
+    "baseline": "A mine layer and a target fleet.",
+    "variable": "Mine count, decay, sweep strength and trait."
+  },
+  "procedure": [
+    "Lay a known number of mines and record the field size.",
+    "Move a fleet through and record damage/speed.",
+    "Sweep with known beam weapons and record mines removed.",
+    "Advance years and record decay, including enclosed planets.",
+    "Test Space Demolition detonation and decay modifiers."
+  ],
+  "expected": {
+    "documented": [
+      "Minefields decay 2% per year normally, 1% for Space Demolition, plus 4% per enclosed planet, capped at 50% (documented-only).",
+      "Sweeping happens before movement; beam sweep = power x range squared summed over the fleet (documented-only).",
+      "Minefields are 75% cloaked if unseen and 75% from non-penetrating scanners (documented-only)."
+    ]
+  },
+  "observed": null,
+  "unresolved": [
+    "Exact field capacity, damage and detonation radius are unknown.",
+    "Whether the decay percentages are additive or multiplicative is unknown."
+  ],
+  "downstream_prs": [
+    "PR10",
+    "PR12",
+    "PR13"
+  ],
+  "notes": ""
+}
