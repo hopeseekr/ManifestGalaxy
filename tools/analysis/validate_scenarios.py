@@ -126,6 +126,8 @@ def load_json(path: Path, report: ValidationReport) -> Any | None:
         report.error(str(path), "file not found")
     except OSError as exc:
         report.error(str(path), f"cannot read file: {exc}")
+    except UnicodeDecodeError as exc:
+        report.error(str(path), f"cannot decode file as UTF-8: {exc}")
     except json.JSONDecodeError as exc:
         report.error(str(path), f"invalid JSON at line {exc.lineno}, column {exc.colno}: {exc.msg}")
     return None

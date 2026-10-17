@@ -254,6 +254,14 @@ class ValidatorTests(unittest.TestCase):
             report = vs.validate(scenario_dir, index_path)
             self.assertTrue(any("must not claim expected.documented" in e for e in report.errors))
 
+    def test_invalid_utf8_is_reported_without_a_traceback(self) -> None:
+        with tempfile.TemporaryDirectory() as raw:
+            scenario_dir, index_path = write_case(Path(raw), rule_index(), {})
+            (scenario_dir / "SCN-BAD-001.json").write_bytes(b"\xff\xfe")
+            report = vs.validate(scenario_dir, index_path)
+            self.assertFalse(report.ok)
+            self.assertTrue(any("cannot decode file as UTF-8" in e for e in report.errors), report.errors)
+
     def test_scenario_id_with_trailing_newline_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as raw:
             data = scenario()
