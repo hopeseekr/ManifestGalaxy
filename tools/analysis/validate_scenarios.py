@@ -106,6 +106,10 @@ def _is_schema_version(value: Any) -> bool:
     return type(value) is int and value == 1
 
 
+def _is_known(value: Any, allowed: set[str]) -> bool:
+    return isinstance(value, str) and value in allowed
+
+
 def _is_string_list(value: Any, *, allow_empty: bool = False) -> bool:
     if not isinstance(value, list):
         return False
@@ -186,9 +190,9 @@ def validate_rule_index(
 
         if not _is_nonempty_string(rule.get("title")):
             report.error(rwhere, "title must be a non-empty string")
-        if rule.get("kind") not in {"trait", "subsystem"}:
+        if not _is_known(rule.get("kind"), {"trait", "subsystem"}):
             report.error(rwhere, "kind must be 'trait' or 'subsystem'")
-        if rule.get("status") not in STATUSES:
+        if not _is_known(rule.get("status"), STATUSES):
             report.error(rwhere, f"invalid status: {rule.get('status')!r}")
         _check_pr_list(rule.get("downstream_prs"), rwhere, report)
 
@@ -209,7 +213,7 @@ def validate_rule_index(
             if not isinstance(trait, dict):
                 report.error(rwhere, "trait rules must contain a trait object")
             else:
-                if trait.get("type") not in {"primary", "lesser"}:
+                if not _is_known(trait.get("type"), {"primary", "lesser"}):
                     report.error(rwhere, "trait.type must be 'primary' or 'lesser'")
                 if not _is_nonempty_string(trait.get("name")):
                     report.error(rwhere, "trait.name must be a non-empty string")
@@ -241,7 +245,7 @@ def _validate_provenance(
             continue
         if not _is_nonempty_string(sha256) or not SHA256_PATTERN.match(sha256):
             report.error(pwhere, "sha256 must be 64 lowercase hexadecimal characters")
-        if kind not in PROVENANCE_KINDS:
+        if not _is_known(kind, PROVENANCE_KINDS):
             report.error(pwhere, f"invalid provenance kind: {kind!r}")
         if not _is_nonempty_string(location):
             report.error(pwhere, "location must be a non-empty string")
@@ -324,9 +328,9 @@ def validate_scenario(
         report.error(where, "title must be a non-empty string")
 
     status = data.get("status")
-    if status not in STATUSES:
+    if not _is_known(status, STATUSES):
         report.error(where, f"invalid status: {status!r}")
-    if data.get("confidence") not in CONFIDENCES:
+    if not _is_known(data.get("confidence"), CONFIDENCES):
         report.error(where, f"invalid confidence: {data.get('confidence')!r}")
 
     scenario_rules = data.get("rule_ids")
