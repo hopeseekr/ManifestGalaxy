@@ -4,7 +4,8 @@
   "title": "Bombing and ground combat",
   "rule_ids": [
     "RULE-COMBAT-BOMB-001",
-    "RULE-COMBAT-GROUND-001"
+    "RULE-COMBAT-GROUND-001",
+    "RULE-PLANET-DEFENSES-001"
   ],
   "status": "documented-only",
   "confidence": "help-only",

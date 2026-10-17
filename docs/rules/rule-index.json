@@ -1017,7 +1017,8 @@
         "PR12"
       ],
       "scenario_ids": [
-        "SCN-PLANET-DEFENSES-001"
+        "SCN-PLANET-DEFENSES-001",
+        "SCN-COMBAT-BOMB-001"
       ]
     },
     {

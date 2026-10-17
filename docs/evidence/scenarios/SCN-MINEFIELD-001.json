@@ -57,7 +57,7 @@
   ],
   "expected": {
     "documented": [
-      "Minefields decay 2% per year normally, 1% for Space Demolition, plus 4% per enclosed planet, capped at 50% (documented-only).",
+      "Minefields have a 2% annual decay rate normally, 1% for Space Demolition, a 4% per enclosed planet adjustment and a 50% cap (documented-only).",
       "Sweeping happens before movement; beam sweep = power x range squared summed over the fleet (documented-only).",
       "Minefields are 75% cloaked if unseen and 75% from non-penetrating scanners (documented-only)."
     ]

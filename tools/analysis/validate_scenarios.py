@@ -35,6 +35,13 @@ STATUSES = {
     "inferred",
     "unknown",
 }
+EVIDENCE_RANK = {
+    "unknown": 0,
+    "documented-only": 1,
+    "inferred": 2,
+    "statically-derived": 2,
+    "observed": 3,
+}
 CONFIDENCES = {"high", "medium", "low", "static-only", "help-only", "unknown"}
 PROVENANCE_KINDS = {"executable", "help-topic", "observation", "operator-notes"}
 PR_PATTERN = re.compile(r"^PR(?:[4-9]|1[0-8])$")
@@ -423,6 +430,29 @@ def _coverage_check(
                     f"rule {rule_id}",
                     f"scenario {scenario_id!r} exists but does not list this rule in rule_ids",
                 )
+        linked_statuses = [
+            scenarios[scenario_id].get("status")
+            for scenario_id in expected_scenarios & set(scenarios)
+        ]
+        rule_status = rule.get("status")
+        strongest = max(
+            (
+                EVIDENCE_RANK.get(status, -1)
+                for status in linked_statuses
+                if isinstance(status, str)
+            ),
+            default=-1,
+        )
+        if (
+            linked_statuses
+            and isinstance(rule_status, str)
+            and rule_status in EVIDENCE_RANK
+            and strongest < EVIDENCE_RANK[rule_status]
+        ):
+            report.error(
+                f"rule {rule_id}",
+                f"status {rule_status!r} is stronger than every linked scenario",
+            )
         if rule.get("kind") == "trait" and not expected_scenarios:
             report.error(f"rule {rule_id}", "trait rule has no controlled scenario")
 
