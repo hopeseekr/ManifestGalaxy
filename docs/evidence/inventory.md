@@ -238,6 +238,22 @@ The decoded topic text is written to the ignored path
 `analysis/help/topics.txt`. The JSON index records TOPICPOS and absolute HLP
 byte offsets for every topic.
 
+A private local PDF can be rendered with `tools/analysis/hlp_to_pdf.py`:
+
+```sh
+python3 tools/analysis/hlp_to_pdf.py 'Stars! - RIP/stars!.hlp' \
+  --output analysis/help/Stars-Player-Guide-1998.pdf \
+  --image-dir analysis/help/images
+```
+
+The current source produces a 200-page A4 PDF with 419 topics and 128 decoded
+DIB bitmap images. External pictures are marked by `help.py` as
+`[[IMAGE |bmN align=...]]` and expanded by the converter. Five records
+(`|bm2`, `|bm82`, `|bm83`, `|bm87`, `|bm108`) are metafiles and are reported
+as unavailable. The PDF and PNGs are private, ignored artifacts and must not be
+committed or redistributed; the text and images are copyright Mare Crisium,
+LLC. Use TOPICPOS or an absolute HLP offset for citations, not a PDF page.
+
 ### Relevant decoded topics
 
 These are **documented-only** statements from the help, not verified against
@@ -349,12 +365,16 @@ itself. PR1 did not perform disassembly.
 
 ## Acceptance checks run
 
-- `python3 -m unittest discover -s tools/analysis/tests -v`: 58 tests passed.
+- `python3 -m unittest discover -s tools/analysis/tests -v`: 69 tests passed,
+  including 10 focused PDF-converter tests.
 - `python3 tools/analysis/inventory.py stars26i.exe --output analysis/inventory.json`:
   successful; two runs byte-identical.
 - `python3 tools/analysis/help.py 'Stars! - RIP/stars!.hlp' --output
   analysis/help/inventory.json --text-output analysis/help/topics.txt`:
   successful; two runs byte-identical; 419 topics decoded.
+- `python3 tools/analysis/hlp_to_pdf.py 'Stars! - RIP/stars!.hlp' ...`:
+  successful; 200-page PDF, 419 topics, 128 images, five unavailable metafiles.
+  The PDF and images remain private and ignored.
 - Input SHA-256 values match the master plan for the executable and are
   recorded for the help file.
 - Malformed/truncated synthetic fixtures fail with actionable offset errors

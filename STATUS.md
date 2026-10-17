@@ -92,7 +92,7 @@ Results:
 - 2026-10-17: Implemented the bounded NE inventory parser and CLI, synthetic NE
   fixtures/tests, HLP directory/`|SYSTEM`/`|TOPIC` parser and CLI, synthetic
   HLP tests, and `.gitignore` protection for original payloads/private output.
-- 2026-10-17: Ran the full test manifest (58 passed), both real-input CLIs,
+- 2026-10-17: Ran the full test manifest (69 passed), all real-input CLIs,
   determinism comparisons, and `py_compile`. Wrote
   `docs/evidence/inventory.md` and updated the PR1 master-plan checkbox.
 - 2026-10-17: Added the private local PDF converter, MRB/DIB and RunLen image
@@ -100,6 +100,11 @@ Results:
   Generated a 200-page PDF with 419 topics and 128 images; five metafile
   pictures are reported as unavailable. The PDF and extracted images remain in
   ignored `analysis/help/`.
+- 2026-10-17: Documented the private PDF pipeline in `PLAN.md`, `README.md`
+  and the evidence index: marker contract, MRB/DIB decoding, 128 embedded
+  images, five unavailable metafiles, best-effort body/table limits, optional
+  Pillow/ReportLab dependency, and the requirement to cite HLP offsets rather
+  than PDF pages. Updated the test count to 69.
 - 2026-10-17: Remaining blocker: none inside PR1. PR2 remains gated on PR1
   integration by an authorized actor. No push, PR, or merge was performed.
 

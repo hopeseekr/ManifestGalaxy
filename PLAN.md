@@ -12,10 +12,11 @@ This package is a set of execution prompts, not an already reverse-engineered sp
 
 - Input: `stars26i.exe`, 3,216,832 bytes, a segmented 16-bit Windows NE executable for Windows 3.1; it is not a native DOS game.
 - SHA-256: `5770dade2db0e11918631d5c128c0bf7ab48e371f7b2267a4ff02531bb8e198e`.
-- Preliminary static inspection located an NE header at file offset `0x400`, race-wizard dialog identifiers, and the string `Turindrones`. PR1 must make those findings reproducible. A name/string does not establish code behavior or race configuration.
-- `Stars! - RIP/stars!.hlp` is a Windows help container titled “Stars! Player's Guide (Jan 10, 1998)”. Check its applicability to this executable; neither the game's 1995 origin nor a filename establishes version-specific rules.
-- No point formula, full catalog, turn ordering, combat rule, RNG algorithm, or AI policy has yet been recovered and verified. No original game was executed during this initial inspection.
-- This workspace currently has no usable Git repository. The prompts specify future branches and commits but do not authorize repository initialization.
+- PR1 reproduced the NE header at file offset `0x400`, 35 segments, 122 resources, 36 dialog templates, the selected `Turindrones` string at segment 35 relative `0xa06` (file `0x55846`), and the resident/module/import tables. A name, caption or string is a lead, not proof of runtime behaviour or race configuration.
+- `Stars! - RIP/stars!.hlp` is a WinHelp 3.1 container titled “Stars! Player's Guide (Jan 10, 1998)”. PR1 decoded its title, January 1998 generation date, 142 internal files and 419 topics. Check its applicability to this executable; neither the game's 1995 origin nor a filename establishes version-specific rules.
+- PR1 also produced a private local PDF rendering of the help (`analysis/help/Stars-Player-Guide-1998.pdf`). It is an ignored convenience artifact, not committed evidence and not a source of gameplay rules. See “Local help PDF” below.
+- No point formula, full catalog, turn ordering, combat rule, RNG algorithm, or AI policy has yet been recovered and verified. No original game was executed during the initial inspection or PR1.
+- The workspace is a Git repository. The integration branch is `trunk`; PR1 is committed on `pr1-binary-evidence` and is not merged by this plan.
 
 ## Architecture and interfaces
 
@@ -28,7 +29,7 @@ Use a Cargo workspace with these package paths:
 | `crates/stars-desktop` | egui/eframe UI, worker ownership, local I/O, packaging entry point | stars-core, stars-ai |
 | `crates/stars-tools` | Headless scenarios, evidence conversion, comparisons and benchmarks | stars-core, stars-ai when running games |
 
-PR1–PR2 use Python standard-library scripts in `tools/analysis` before the Rust workspace exists. Keep these inspection tools separate from gameplay. Shared Rust rule calculations belong only in core.
+PR1–PR2 use Python standard-library scripts in `tools/analysis` before the Rust workspace exists. The PR1 inspection/reporting path stays standard-library-only; the optional private PDF renderer uses Pillow and ReportLab. Keep these inspection tools separate from gameplay. Shared Rust rule calculations belong only in core.
 
 Use Rust 2024 and a pinned stable toolchain selected and verified in PR3. Pin dependency resolution with Cargo.lock. Use egui/eframe with wgpu, procedural original graphics, and properly licensed bundled fonts. Check current official dependency documentation during implementation rather than freezing unverified versions here.
 
@@ -50,6 +51,46 @@ Keep simulation independent of OS I/O, wall time, threads and rendering. Use exp
 AI configuration and AI decision policy are separate investigations. PR14 may deliver a functional designed policy with a precise difference/fidelity report where original policy cannot be recovered. This exception does not permit invented race-point, economy or combat formulas to pass as verified.
 
 Decoded assets/help and raw extraction output stay private in ignored `analysis/`. Commit tools, synthetic fixtures and concise factual evidence, not original game payloads. Never inspect or expose license-code contents.
+
+### Local help PDF
+
+PR1 includes `tools/analysis/hlp_to_pdf.py`, a private, local-only converter for
+the supplied help file. It is not a gameplay dependency and is not a release
+artifact.
+
+```sh
+python3 tools/analysis/hlp_to_pdf.py 'Stars! - RIP/stars!.hlp' \
+  --output analysis/help/Stars-Player-Guide-1998.pdf \
+  --image-dir analysis/help/images
+```
+
+The current source produces a 200-page A4 PDF with 419 topics and 128 decoded
+DIB bitmap images. The PDF, extracted PNGs, text dump and inventory all remain
+under ignored `analysis/` and must not be committed or redistributed. The help
+text and images are copyright Mare Crisium, LLC; the converter only supports a
+private format-shift of a user-supplied copy.
+
+Implementation facts future agents must preserve:
+
+- `tools/analysis/help.py` emits `[[IMAGE |bmN align=left|center|right]]`
+  markers in decoded topic text for external pictures. `hlp_to_pdf.py` replaces
+  those markers with extracted images. If the marker format or text renderer
+  changes, update both the converter and the focused tests.
+- External pictures are WinHelp MRB/SHG records in `|bm0`–`|bm132`; DIB
+  pictures use the WinHelp RunLen/LZ77 packings and a synthesized BMP wrapper.
+  Five records (`|bm2`, `|bm82`, `|bm83`, `|bm87`, `|bm108`) are Windows
+  metafiles and are reported as unavailable rather than guessed.
+- Help body text is best-effort: six topics use strings-only fallback for 18
+  display/table records, and table cell geometry is approximate. All 419 topic
+  titles and all 128 supported DIBs decode.
+- The PDF is a convenience view. Cite the HLP source, TOPICPOS, or absolute HLP
+  byte offset for evidence; PDF page numbers are layout-dependent and are not
+  stable citations.
+- Help images and text are reference evidence, not assets for the remake.
+  Gameplay graphics remain original procedural work under the product rules.
+- The converter uses Pillow and ReportLab; the core Rust packages and the
+  PR1 inspection/reporting path remain independent of those optional Python
+  packages.
 
 ## Custom-race trait coverage
 
@@ -137,5 +178,11 @@ The same full past-tense sentence is used for each PR's GitHub title, branch mer
 Every PR names focused test targets to create and run, plus relevant structural checks. Add regression selectors for directly affected existing tests; do not replace meaningful test coverage with a single broad build. Research tools must reject malformed/truncated binary inputs. Core must pass deterministic replay, boundary arithmetic, trait and visibility tests. UI checks include resizable layouts, keyboard operation, 100/150/200% scaling and mixed-DPI movement where hardware permits.
 
 Complete-game fixtures must cover one and multiple opponents, elimination/victory and worker failures. Persistence must survive invalid inputs, failed writes and interrupted updates, and preserve future turn results after reload. Compare observed original behavior with honest confidence; uncertain RNG requires invariant/statistical checks rather than fake exact fixtures.
+
+Research tooling checks include `python3 -m unittest discover -s
+tools/analysis/tests -v`. The local PDF converter is covered by synthetic MRB,
+DIB, RunLen and marker tests; generating a PDF is a private manual check, not a
+release gate. Do not report a generated PDF as a platform smoke test, and do not
+commit its copyrighted content.
 
 Record benchmark seed/settings/hardware and release-mode measurements. CPU utilization alone is not success. Native CI builds are necessary but do not replace actual offline platform smoke checks. Finish with an evidence coverage report, known differences, remaining limitations and platform results. Never mark an unchecked milestone complete.

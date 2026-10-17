@@ -31,7 +31,7 @@ confidence levels, limitations, and open PR2 questions.
 python3 -m unittest discover -s tools/analysis/tests -v
 ```
 
-Expected result: `58 tests ... OK`.
+Expected result: `69 tests ... OK`.
 
 ## Inventory the executable
 
@@ -76,6 +76,28 @@ images are copyright Mare Crisium, LLC; keep the generated PDF private and do
 not redistribute it without permission. See the conversion-notes page inside
 the PDF for the remaining decoding limits.
 
+### How the PDF conversion works
+
+- `help.py` emits markers such as `[[IMAGE |bm12 align=center]]` in decoded
+  topic text.
+- `hlp_to_pdf.py` resolves each `|bmN` marker to an internal WinHelp MRB/SHG
+  picture, decodes the DIB/RunLen data, writes a PNG, and embeds it at that
+  position in the PDF.
+- The current help has 419 topics and 133 `|bmN` files: 128 supported DIBs are
+  embedded, while five Windows metafiles (`|bm2`, `|bm82`, `|bm83`, `|bm87`,
+  `|bm108`) are reported as unavailable.
+- Body text is best-effort. Six topics use strings-only fallback for 18
+  display/table records, and table cell geometry is approximate.
+- The PDF is a convenience rendering, not authoritative evidence. Cite the HLP
+  file, TOPICPOS, or absolute HLP byte offset rather than a PDF page number.
+- Help images and text are reference material only. Do not copy them into the
+  remake's assets or commit generated output.
+
+If you change the picture marker format or the topic text renderer, update the
+converter and run the full test suite. The focused converter tests cover
+synthetic MRB/DIB extraction, RunLen decoding, metafile rejection, and marker
+handling.
+
 ## Check the supplied files
 
 ```sh
@@ -94,14 +116,17 @@ The executable hash must match the master plan:
 ```sh
 python3 tools/analysis/inventory.py --help
 python3 tools/analysis/help.py --help
+python3 tools/analysis/hlp_to_pdf.py --help
 ```
 
 ## Repository layout
 
 ```text
-tools/analysis/          PR1 Python inspection tools and tests
+tools/analysis/          PR1 Python inspection, help-decoding and PDF tools
+tools/analysis/tests/    Synthetic NE/HLP/PDF tests
 docs/evidence/           Committed evidence index and findings
-analysis/                Ignored private extraction and decoded output
+analysis/inventory.json  Ignored executable inventory
+analysis/help/           Ignored decoded help, images and private PDF
 Stars! - RIP/            Ignored supplied help/archive files
 stars26i.exe             Ignored supplied executable
 ```
@@ -109,3 +134,18 @@ stars26i.exe             Ignored supplied executable
 Gameplay packages (`crates/stars-core`, `stars-ai`, `stars-desktop`,
 `stars-tools`) do not exist yet. `cargo run` will not work until PR3 introduces
 the Rust workspace.
+
+## Notes for future agents
+
+- PR1 findings are evidence leads, not recovered rules. Read
+  [docs/evidence/inventory.md](docs/evidence/inventory.md) and keep observed,
+  statically derived, documented-only, inferred and unknown claims separate.
+- Regenerate derived artifacts with the commands above; never commit
+  `analysis/`, the supplied executables/help files, extracted images, or the
+  PDF.
+- Keep the `[[IMAGE ...]]` marker contract in sync between `help.py` and
+  `hlp_to_pdf.py`. The PDF converter should continue to fail loudly or report
+  unavailable pictures rather than invent image bytes.
+- The help is documentation, not proof that `stars26i.exe` implements the same
+  numbers. Version-specific rules still need PR2 evidence and controlled
+  scenarios.
