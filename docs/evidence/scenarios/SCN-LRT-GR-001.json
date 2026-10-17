@@ -38,13 +38,13 @@
   "expected": {
     "documented": [
       "Only half of research resources apply to the current field (documented-only).",
-      "15% of total research resources apply to each of the six fields; together with half to the current field those statements total 140%, while the help parenthetical claims 125% (internal help contradiction; documented-only)."
+      "15% of total research resources apply to each of the five fields other than the current field; with half to the current field this totals 125%, matching the help's explicit 'adds up to 125%' statement (documented-only). The help wording 'each of the fields' is ambiguous but its 125% parenthetical fixes the intended allocation."
     ]
   },
   "observed": null,
   "unresolved": [
     "Exact advantage-point cost is unknown.",
-    "The help's Generalized Research percentages conflict: 50% to the current field plus 15% to each of six fields is 140%, but the help says 125%. The intended allocation, whether the current field is included in the six 15% shares, and the resource base are unresolved.",
+    "The help wording 'each of the fields' could be read as including the current field; the 125% parenthetical implies 15% to each of the five non-current fields. The exact per-field allocation and resource base must still be runtime-verified.",
     "Rounding and overflow behavior across fields are unknown."
   ],
   "downstream_prs": [
