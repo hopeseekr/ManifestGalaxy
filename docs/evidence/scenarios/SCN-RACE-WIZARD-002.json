@@ -102,7 +102,7 @@
       "Step 2 selects a primary trait; step 3 selects lesser traits; step 4 sets habitable ranges, immunities and growth rate (help states 1%-20%).",
       "Step 5 sets population efficiency for colonists, factories, mines and defenses; step 6 sets research-cost choices for six fields.",
       "Finish verifies a valid race, re-prompts for the password and opens Save As.",
-      "Predefined races preset steps 2-6 in the original help; this product excludes selectable predefined race presets."
+      "Predefined races preset steps 2-6 in the original help."
     ]
   },
   "observed": null,
@@ -114,5 +114,5 @@
   "downstream_prs": [
     "PR5"
   ],
-  "notes": ""
+  "notes": "Product policy excludes selectable predefined-race presets; that exclusion is a design decision, not a documented claim."
 }
