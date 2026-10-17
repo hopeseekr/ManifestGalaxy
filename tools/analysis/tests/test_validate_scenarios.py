@@ -254,6 +254,26 @@ class ValidatorTests(unittest.TestCase):
             report = vs.validate(scenario_dir, index_path)
             self.assertTrue(any("must not claim expected.documented" in e for e in report.errors))
 
+    def test_boolean_schema_version_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as raw:
+            data = scenario()
+            data["schema_version"] = True
+            scenario_dir, index_path = write_case(
+                Path(raw), rule_index(), {"SCN-TEST-001.json": data}
+            )
+            report = vs.validate(scenario_dir, index_path)
+            self.assertTrue(any("schema_version must be 1" in e for e in report.errors), report.errors)
+
+    def test_float_rule_index_schema_version_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as raw:
+            index = rule_index()
+            index["schema_version"] = 1.0
+            scenario_dir, index_path = write_case(
+                Path(raw), index, {"SCN-TEST-001.json": scenario()}
+            )
+            report = vs.validate(scenario_dir, index_path)
+            self.assertTrue(any("schema_version must be 1" in e for e in report.errors), report.errors)
+
     def test_invalid_utf8_is_reported_without_a_traceback(self) -> None:
         with tempfile.TemporaryDirectory() as raw:
             scenario_dir, index_path = write_case(Path(raw), rule_index(), {})

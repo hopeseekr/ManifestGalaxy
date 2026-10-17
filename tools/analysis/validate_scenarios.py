@@ -102,6 +102,10 @@ def _is_nonempty_string(value: Any) -> bool:
     return isinstance(value, str) and bool(value.strip())
 
 
+def _is_schema_version(value: Any) -> bool:
+    return type(value) is int and value == 1
+
+
 def _is_string_list(value: Any, *, allow_empty: bool = False) -> bool:
     if not isinstance(value, list):
         return False
@@ -142,7 +146,7 @@ def validate_rule_index(
     if not isinstance(data, dict):
         report.error(where, "rule index must be a JSON object")
         return {}
-    if data.get("schema_version") != 1:
+    if not _is_schema_version(data.get("schema_version")):
         report.error(where, "schema_version must be 1")
 
     hashes = data.get("source_hashes")
@@ -307,7 +311,7 @@ def validate_scenario(
         report.error(where, f"missing required keys: {', '.join(sorted(missing))}")
         return None, []
 
-    if data.get("schema_version") != 1:
+    if not _is_schema_version(data.get("schema_version")):
         report.error(where, "schema_version must be 1")
 
     scenario_id = data.get("id")
