@@ -6,6 +6,12 @@ PR1 (binary evidence inventory and extraction tools) is complete and locally
 validated. The scoped signed commit uses this exact message:
 `Established the binary evidence inventory and extraction tools.`
 
+A private local PDF converter is also available:
+`tools/analysis/hlp_to_pdf.py`. It generates
+`analysis/help/Stars-Player-Guide-1998.pdf` with 419 topics and 128 decoded
+bitmap images. The PDF and extracted images are ignored, private artifacts and
+must not be redistributed without permission.
+
 PR2 has not been started. Its prerequisite is PR1's authorized integration;
 the PR1 prompt does not authorize a push, merge, or PR2 work.
 
@@ -43,15 +49,19 @@ python3 tools/analysis/inventory.py stars26i.exe --output analysis/inventory.jso
 python3 tools/analysis/help.py 'Stars! - RIP/stars!.hlp' \
   --output analysis/help/inventory.json \
   --text-output analysis/help/topics.txt
+python3 tools/analysis/hlp_to_pdf.py 'Stars! - RIP/stars!.hlp' \
+  --output analysis/help/Stars-Player-Guide-1998.pdf \
+  --image-dir analysis/help/images
 python3 -m py_compile tools/analysis/ne.py tools/analysis/inventory.py \
-  tools/analysis/help.py tools/analysis/tests/test_ne.py \
-  tools/analysis/tests/test_inventory.py tools/analysis/tests/test_help.py
+  tools/analysis/help.py tools/analysis/hlp_to_pdf.py \
+  tools/analysis/tests/test_ne.py tools/analysis/tests/test_inventory.py \
+  tools/analysis/tests/test_help.py tools/analysis/tests/test_hlp_to_pdf.py
 sha256sum stars26i.exe 'Stars! - RIP/stars!.hlp'
 ```
 
 Results:
 
-- 58 unittest tests passed (31 NE/inventory, 27 help).
+- 69 unittest tests passed (31 NE/inventory, 28 help, 10 PDF converter).
 - Executable SHA-256 matches `PLAN.md`:
   `5770dade2db0e11918631d5c128c0bf7ab48e371f7b2267a4ff02531bb8e198e`.
 - Help SHA-256:
@@ -85,6 +95,11 @@ Results:
 - 2026-10-17: Ran the full test manifest (58 passed), both real-input CLIs,
   determinism comparisons, and `py_compile`. Wrote
   `docs/evidence/inventory.md` and updated the PR1 master-plan checkbox.
+- 2026-10-17: Added the private local PDF converter, MRB/DIB and RunLen image
+  decoding, PDF markers for external pictures, and focused converter tests.
+  Generated a 200-page PDF with 419 topics and 128 images; five metafile
+  pictures are reported as unavailable. The PDF and extracted images remain in
+  ignored `analysis/help/`.
 - 2026-10-17: Remaining blocker: none inside PR1. PR2 remains gated on PR1
   integration by an authorized actor. No push, PR, or merge was performed.
 

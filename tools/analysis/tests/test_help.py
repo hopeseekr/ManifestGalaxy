@@ -297,6 +297,20 @@ def _first_leaf_offset(data: bytes) -> int:
 
 
 class ValidParsingTests(unittest.TestCase):
+    def test_external_picture_command_emits_pdf_marker(self):
+        # Header from _display_link, with a center-aligned external |bm7
+        # picture inserted before the end-of-paragraph command.
+        prefix = b"\x80\x00\x00\x00\x00\x00\x00\x00\x00"
+        picture = b"\x86\x03\x08\x80\x00\x00\x07\x00"
+        link_data1 = prefix + picture + b"\x82\xff"
+        link_data2 = b"before\x00after\x00"
+        text = help._render_display_record(link_data1, link_data2)
+        self.assertIn("before", text)
+        self.assertIn("[[IMAGE |bm7 align=center]]", text)
+        self.assertIn("after", text)
+        self.assertLess(text.index("before"), text.index("[[IMAGE"))
+        self.assertLess(text.index("[[IMAGE"), text.index("after"))
+
     def test_header_directory_system_and_topics(self):
         data = base_hlp()
         with tempfile.TemporaryDirectory() as temporary:

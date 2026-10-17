@@ -21,8 +21,9 @@ confidence levels, limitations, and open PR2 questions.
 - Python 3.11 or newer (validated with Python 3.14.8)
 - The supplied `stars26i.exe` and `Stars! - RIP/stars!.hlp` in the repository
   root. These original payloads are ignored by Git.
-
-No third-party Python packages are required.
+- For the private PDF converter only: Pillow and ReportLab
+  (`python3 -m pip install Pillow reportlab`). The inspection and test tools
+  otherwise use the Python standard library.
 
 ## Run the tests
 
@@ -57,6 +58,23 @@ This writes:
 
 Both outputs are ignored by Git. The decoded help is documentation evidence,
 not proof that the executable implements the same behavior.
+
+## Generate a private PDF
+
+```sh
+python3 tools/analysis/hlp_to_pdf.py 'Stars! - RIP/stars!.hlp' \
+  --output analysis/help/Stars-Player-Guide-1998.pdf \
+  --image-dir analysis/help/images
+```
+
+This writes a 200-page A4 PDF with 419 topics and 128 decoded bitmap images,
+plus the extracted PNGs. The five Windows metafile pictures are reported as
+unavailable rather than guessed. Use `--no-images` for a text-only PDF.
+
+The PDF and extracted images are ignored by Git. The source help text and
+images are copyright Mare Crisium, LLC; keep the generated PDF private and do
+not redistribute it without permission. See the conversion-notes page inside
+the PDF for the remaining decoding limits.
 
 ## Check the supplied files
 

@@ -1026,6 +1026,19 @@ def _scan_int(data: bytes, cursor: int) -> tuple[int, int]:
     return (data[cursor] >> 1) - 0x40, cursor + 1
 
 
+def _picture_marker(command: int, embedded: bool, number: int) -> bytes:
+    """Return a stable marker that the PDF converter can replace with an image.
+
+    Markers are only produced for external ``|bmN`` pictures; embedded
+    pictures are marked separately because their bytes are inside LinkData1.
+    """
+
+    align = {0x86: "center", 0x87: "left", 0x88: "right"}[command]
+    if embedded:
+        return f"\n[[IMAGE embedded align={align}]]\n".encode("ascii")
+    return f"\n[[IMAGE |bm{number} align={align}]]\n".encode("ascii")
+
+
 def _render_paragraph(
     link_data1: bytes,
     cursor: int,
@@ -1092,6 +1105,12 @@ def _render_paragraph(
                 raise _LinkFormatError("picture data runs past LinkData1")
             if picture_type == 0x22:
                 _hotspots, cursor = _scan_word(link_data1, cursor)
+            if picture_type in (3, 0x22):
+                if cursor + 4 > len(link_data1):
+                    raise _LinkFormatError("truncated picture union")
+                embedded = struct.unpack_from("<H", link_data1, cursor)[0] != 0
+                number = struct.unpack_from("<H", link_data1, cursor + 2)[0]
+                output.append(_picture_marker(command, embedded, number))
             cursor += picture_size
         elif command == 0x89:
             cursor += 1
