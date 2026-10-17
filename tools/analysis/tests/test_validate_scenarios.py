@@ -147,6 +147,19 @@ class ValidatorTests(unittest.TestCase):
             report = vs.validate(scenario_dir, index_path)
             self.assertTrue(any("executable SHA-256 does not match" in e for e in report.errors))
 
+    def test_unknown_provenance_source_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as raw:
+            data = scenario()
+            data["provenance"][0]["source"] = "other.hlp"
+            scenario_dir, index_path = write_case(
+                Path(raw), rule_index(), {"SCN-TEST-001.json": data}
+            )
+            report = vs.validate(scenario_dir, index_path)
+            self.assertTrue(
+                any("unsupported provenance source" in e for e in report.errors),
+                report.errors,
+            )
+
     def test_documented_only_requires_help_provenance(self) -> None:
         with tempfile.TemporaryDirectory() as raw:
             data = scenario()

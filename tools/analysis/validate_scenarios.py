@@ -44,6 +44,7 @@ EVIDENCE_RANK = {
 }
 CONFIDENCES = {"high", "medium", "low", "static-only", "help-only", "unknown"}
 PROVENANCE_KINDS = {"executable", "help-topic", "observation", "operator-notes"}
+PROVENANCE_SOURCES = {EXE_NAME, HELP_NAME, "operator-notes"}
 PR_PATTERN = re.compile(r"^PR(?:[4-9]|1[0-8])\Z")
 RULE_ID_PATTERN = re.compile(r"^RULE-[A-Z0-9][A-Z0-9-]*\Z")
 SCENARIO_ID_PATTERN = re.compile(r"^SCN-[A-Z0-9][A-Z0-9-]*\Z")
@@ -249,6 +250,9 @@ def _validate_provenance(
             report.error(pwhere, f"invalid provenance kind: {kind!r}")
         if not _is_nonempty_string(location):
             report.error(pwhere, "location must be a non-empty string")
+            continue
+        if source not in PROVENANCE_SOURCES:
+            report.error(pwhere, f"unsupported provenance source: {source!r}")
             continue
 
         if source == EXE_NAME and sha256 != EXE_SHA256:
