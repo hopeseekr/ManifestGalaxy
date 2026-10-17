@@ -165,11 +165,11 @@
     },
     {
       "id": "RULE-RACE-PRT-IT",
-      "title": "Interstellar Traveller",
+      "title": "Interstellar Traveler",
       "kind": "trait",
       "trait": {
         "type": "primary",
-        "name": "Interstellar Traveller",
+        "name": "Interstellar Traveler",
         "abbreviation": "IT"
       },
       "status": "documented-only",

@@ -31,12 +31,12 @@
     "Send a cargo-less fleet through a gate and record travel time and fuel.",
     "Add cargo and record whether it is allowed and how weight is computed.",
     "Test overload and safety failure.",
-    "Test Interstellar Traveller restrictions and gate-cost modifier."
+    "Test Interstellar Traveler restrictions and gate-cost modifier."
   ],
   "expected": {
     "documented": [
       "Stargates provide cargo-less, fuel-free, single-year transport between owned planets (documented-only).",
-      "Interstellar Traveller can transport cargo through gates and ignores cargo weight for gate limits (documented-only)."
+      "Interstellar Traveler can transport cargo through gates and ignores cargo weight for gate limits (documented-only)."
     ]
   },
   "observed": null,

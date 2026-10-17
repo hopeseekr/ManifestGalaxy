@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "id": "SCN-PRT-IT-001",
-  "title": "Interstellar Traveller trait evidence and controlled observation",
+  "title": "Interstellar Traveler trait evidence and controlled observation",
   "rule_ids": [
     "RULE-RACE-PRT-IT"
   ],
@@ -13,24 +13,24 @@
       "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
       "kind": "help-topic",
       "location": "TOPICPOS 1786810 (0x001b43ba), HLP file offset 450991 (0x0006e1af), topic 265 'Interstellar Traveller'",
-      "note": "Decoded help topic for Interstellar Traveller; documented-only claim, not a runtime observation."
+      "note": "Decoded help topic for Interstellar Traveler; documented-only claim, not a runtime observation."
     },
     {
       "source": "stars26i.exe",
       "sha256": "5770dade2db0e11918631d5c128c0bf7ab48e371f7b2267a4ff02531bb8e198e",
       "kind": "executable",
-      "location": "dialog #149 resource at file offset 0x2fa900, control 278, caption 'Interstellar Traveller'; style 0x50000009 (BS_AUTORADIOBUTTON)",
+      "location": "dialog #149 resource at file offset 0x2fa900, control 278, caption 'Inter-stellar Traveler'; style 0x50000009 (BS_AUTORADIOBUTTON)",
       "note": "Executable location of the trait name/control is a lead; it does not prove runtime mechanics."
     }
   ],
   "setup": {
     "baseline": "A custom race with no other selected trait and otherwise identical wizard choices.",
-    "variable": "Select only Interstellar Traveller and record the advantage-point balance and observable effects.",
+    "variable": "Select only Interstellar Traveler and record the advantage-point balance and observable effects.",
     "universe": "Single-player, fixed small universe with one Turindrones opponent if the runtime exposes it (otherwise record the actual opponent), fixed difficulty, no random events; keep the same seed/settings across trials."
   },
   "procedure": [
     "Create the baseline race and record the step 1-6 settings and advantage-point balance.",
-    "Create the same race with only Interstellar Traveller changed; record the exact advantage-point balance and any disabled controls.",
+    "Create the same race with only Interstellar Traveler changed; record the exact advantage-point balance and any disabled controls.",
     "Start the game and record starting technology, planets, fleets, installations and available catalog entries.",
     "Run a controlled comparison for each documented effect, varying one input at a time and repeating at least three trials where randomness may apply.",
     "Record the observed result, game year, settings and any discrepancy from the documented claim."

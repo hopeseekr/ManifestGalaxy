@@ -49,7 +49,13 @@ Keep UI scaling and worker-response checks separate from core rules tests. Repor
 
 Create the exact branch in the active prompt from the discovered integration branch after its predecessor has been merged by an authorized actor. This routine branch creation and scoped local commit are authorized by implementation of the prompt. Do not ask for repeat permission. A merge-message field does not authorize a merge.
 
-Commit completed scoped work when Git is usable, using the exact full past-tense sentence supplied in the prompt. Sign commits with the configured key and use pinentry; do not disable signing or expose passphrases. If Git/signing is unavailable, keep the files and report the limitation instead of inventing a commit or initializing a repository.
+### Commits and signing
+
+- **Always commit your changes when you finish a task.** Do not leave unrelated work uncommitted in the tree once the task is complete.
+- **Write commit messages as full, past-tense sentences.** Use the exact sentence supplied in the prompt when there is one; otherwise use a concise subject and, when helpful, a body explaining why.
+- **Use pinentry for the GPG passphrase.** Commits are signed with the configured key; never disable signing or expose passphrases.
+- If gpg fails with `cannot open '/dev/tty'`, re-run the commit with `git -c gpg.program=/tmp/opencode/gpg-ask commit ...`, which adds `--pinentry-mode ask` so pinentry can prompt.
+- If Git/signing remains unavailable, keep the files and report the limitation instead of inventing a commit or initializing a repository.
 
 Never stage unrelated changes, secrets, original game files, generated binary assets or build outputs. Do not push, publish, or merge unless explicitly requested. Rebase only when appropriate and authorized; back up before an authorized history rewrite and preserve authorship. Do not carry over obsolete branch names or rewrite recipes from other projects.
 

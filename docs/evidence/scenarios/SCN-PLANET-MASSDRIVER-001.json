@@ -38,7 +38,7 @@
     "Target the driver and build a packet.",
     "Record launch year, first-year travel, arrival year and decay.",
     "Catch with equal/greater and lesser/no driver; record loss and damage.",
-    "Test speeds above the rated speed and Packet Physics/Interstellar Traveller modifiers."
+    "Test speeds above the rated speed and Packet Physics/Interstellar Traveler modifiers."
   ],
   "expected": {
     "documented": [
