@@ -254,6 +254,16 @@ class ValidatorTests(unittest.TestCase):
             report = vs.validate(scenario_dir, index_path)
             self.assertTrue(any("must not claim expected.documented" in e for e in report.errors))
 
+    def test_scenario_id_with_trailing_newline_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as raw:
+            data = scenario()
+            data["id"] = "SCN-TEST-001\n"
+            scenario_dir, index_path = write_case(
+                Path(raw), rule_index(), {"SCN-TEST-001.json": data}
+            )
+            report = vs.validate(scenario_dir, index_path)
+            self.assertTrue(any("invalid scenario ID" in e for e in report.errors), report.errors)
+
     def test_rule_status_stronger_than_linked_scenario_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as raw:
             index = rule_index()

@@ -44,10 +44,10 @@ EVIDENCE_RANK = {
 }
 CONFIDENCES = {"high", "medium", "low", "static-only", "help-only", "unknown"}
 PROVENANCE_KINDS = {"executable", "help-topic", "observation", "operator-notes"}
-PR_PATTERN = re.compile(r"^PR(?:[4-9]|1[0-8])$")
-RULE_ID_PATTERN = re.compile(r"^RULE-[A-Z0-9][A-Z0-9-]*$")
-SCENARIO_ID_PATTERN = re.compile(r"^SCN-[A-Z0-9][A-Z0-9-]*$")
-SHA256_PATTERN = re.compile(r"^[0-9a-f]{64}$")
+PR_PATTERN = re.compile(r"^PR(?:[4-9]|1[0-8])\Z")
+RULE_ID_PATTERN = re.compile(r"^RULE-[A-Z0-9][A-Z0-9-]*\Z")
+SCENARIO_ID_PATTERN = re.compile(r"^SCN-[A-Z0-9][A-Z0-9-]*\Z")
+SHA256_PATTERN = re.compile(r"^[0-9a-f]{64}\Z")
 TOPICPOS_PATTERN = re.compile(r"TOPICPOS\s+\d+\s+\(0x[0-9a-fA-F]+\)")
 HELP_OFFSET_PATTERN = re.compile(r"HLP file offset\s+\d+\s+\(0x[0-9a-fA-F]+\)")
 EXECUTABLE_LOCATION_PATTERN = re.compile(
