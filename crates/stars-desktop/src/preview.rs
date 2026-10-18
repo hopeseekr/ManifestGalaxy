@@ -64,25 +64,27 @@ pub fn preview_row(seed: u64, row: u32, rows: u32, columns: u32) -> Vec<PreviewS
 
     let mut state = splitmix64(seed ^ u64::from(row).wrapping_mul(0x9e37_79b9_7f4a_7c15));
     let mut stars = Vec::new();
+    let coordinate_scale = u64::from(PREVIEW_COORDINATE_SCALE);
 
-    for column in 0..columns {
+    for _column in 0..columns {
         state = splitmix64(state);
 
-        // Two in five cells contain a placeholder star.
+        // Two in five candidate cells contain a placeholder star.
         if state % 5 > 1 {
             continue;
         }
 
-        let x = ((u64::from(column) * 2 + 1) * u64::from(PREVIEW_COORDINATE_SCALE))
-            / (u64::from(columns) * 2);
-        let y = ((u64::from(row) * 2 + 1) * u64::from(PREVIEW_COORDINATE_SCALE))
-            / (u64::from(rows) * 2);
+        // Scatter both coordinates independently across the whole map. Keeping
+        // stars at row/column cell centres produced an obvious lattice instead
+        // of a natural-looking procedural preview.
+        let x_state = splitmix64(state ^ 0xa076_1d64_78bd_642f);
+        let y_state = splitmix64(state ^ 0xe703_7ed1_a0b4_28db);
 
         stars.push(PreviewStar {
-            x: x as u16,
-            y: y as u16,
-            intensity: (state >> 32) as u8,
-            size: ((state >> 40) % 4) as u8,
+            x: (x_state % coordinate_scale) as u16,
+            y: (y_state % coordinate_scale) as u16,
+            intensity: (state >> 56) as u8,
+            size: ((state >> 48) % 4) as u8,
         });
     }
 
@@ -149,5 +151,21 @@ mod tests {
         let again = preview_row(7, 3, 8, DEFAULT_PREVIEW_COLUMNS);
         assert_eq!(row, again);
         assert!(row.len() <= DEFAULT_PREVIEW_COLUMNS as usize);
+    }
+
+    #[test]
+    fn positions_are_scattered_instead_of_lattice_aligned() {
+        let snapshot = preview_snapshot(RequestId::new(9), 123, 8, 12);
+        let xs: std::collections::BTreeSet<_> = snapshot.stars.iter().map(|star| star.x).collect();
+        let ys: std::collections::BTreeSet<_> = snapshot.stars.iter().map(|star| star.y).collect();
+
+        assert!(
+            xs.len() > 12,
+            "stars should not all sit on twelve column centres"
+        );
+        assert!(
+            ys.len() > 8,
+            "stars should not all sit on eight row centres"
+        );
     }
 }
