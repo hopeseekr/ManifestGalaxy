@@ -36,7 +36,7 @@ lead.
 | `RULE-RACE-PREDEFINED-001` | Predefined races preset steps 2-6 in the original help | documented-only | Help topic 250, TOPICPOS 1707608, HLP 433229 | PR5 | `SCN-RACE-WIZARD-002` |
 | `RULE-RACE-FINISH-001` | Finish validates, re-prompts for password and saves | documented-only | Help topic 288, TOPICPOS 1884268, HLP 474721 | PR5 | `SCN-RACE-WIZARD-002` |
 | `RULE-RACE-POINTS-GATE-001` | Balance must be zero or greater before Finish | documented-only | Help topics 247 and 268 | PR5 | `SCN-RACE-POINTS-001` |
-| `RULE-RACE-POINTS-COST-001` | Exact trait and field costs/formula | unknown | No numeric point table in the decoded help; dialog `#151` shows choices only | PR5 | `SCN-RACE-POINTS-COST-001` |
+| `RULE-RACE-POINTS-COST-001` | Exact trait and field costs/formula | statically-derived | No numeric point table in the decoded help; formula traced to `stars-decompile/race.c` `CAdvantagePoints()` (NB09 symbols from `stars26jrc3.exe`). See [`advantage-points.md`](advantage-points.md). Two decompilation defects are corrected as designed. | PR5 | `SCN-RACE-POINTS-COST-001` |
 | `RULE-RACE-TRAIT-EXCLUSIONS-001` | Trait exclusions and forced combinations | unknown | Not stated in decoded help; runtime behavior not observed | PR5, PR13 | `SCN-RACE-POINTS-COST-001` |
 | `RULE-RACE-COMPAT-001` | Valid lesser-trait combinations and enforcement | unknown | 14 checkboxes show independent UI controls, but valid/invalid combinations are not recovered | PR5, PR13 | `SCN-RACE-POINTS-COST-001` |
 | `RULE-RACE-LEFTOVER-001` | Leftover points convert to minerals, mines, factories, defenses or concentration | documented-only | Help topics 251-255 | PR5, PR6 | `SCN-RACE-LEFTOVER-001` |
@@ -157,26 +157,28 @@ runtime effects was observed against `stars26i.exe`.
 
 ### 1.5 Advantage points, exclusions and valid combinations
 
+- **Specified.** The full calculation is in [`advantage-points.md`](advantage-points.md):
+  a 1650 third-point accumulator, one truncating division by 3 at the end, both
+  trait tables, all Step-5 curves, growth remapping, the habitability sampling
+  term and the research curve. The structure and table values are
+  `statically-derived` from `stars-decompile/race.c`, whose types and symbols
+  come from NB09 CodeView data in `stars26jrc3.exe`.
 - The wizard displays a current balance and requires it to be non-negative
-  before Finish (help topics 247 and 268). This gate is documented-only.
-- The exact point cost of every trait, habitable-range change and efficiency
-  setting is unknown. The help contains no numeric table. `SCN-RACE-POINTS-COST-001`
-  defines the pairwise measurement matrix.
+  before Finish (help topics 247 and 268). This gate is documented-only and
+  agrees with the calculation's sign convention.
+- There is no "no primary trait" value: `raNone` is Jack of All Trades, so the
+  product requirement of exactly one primary trait is also what the data model
+  enforces.
 - The executable dialog `#149` statically permits at most one primary trait.
-  The executable dialog `#150` statically permits independent lesser
-  checkboxes. Runtime enforcement, trait exclusions and invalid combinations are
-  unknown.
-- The canonical validation contract for PR5 is: exactly one primary trait (a
-  product requirement; the template proves only at most one), zero or more
-  lesser traits, a non-negative advantage-point balance, and only combinations
-  allowed by recovered exclusions. Because the exclusion matrix is unknown,
-  PR5 must not reject a combination on a guessed rule. If the product policy
-  intentionally permits every non-excluded combination, label that policy and
-  keep the unknown original exclusions visible in this ledger.
-- Do not infer point costs from a single balance sample: several costs may be
-  non-linear, and the help describes interactions such as immunity wasting
-  part of Total Terraforming and Improved Starbases not stacking with Alternate
-  Reality's starbase discount.
+  Trait exclusions remain **unknown**; neither the help nor the point
+  calculation contains an exclusion matrix.
+- The canonical validation contract for PR5 is: exactly one primary trait, zero
+  or more lesser traits, a non-negative advantage-point balance, and only
+  combinations allowed by recovered exclusions. Because the exclusion matrix is
+  unknown, PR5 must not reject a combination on a guessed rule.
+- The help contains no numeric table, so the help cannot independently confirm
+  any cost. Cheap Engines being a net gain is what the table says; only its
+  gameplay side is documented (help topic 277).
 
 ### 1.6 Leftover advantage points
 

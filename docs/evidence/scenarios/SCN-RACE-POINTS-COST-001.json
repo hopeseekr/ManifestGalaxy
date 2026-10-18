@@ -1,9 +1,8 @@
 {
   "schema_version": 1,
   "id": "SCN-RACE-POINTS-COST-001",
-  "title": "Exact advantage-point costs, exclusions and valid trait combinations",
+  "title": "Trait exclusions and valid lesser-trait combinations",
   "rule_ids": [
-    "RULE-RACE-POINTS-COST-001",
     "RULE-RACE-TRAIT-EXCLUSIONS-001",
     "RULE-RACE-COMPAT-001"
   ],
@@ -46,13 +45,12 @@
   "expected": {},
   "observed": null,
   "unresolved": [
-    "No numeric point values, cost formula, exclusion matrix or full valid-combination set is recovered.",
-    "The help does not provide the point table.",
-    "No original-game execution or disassembly was performed in PR2."
+    "No trait exclusion matrix or full valid-combination set was recovered from help or the point calculation.",
+    "No original-game execution or disassembly was performed; exclusions were not observed."
   ],
   "downstream_prs": [
     "PR5",
     "PR13"
   ],
-  "notes": "This is a gap scenario. It defines the measurements required to replace unknown values; it does not assert any point cost."
+  "notes": "Gap scenario for exclusions and compatible combinations only. The numeric cost formula is specified separately in SCN-RACE-POINTS-COST-002 and docs/rules/advantage-points.md; this scenario asserts no exclusion rule."
 }

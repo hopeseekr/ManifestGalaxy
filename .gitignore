@@ -15,6 +15,11 @@
 *.extracted
 *.dump
 
+# Third-party decompilation projects supplied locally as evidence sources.
+# Never committed: they are not ours to redistribute and may contain game code.
+/stars-decompile/
+/stars-game-recompiled/
+
 # Python caches and local test output.
 __pycache__/
 *.pyc

@@ -644,12 +644,12 @@
       "id": "RULE-RACE-POINTS-COST-001",
       "title": "Exact trait, field-range and population-efficiency advantage-point costs",
       "kind": "subsystem",
-      "status": "unknown",
+      "status": "statically-derived",
       "downstream_prs": [
         "PR5"
       ],
       "scenario_ids": [
-        "SCN-RACE-POINTS-COST-001"
+        "SCN-RACE-POINTS-COST-002"
       ]
     },
     {
