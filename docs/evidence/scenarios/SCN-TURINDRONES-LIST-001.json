@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "id": "SCN-TURINDRONES-LIST-001",
+  "title": "Opponent-name string sequence",
+  "rule_ids": [
+    "RULE-RACE-TURINDRONES-NAMES-001"
+  ],
+  "status": "statically-derived",
+  "confidence": "static-only",
+  "provenance": [
+    {
+      "source": "stars26i.exe",
+      "sha256": "5770dade2db0e11918631d5c128c0bf7ab48e371f7b2267a4ff02531bb8e198e",
+      "kind": "executable",
+      "location": "segment 35, segment-relative offset 0xa06, file offset 0x55846: ASCII sequence Stars!.Stars!.Robotoids.Turindrones.Automitrons.Rototills.Cybertrons.Macinti.Random",
+      "note": "PR1 located the string; exact delimiters are NUL/period-separated in the data segment."
+    }
+  ],
+  "setup": {
+    "baseline": "Supplied executable; no execution required.",
+    "variable": "Search the data segment for the opponent-name sequence."
+  },
+  "procedure": [
+    "Use the checked NE parser to locate segment 35.",
+    "Extract the bounded byte window at relative offset 0xa06.",
+    "Decode printable ASCII and record NUL/period delimiters.",
+    "Do not infer which entry is selectable or which AI policy applies."
+  ],
+  "expected": {
+    "static": [
+      "The sequence includes the names Stars!, Robotoids, Turindrones, Automitrons, Rototills, Cybertrons, Macinti and Random.",
+      "Turindrones occurs at file offset 0x55846."
+    ]
+  },
+  "observed": null,
+  "unresolved": [
+    "Runtime use of the sequence is unknown.",
+    "The exact opponent preset configuration for Turindrones is unknown."
+  ],
+  "downstream_prs": [
+    "PR14"
+  ],
+  "notes": "A located name is a lead, not an opponent/AI configuration."
+}

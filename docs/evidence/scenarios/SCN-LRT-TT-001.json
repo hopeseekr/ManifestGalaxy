@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "id": "SCN-LRT-TT-001",
+  "title": "Total Terraforming trait evidence and controlled observation",
+  "rule_ids": [
+    "RULE-RACE-LRT-TT"
+  ],
+  "status": "documented-only",
+  "confidence": "help-only",
+  "provenance": [
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 1818636 (0x001bc00c), HLP file offset 458241 (0x0006fe01), topic 270 'Total Terraforming'",
+      "note": "Decoded help topic for Total Terraforming; documented-only claim, not a runtime observation."
+    },
+    {
+      "source": "stars26i.exe",
+      "sha256": "5770dade2db0e11918631d5c128c0bf7ab48e371f7b2267a4ff02531bb8e198e",
+      "kind": "executable",
+      "location": "dialog #150 resource at file offset 0x2fab00, candidate control 292 (caption empty; position-based lead only); no literal 'Total Terraforming' ASCII string was found in the executable by exact-byte search",
+      "note": "Executable location of the trait name/control is a lead; it does not prove runtime mechanics."
+    }
+  ],
+  "setup": {
+    "baseline": "A custom race with no other selected trait and otherwise identical wizard choices.",
+    "variable": "Select only Total Terraforming and record the advantage-point balance and observable effects.",
+    "universe": "Single-player, fixed small universe with one Turindrones opponent if the runtime exposes it (otherwise record the actual opponent), fixed difficulty, no random events; keep the same seed/settings across trials."
+  },
+  "procedure": [
+    "Create the baseline race and record the step 1-6 settings and advantage-point balance.",
+    "Create the same race with only Total Terraforming changed; record the exact advantage-point balance and any disabled controls.",
+    "Start the game and record starting technology, planets, fleets, installations and available catalog entries.",
+    "Run a controlled comparison for each documented effect, varying one input at a time and repeating at least three trials where randomness may apply.",
+    "Record the observed result, game year, settings and any discrepancy from the documented claim."
+  ],
+  "expected": {
+    "documented": [
+      "Starts able to adjust each environmental attribute by up to 3% in either direction (documented-only).",
+      "Can research terraforming technologies up to 30% instead of the normal 15% (documented-only).",
+      "Terraforming requires 30% fewer resources (documented-only).",
+      "Terraforming requires only Biotechnology research rather than Biotechnology plus a second field (documented-only)."
+    ]
+  },
+  "observed": null,
+  "unresolved": [
+    "Exact advantage-point cost is unknown.",
+    "The 30% resource reduction rounding is unknown.",
+    "The 3% starting cap and 30% maximum are documented but not runtime-verified.",
+    "Interaction with immunity and Claim Adjuster temporary terraforming is unknown."
+  ],
+  "downstream_prs": [
+    "PR5",
+    "PR6",
+    "PR8",
+    "PR13"
+  ],
+  "notes": "The help is dated January 1998 and its applicability to stars26i.exe is unverified. No original-game execution is claimed by PR2."
+}

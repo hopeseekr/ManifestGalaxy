@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "id": "SCN-PRT-CA-001",
+  "title": "Claim Adjuster trait evidence and controlled observation",
+  "rule_ids": [
+    "RULE-RACE-PRT-CA"
+  ],
+  "status": "documented-only",
+  "confidence": "help-only",
+  "provenance": [
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 1754710 (0x001ac656), HLP file offset 443467 (0x0006c44b), topic 261 'Claim Adjuster'",
+      "note": "Decoded help topic for Claim Adjuster; documented-only claim, not a runtime observation."
+    },
+    {
+      "source": "stars26i.exe",
+      "sha256": "5770dade2db0e11918631d5c128c0bf7ab48e371f7b2267a4ff02531bb8e198e",
+      "kind": "executable",
+      "location": "dialog #149 resource at file offset 0x2fa900, control 274, caption 'Claim Adjuster'; style 0x50000009 (BS_AUTORADIOBUTTON)",
+      "note": "Executable location of the trait name/control is a lead; it does not prove runtime mechanics."
+    }
+  ],
+  "setup": {
+    "baseline": "A custom race with no other selected trait and otherwise identical wizard choices.",
+    "variable": "Select only Claim Adjuster and record the advantage-point balance and observable effects.",
+    "universe": "Single-player, fixed small universe with one Turindrones opponent if the runtime exposes it (otherwise record the actual opponent), fixed difficulty, no random events; keep the same seed/settings across trials."
+  },
+  "procedure": [
+    "Create the baseline race and record the step 1-6 settings and advantage-point balance.",
+    "Create the same race with only Claim Adjuster changed; record the exact advantage-point balance and any disabled controls.",
+    "Start the game and record starting technology, planets, fleets, installations and available catalog entries.",
+    "Run a controlled comparison for each documented effect, varying one input at a time and repeating at least three trials where randomness may apply.",
+    "Record the observed result, game year, settings and any discrepancy from the documented claim."
+  ],
+  "expected": {
+    "documented": [
+      "Starts with Energy, Weapons and Propulsion tech 1 and Biotech tech 6 (documented-only).",
+      "Starts with a ship able to terraform other players' planets from orbit (documented-only).",
+      "Exclusive Retro Bomb, Orbital Adjuster and de-terraforming bombs (documented-only).",
+      "Terraforming is free and temporary; owned planets are terraformed each year to the current technology limit and revert on abandonment or capture (documented-only)."
+    ]
+  },
+  "observed": null,
+  "unresolved": [
+    "Exact advantage-point cost is unknown.",
+    "The per-year terraforming application order and cap are unknown.",
+    "Temporary-state storage and reversion semantics are unknown.",
+    "Interaction with Total Terraforming is unknown."
+  ],
+  "downstream_prs": [
+    "PR5",
+    "PR6",
+    "PR8",
+    "PR9",
+    "PR13"
+  ],
+  "notes": "The help is dated January 1998 and its applicability to stars26i.exe is unverified. No original-game execution is claimed by PR2."
+}

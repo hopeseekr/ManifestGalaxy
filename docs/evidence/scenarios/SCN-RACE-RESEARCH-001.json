@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "id": "SCN-RACE-RESEARCH-001",
+  "title": "Research fields, cost progression and miniaturization",
+  "rule_ids": [
+    "RULE-RACE-RESEARCH-COST-001",
+    "RULE-TECH-FIELDS-001",
+    "RULE-TECH-COST-001",
+    "RULE-TECH-MINI-001"
+  ],
+  "status": "documented-only",
+  "confidence": "help-only",
+  "provenance": [
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 657715 (0x000a0933), HLP file offset 169768 (0x00029728), topic 73 'Fields of Study'",
+      "note": "Six fields, levels 0-26, one field at a time."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 688673 (0x000a8221), HLP file offset 176150 (0x0002b016), topic 76 'The Cost of Research'",
+      "note": "Costs rise in a Fibonacci-like series plus 10 resources per field per level."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 640900 (0x0009c784), HLP file offset 165241 (0x00028579), topic 71 'Conditions that Affect Production'",
+      "note": "Miniaturization 4% per level to 75%, or 5% to 80% with Bleeding Edge."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 1870558 (0x001c8ade), HLP file offset 473299 (0x000738d3), topic 287 'Step 6: Research Costs (Player Race)'",
+      "note": "Step 6 cost choices and all-fields starting tech."
+    }
+  ],
+  "setup": {
+    "baseline": "A race with standard research costs and no relevant trait.",
+    "variable": "Field, current level, allocated resources and research-cost choice."
+  },
+  "procedure": [
+    "Record the six fields and starting levels.",
+    "For each field, record the resource cost of the next level at levels 0-10 and compare to the documented progression.",
+    "Change the percentage allocation and record the next-level estimate.",
+    "Test each of the three cost choices and the all-fields starting-tech box.",
+    "Design a component at two different tech levels and record miniaturized cost."
+  ],
+  "expected": {
+    "documented": [
+      "Six fields: Energy, Weapons, Propulsion, Construction, Electronics and Biotechnology; levels 0-26; one field at a time (documented-only).",
+      "Research cost increases in a Fibonacci-like series plus 10 resources per field per level already achieved (documented-only).",
+      "Miniaturization reduces production cost 4% per level above requirement, capped at 75%; Bleeding Edge uses 5% and caps at 80% (documented-only).",
+      "Step 6 choices are Costs 75% extra, standard, and Costs 50% less for each field; All Costs 75% Extra starts those fields at tech 3 (tech 4 with Jack of All Trades) (documented-only)."
+    ]
+  },
+  "observed": null,
+  "unresolved": [
+    "Exact Fibonacci base and rounding are not stated.",
+    "The help gives 5% in one topic and 4% in another for normal miniaturization; the version-specific value must be measured.",
+    "Whether Generalised Research changes the cost base or only distribution is unknown."
+  ],
+  "downstream_prs": [
+    "PR5",
+    "PR9"
+  ],
+  "notes": ""
+}

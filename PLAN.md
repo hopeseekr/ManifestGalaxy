@@ -16,7 +16,7 @@ This package is a set of execution prompts, not an already reverse-engineered sp
 - `Stars! - RIP/stars!.hlp` is a WinHelp 3.1 container titled “Stars! Player's Guide (Jan 10, 1998)”. PR1 decoded its title, January 1998 generation date, 142 internal files and 419 topics. Check its applicability to this executable; neither the game's 1995 origin nor a filename establishes version-specific rules.
 - PR1 also produced a private local PDF rendering of the help (`analysis/help/Stars-Player-Guide-1998.pdf`). It is an ignored convenience artifact, not committed evidence and not a source of gameplay rules. See “Local help PDF” below.
 - No point formula, full catalog, turn ordering, combat rule, RNG algorithm, or AI policy has yet been recovered and verified. No original game was executed during the initial inspection or PR1.
-- The workspace is a Git repository. The integration branch is `trunk`; PR1 is committed on `pr1-binary-evidence` and is not merged by this plan.
+- The workspace is a Git repository. The integration branch is `trunk`; PR1 is merged on `trunk`. PR2 is complete on `pr2-rules-specification` and is not merged by this plan.
 
 ## Architecture and interfaces
 
@@ -109,7 +109,7 @@ The `interactions / boundary cases to verify` column records evidence questions,
 | `PRT.IS` | Inner-Strength | PR2, PR5, PR6, PR9, PR10, PR12, PR13 | Verify fleet reproduction, healing, defenses, weapon costs and bombing restrictions. | Check fleet phase ordering, healing/reproduction limits, defense and weapon catalogs, and bomb validation. |
 | `PRT.SD` | Space Demolition | PR2, PR5, PR6, PR9, PR10, PR11, PR12, PR13 | Verify mine scanning, detonation, decay and travel effects. | Check minefield visibility, detonation order, decay timing, travel resolution and scanner interactions. |
 | `PRT.PP` | Packet Physics | PR2, PR5, PR6, PR8, PR9, PR10, PR11, PR12, PR13 | Verify packets, scanning, terraforming and mass-driver effects. | Check packet setup, scanner visibility, terraforming boundaries, mass-driver travel and impact order. |
-| `PRT.IT` | Interstellar Traveller | PR2, PR5, PR6, PR9, PR10, PR11, PR12, PR13 | Verify gate cargo and range limits, gate scans and packet interactions. | Check setup, gate capacity/range boundaries, scan visibility, and packet penalties without assuming rates. |
+| `PRT.IT` | Interstellar Traveler | PR2, PR5, PR6, PR9, PR10, PR11, PR12, PR13 | Verify gate cargo and range limits, gate scans and packet interactions. | Check setup, gate capacity/range boundaries, scan visibility, and packet penalties without assuming rates. |
 | `PRT.AR` | Alternate Reality | PR2, PR5, PR6, PR8, PR9, PR10, PR11, PR13 | Verify orbital housing, energy-dependent resources, natural mining and scans, own-world remote mining, planetary-installation restriction and colonist travel loss. | Check setup and orbital capacity, energy/resource availability, mining ownership, scanner views, installation validation and colonist travel. |
 | `PRT.JOAT` | Jack of All Trades | PR2, PR5, PR6, PR8, PR9, PR11, PR13 | Verify starting technology and ships, inherent scanners and population capacity. | Check setup inventory, starting catalog legality, scanner behavior and population-capacity boundaries. |
 
@@ -141,7 +141,7 @@ The prerequisite for each PR after PR1 is its predecessor's authorized integrati
 | Done | PR prompt | Principal deliverable |
 |---|---|---|
 | [x] | [PR1: binary evidence](PLAN-pr1-description.md) | Established the binary evidence inventory and extraction tools. |
-| [ ] | [PR2: rules specification](PLAN-pr2-description.md) | Documented recovered rules and reference scenarios. |
+| [x] | [PR2: rules specification](PLAN-pr2-description.md) | Documented recovered rules and reference scenarios. |
 | [ ] | [PR3: rust foundation](PLAN-pr3-description.md) | Added the Rust workspace and desktop application foundation. |
 | [ ] | [PR4: simulation contracts](PLAN-pr4-description.md) | Added deterministic game state and turn-processing contracts. |
 | [ ] | [PR5: custom race builder](PLAN-pr5-description.md) | Implemented the custom race builder and point calculations. |

@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "id": "SCN-SCAN-RANGE-001",
+  "title": "Additive scanner range",
+  "rule_ids": [
+    "RULE-SCAN-RANGE-001"
+  ],
+  "status": "documented-only",
+  "confidence": "help-only",
+  "provenance": [
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 1215545 (0x00128c39), HLP file offset 309806 (0x0004ba2e), topic 147 'Scanner Technology'",
+      "note": "Scanner range formula and penetration classes."
+    }
+  ],
+  "setup": {
+    "baseline": "A ship with known scanners at a controlled distance from target fleets/planets.",
+    "variable": "Scanner combination and target class."
+  },
+  "procedure": [
+    "Place one scanner and record detection range.",
+    "Combine two or three scanners and compare to the fourth-root formula.",
+    "Test planet-penetrating versus non-penetrating targets."
+  ],
+  "expected": {
+    "documented": [
+      "Ship scanner range is the fourth root of the sum of each scanner range to the fourth power; the same applies to planet-penetrating scanners (documented-only).",
+      "Non-penetrating scanners cannot detect fleets in orbit or reveal planetary statistics (documented-only)."
+    ]
+  },
+  "observed": null,
+  "unresolved": [
+    "Exact scanner values are in the undecoded table.",
+    "Rounding of the fourth-root result is unknown."
+  ],
+  "downstream_prs": [
+    "PR9",
+    "PR11"
+  ],
+  "notes": ""
+}

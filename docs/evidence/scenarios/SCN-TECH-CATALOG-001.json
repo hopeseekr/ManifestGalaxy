@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "id": "SCN-TECH-CATALOG-001",
+  "title": "Technology, hull and component catalog extraction",
+  "rule_ids": [
+    "RULE-TECH-CATALOG-001"
+  ],
+  "status": "unknown",
+  "confidence": "unknown",
+  "provenance": [
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 2067721 (0x001f8d09), HLP file offset 523006 (0x0007fafe), topic 317 'About Data Tables'",
+      "note": "Index of data tables."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 2097164 (0x0020000c), HLP file offset 527873 (0x00080e01), topic 330 'Ship Hulls table'",
+      "note": "Ship Hulls table topic; decoded body contains no table rows."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 2097399 (0x002000f7), HLP file offset 528108 (0x00080eec), topic 331 'Starbase Hulls table'",
+      "note": "Starbase Hulls table topic; decoded body contains no table rows."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 2097642 (0x002001ea), HLP file offset 528351 (0x00080fdf), topic 332 'Terraforming table'",
+      "note": "Terraforming table topic; decoded body contains no table rows."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 2097881 (0x002002d9), HLP file offset 528590 (0x000810ce), topic 333 'Torpedoes table'",
+      "note": "Torpedoes table topic; decoded body contains no table rows."
+    }
+  ],
+  "setup": {
+    "baseline": "Supplied help and executable.",
+    "variable": "Table category and record source."
+  },
+  "procedure": [
+    "Confirm the help table topics decode only titles/links and no rows.",
+    "Use the Technology Browser in a controlled game to record each category entry, stats and research requirements.",
+    "Cross-check each entry against executable resources/code only when a reproducible static method exists.",
+    "Record missing entries as gaps rather than inventing stats."
+  ],
+  "expected": {},
+  "observed": null,
+  "unresolved": [
+    "Armor, beam weapon, bomb, electrical, engine, mechanical, mine-laying, mining, orbital, planetary-installation, scanner, shield, hull, starbase-hull, terraforming and torpedo table rows are not decoded.",
+    "No full catalog, cost or tech-requirement table is recovered.",
+    "Component names in trait help topics are leads, not a complete catalog."
+  ],
+  "downstream_prs": [
+    "PR9"
+  ],
+  "notes": "Do not populate the catalog from memory or external Stars! material without version-specific evidence."
+}

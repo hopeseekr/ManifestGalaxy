@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "id": "SCN-PLANET-PRODUCTION-001",
+  "title": "Production queue behavior",
+  "rule_ids": [
+    "RULE-PLANET-PRODUCTION-001"
+  ],
+  "status": "documented-only",
+  "confidence": "help-only",
+  "provenance": [
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 557068 (0x0008800c), HLP file offset 142849 (0x00022e01), topic 58 'Production'",
+      "note": "Production overview."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 558530 (0x000885c2), HLP file offset 144311 (0x000233b7), topic 59 'How Production Works'",
+      "note": "Top-down queue, partial items, mineral block."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 560433 (0x00088d31), HLP file offset 146214 (0x00023b26), topic 60 'Adding an Item to the Production Queue'",
+      "note": "Adding items at top/middle/bottom."
+    }
+  ],
+  "setup": {
+    "baseline": "An owned planet with a controlled queue and mineral supply.",
+    "variable": "Queue order and mineral availability."
+  },
+  "procedure": [
+    "Record the queue and percentage complete.",
+    "Insert an item at the top and record whether partial work continues.",
+    "Remove all minerals and record where production stops.",
+    "Test unique items and upgrades."
+  ],
+  "expected": {
+    "documented": [
+      "Production is processed top-down; inserting at the top prevents work on the previous item until the new item completes or is deleted (documented-only).",
+      "Production halts when the planet runs out of minerals (documented-only).",
+      "Unique items disappear from inventory once queued; upgrades replace older versions and require only enhancement minerals (documented-only)."
+    ]
+  },
+  "observed": null,
+  "unresolved": [
+    "Exact resource/mineral allocation order within one queue item is unknown.",
+    "Rounding and partial-progress behavior are unverified."
+  ],
+  "downstream_prs": [
+    "PR8"
+  ],
+  "notes": ""
+}

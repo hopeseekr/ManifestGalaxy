@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "id": "SCN-LRT-OBRM-001",
+  "title": "Only Basic Remote Mining trait evidence and controlled observation",
+  "rule_ids": [
+    "RULE-RACE-LRT-OBRM"
+  ],
+  "status": "documented-only",
+  "confidence": "help-only",
+  "provenance": [
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 1822177 (0x001bcde1), HLP file offset 461782 (0x00070bd6), topic 278 'Only Basic Remote Mining'",
+      "note": "Decoded help topic for Only Basic Remote Mining; documented-only claim, not a runtime observation."
+    },
+    {
+      "source": "stars26i.exe",
+      "sha256": "5770dade2db0e11918631d5c128c0bf7ab48e371f7b2267a4ff02531bb8e198e",
+      "kind": "executable",
+      "location": "dialog #150 resource at file offset 0x2fab00, candidate control 300 (caption empty; position-based lead only); no literal 'Only Basic Remote Mining' ASCII string was found in the executable by exact-byte search",
+      "note": "Executable location of the trait name/control is a lead; it does not prove runtime mechanics."
+    }
+  ],
+  "setup": {
+    "baseline": "A custom race with no other selected trait and otherwise identical wizard choices.",
+    "variable": "Select only Only Basic Remote Mining and record the advantage-point balance and observable effects.",
+    "universe": "Single-player, fixed small universe with one Turindrones opponent if the runtime exposes it (otherwise record the actual opponent), fixed difficulty, no random events; keep the same seed/settings across trials."
+  },
+  "procedure": [
+    "Create the baseline race and record the step 1-6 settings and advantage-point balance.",
+    "Create the same race with only Only Basic Remote Mining changed; record the exact advantage-point balance and any disabled controls.",
+    "Start the game and record starting technology, planets, fleets, installations and available catalog entries.",
+    "Run a controlled comparison for each documented effect, varying one input at a time and repeating at least three trials where randomness may apply.",
+    "Record the observed result, game year, settings and any discrepancy from the documented claim."
+  ],
+  "expected": {
+    "documented": [
+      "The Robo-Miner, Robo-Maxi-Miner and Robo-Super-Miner robots and the Maxi-Miner hull are unavailable (documented-only)."
+    ]
+  },
+  "observed": null,
+  "unresolved": [
+    "Exact advantage-point cost is unknown.",
+    "The complete hull and robot exclusion set is not decoded.",
+    "The help title implies a population bonus, but no population-bonus text was decoded; do not implement one without evidence."
+  ],
+  "downstream_prs": [
+    "PR5",
+    "PR6",
+    "PR8",
+    "PR9",
+    "PR13"
+  ],
+  "notes": "The help is dated January 1998 and its applicability to stars26i.exe is unverified. No original-game execution is claimed by PR2."
+}

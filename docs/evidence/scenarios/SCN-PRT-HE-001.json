@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "id": "SCN-PRT-HE-001",
+  "title": "Hyper-Expansion trait evidence and controlled observation",
+  "rule_ids": [
+    "RULE-RACE-PRT-HE"
+  ],
+  "status": "documented-only",
+  "confidence": "help-only",
+  "provenance": [
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 1736867 (0x001a80a3), HLP file offset 437912 (0x0006ae98), topic 258 'Hyper-Expansion'",
+      "note": "Decoded help topic for Hyper-Expansion; documented-only claim, not a runtime observation."
+    },
+    {
+      "source": "stars26i.exe",
+      "sha256": "5770dade2db0e11918631d5c128c0bf7ab48e371f7b2267a4ff02531bb8e198e",
+      "kind": "executable",
+      "location": "dialog #149 resource at file offset 0x2fa900, control 271, caption 'Hyper-Expansion'; style 0x50000009 (BS_AUTORADIOBUTTON)",
+      "note": "Executable location of the trait name/control is a lead; it does not prove runtime mechanics."
+    }
+  ],
+  "setup": {
+    "baseline": "A custom race with no other selected trait and otherwise identical wizard choices.",
+    "variable": "Select only Hyper-Expansion and record the advantage-point balance and observable effects.",
+    "universe": "Single-player, fixed small universe with one Turindrones opponent if the runtime exposes it (otherwise record the actual opponent), fixed difficulty, no random events; keep the same seed/settings across trials."
+  },
+  "procedure": [
+    "Create the baseline race and record the step 1-6 settings and advantage-point balance.",
+    "Create the same race with only Hyper-Expansion changed; record the exact advantage-point balance and any disabled controls.",
+    "Start the game and record starting technology, planets, fleets, installations and available catalog entries.",
+    "Run a controlled comparison for each documented effect, varying one input at a time and repeating at least three trials where randomness may apply.",
+    "Record the observed result, game year, settings and any discrepancy from the documented claim."
+  ],
+  "expected": {
+    "documented": [
+      "Colonist growth rate is twice the value shown on wizard step 4 (documented-only).",
+      "Starts with one armed scout and three mini-colony ships (documented-only).",
+      "Exclusive Mini-Colonizer and Meta Morph hulls; Settler's Delight engine is limited to the Mini-Colonizer (documented-only).",
+      "Flux Capacitor increases beam-weapon damage on Hyper-Expansion ships by 20% (documented-only).",
+      "Cannot build stargates; maximum population is half the normal support value for the race environment (documented-only)."
+    ]
+  },
+  "observed": null,
+  "unresolved": [
+    "Exact advantage-point cost is not stated by the help and was not recovered.",
+    "Whether the displayed growth rate is doubled before or after rounding is unknown.",
+    "The precise population-cap calculation and its interaction with other traits are unknown.",
+    "Runtime enforcement of the stargate prohibition and hull/engine restrictions is unverified."
+  ],
+  "downstream_prs": [
+    "PR5",
+    "PR6",
+    "PR8",
+    "PR9",
+    "PR10",
+    "PR13"
+  ],
+  "notes": "The help is dated January 1998 and its applicability to stars26i.exe is unverified. No original-game execution is claimed by PR2."
+}

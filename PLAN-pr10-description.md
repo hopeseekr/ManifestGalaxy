@@ -36,7 +36,7 @@ Preserve concurrent and unrelated work. Restrict changes to this responsibility 
 - Reference routes match travel time and fuel at boundaries and multiple speeds.
 - Split then merge conserves ships/cargo/fuel under verified semantics; overflow and unauthorized transfer orders fail safely.
 - Test zero-distance orders, no fuel, full cargo, removed targets, competing arrivals and colonization ownership changes.
-- Verify Improved Fuel Efficiency, No Ramscoop Engines, and Cheap Engines fuel, engine availability, and reliability behavior, plus Inner-Strength fleet population where confirmed; recover applicability and effects against the ordinary baseline and record them in the [trait coverage matrix](PLAN.md#custom-race-trait-coverage). Interstellar Traveller gate behavior and Stargates remain covered by PR13.
+- Verify Improved Fuel Efficiency, No Ramscoop Engines, and Cheap Engines fuel, engine availability, and reliability behavior, plus Inner-Strength fleet population where confirmed; recover applicability and effects against the ordinary baseline and record them in the [trait coverage matrix](PLAN.md#custom-race-trait-coverage). Interstellar Traveler gate behavior and Stargates remain covered by PR13.
 
 Implement and execute these checks:
 

@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "id": "SCN-PLANET-STARBASE-001",
+  "title": "Starbase build and combat role",
+  "rule_ids": [
+    "RULE-PLANET-STARBASE-001"
+  ],
+  "status": "documented-only",
+  "confidence": "help-only",
+  "provenance": [
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 411153 (0x00064611), HLP file offset 107526 (0x0001a406), topic 49 'Starbases'",
+      "note": "Starbase roles, shipyard, defense, cloaks."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 1132666 (0x0011487a), HLP file offset 288367 (0x0004666f), topic 133 'Starbase Combat'",
+      "note": "Starbase combat and initiative 10-18."
+    }
+  ],
+  "setup": {
+    "baseline": "An owned planet with no starbase.",
+    "variable": "Starbase hull, components and attacking fleet."
+  },
+  "procedure": [
+    "Build a starbase and record cost, dock capability and defense.",
+    "Attack with a fleet and record starbase initiative and targeting.",
+    "Confirm bombing/invasion is blocked while the starbase survives.",
+    "Test cloaking and Alternate Reality/Improved Starbases variants."
+  ],
+  "expected": {
+    "documented": [
+      "A starbase can be a shipyard, defensive station and platform for stargate/mass driver; a space dock is required to build ships (documented-only).",
+      "A planet cannot be bombed or invaded while its starbase survives; starbases have initiative 10-18 and always strike back (documented-only)."
+    ]
+  },
+  "observed": null,
+  "unresolved": [
+    "Exact hull stats and build costs are in the undecoded tables.",
+    "Starbase combat damage arithmetic is unknown."
+  ],
+  "downstream_prs": [
+    "PR9",
+    "PR12"
+  ],
+  "notes": ""
+}

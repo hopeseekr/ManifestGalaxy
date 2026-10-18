@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "id": "SCN-SCORE-001",
+  "title": "Score sheet components",
+  "rule_ids": [
+    "RULE-VICTORY-SCORE-001"
+  ],
+  "status": "documented-only",
+  "confidence": "help-only",
+  "provenance": [
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 2034048 (0x001f0980), HLP file offset 513909 (0x0007d775), topic 313 'Score sheet'",
+      "note": "Score components and capital-ship formula."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 215440 (0x00034990), HLP file offset 59269 (0x0000e785), topic 25 'Winning'",
+      "note": "Score report and winners."
+    }
+  ],
+  "setup": {
+    "baseline": "A controlled game with known planet, starbase, ship, tech and resource totals.",
+    "variable": "One scored asset at a time."
+  },
+  "procedure": [
+    "Record score before and after adding one planet, starbase, unarmed ship, escort and capital ship.",
+    "Record tech-level and resource score contributions at boundaries.",
+    "Verify the capital-ship formula with several ship/planet counts.",
+    "Check public-score visibility before and after turn 20."
+  ],
+  "expected": {
+    "documented": [
+      "Planets score 1-6 points, 1 per 100,000 colonists; starbases 3 points each excluding Orbital Forts (documented-only).",
+      "Unarmed ships score 1/2 point each up to the planet count; escorts score 2 each up to the planet count (documented-only).",
+      "Capital ships score (8 x ships x planets)/(ships + planets); tech levels score 1-4 by band; resources score 1 per 30 (documented-only).",
+      "History graph covers the last 100 years; public scores appear after turn 20 if enabled (documented-only)."
+    ]
+  },
+  "observed": null,
+  "unresolved": [
+    "The exact planet score curve and rounding are not decoded.",
+    "Power-rating definitions for unarmed/escort/capital classes depend on the unrecovered combat data."
+  ],
+  "downstream_prs": [
+    "PR15"
+  ],
+  "notes": ""
+}

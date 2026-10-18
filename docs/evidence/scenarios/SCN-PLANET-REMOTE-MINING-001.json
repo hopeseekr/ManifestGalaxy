@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "id": "SCN-PLANET-REMOTE-MINING-001",
+  "title": "Remote mining",
+  "rule_ids": [
+    "RULE-PLANET-REMOTE-MINING-001"
+  ],
+  "status": "documented-only",
+  "confidence": "help-only",
+  "provenance": [
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 984050 (0x000f03f2), HLP file offset 250343 (0x0003d1e7), topic 114 'Remote Mining'",
+      "note": "Remote mining on uninhabited worlds with robot miners."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 969481 (0x000ecb09), HLP file offset 248062 (0x0003c8fe), topic 113 'Mining Colonized Worlds'",
+      "note": "Alternate Reality remote-mines its own worlds."
+    }
+  ],
+  "setup": {
+    "baseline": "A mining fleet with known modules over an uninhabited planet.",
+    "variable": "Miner type, module count, concentration and ownership."
+  },
+  "procedure": [
+    "Record the planet concentration and fleet mining modules.",
+    "Mine for one year and record each mineral output.",
+    "Vary module count and concentration.",
+    "Test ownership, range and Alternate Reality self-mining.",
+    "Test Only Basic Remote Mining and Advanced Remote Mining availability."
+  ],
+  "expected": {
+    "documented": [
+      "Remote mining uses robot miners on uninhabited worlds and reports the planet environment/minerals annually (documented-only).",
+      "Alternate Reality races must remote-mine their own worlds (documented-only)."
+    ]
+  },
+  "observed": null,
+  "unresolved": [
+    "Exact output formula and module stats are not decoded.",
+    "Range and ownership constraints need runtime confirmation."
+  ],
+  "downstream_prs": [
+    "PR8",
+    "PR10"
+  ],
+  "notes": ""
+}

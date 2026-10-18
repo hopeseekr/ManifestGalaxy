@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "id": "SCN-COMBAT-001",
+  "title": "Battle rounds, movement and targeting",
+  "rule_ids": [
+    "RULE-COMBAT-ROUNDS-001",
+    "RULE-COMBAT-TARGETING-001"
+  ],
+  "status": "documented-only",
+  "confidence": "help-only",
+  "provenance": [
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 2098114 (0x002003c2), HLP file offset 528823 (0x000811b7), topic 334 'The Guts of Combat'",
+      "note": "Combat overview."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 2166117 (0x00210d65), HLP file offset 547674 (0x00085b5a), topic 339 'Movement, Initiative and Firing in Battle'",
+      "note": "Movement/initiative/firing and 16-round limit."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 1148632 (0x001186d8), HLP file offset 292045 (0x000474cd), topic 136 'Targeting'",
+      "note": "Primary/secondary targeting."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 1150776 (0x00118f38), HLP file offset 294189 (0x00047d2d), topic 137 'Tactics'",
+      "note": "Tactics and disengagement."
+    }
+  ],
+  "setup": {
+    "baseline": "A controlled battle with identical ships on both sides.",
+    "variable": "One battle-plan setting, range or engine."
+  },
+  "procedure": [
+    "Record the battle VCR and round-by-round movement/firing.",
+    "Vary one battle-plan target/tactic at a time.",
+    "Test disengagement and the 16-round limit.",
+    "Repeat with starbases and multiple token weights."
+  ],
+  "expected": {
+    "documented": [
+      "Battles last up to 16 rounds; each round is each token moving and firing in phases (documented-only).",
+      "Movement is 1-8 squares per round, in three phases by allowable movement; tokens move heaviest to lightest within +/-15% (documented-only).",
+      "Targeting tries the primary target type, then secondary, then disengages (documented-only)."
+    ]
+  },
+  "observed": null,
+  "unresolved": [
+    "The movement formula is documented but its integer/rounding behavior is strings-only and unverified.",
+    "Initiative, damage and weapon stats are not fully recovered."
+  ],
+  "downstream_prs": [
+    "PR12"
+  ],
+  "notes": ""
+}

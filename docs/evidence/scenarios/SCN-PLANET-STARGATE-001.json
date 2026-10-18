@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "id": "SCN-PLANET-STARGATE-001",
+  "title": "Stargate travel",
+  "rule_ids": [
+    "RULE-PLANET-STARGATE-001"
+  ],
+  "status": "documented-only",
+  "confidence": "help-only",
+  "provenance": [
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 429930 (0x00068f6a), HLP file offset 114015 (0x0001bd5f), topic 50 'Stargates'",
+      "note": "Stargate travel is cargo-less, fuel-free and single-year."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 918463 (0x000e03bf), HLP file offset 233908 (0x000391b4), topic 105 'Stargate Navigation'",
+      "note": "Stargate navigation topic."
+    }
+  ],
+  "setup": {
+    "baseline": "Two owned planets with stargates of known type.",
+    "variable": "Ship mass, cargo, gate type and safety."
+  },
+  "procedure": [
+    "Send a cargo-less fleet through a gate and record travel time and fuel.",
+    "Add cargo and record whether it is allowed and how weight is computed.",
+    "Test overload and safety failure.",
+    "Test Interstellar Traveler restrictions and gate-cost modifier."
+  ],
+  "expected": {
+    "documented": [
+      "Stargates provide cargo-less, fuel-free, single-year transport between owned planets (documented-only).",
+      "Interstellar Traveler can transport cargo through gates and ignores cargo weight for gate limits (documented-only)."
+    ]
+  },
+  "observed": null,
+  "unresolved": [
+    "Exact gate capacity, range and overload risk are not decoded.",
+    "The single-year timing relative to normal movement is unverified."
+  ],
+  "downstream_prs": [
+    "PR10"
+  ],
+  "notes": ""
+}

@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "id": "SCN-SCAN-CLOAK-001",
+  "title": "Cloak percentage and detection",
+  "rule_ids": [
+    "RULE-SCAN-CLOAK-001"
+  ],
+  "status": "documented-only",
+  "confidence": "help-only",
+  "provenance": [
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 1245197 (0x0013000d), HLP file offset 314882 (0x0004ce02), topic 150 \"Cloaking, or Hiding from an Opponent's Scanners\"",
+      "note": "Cloak reduces range; max 98%; same-location visibility."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 1248208 (0x00130bd0), HLP file offset 317893 (0x0004d9c5), topic 151 \"Detecting an Opponent's Fleets\"",
+      "note": "75% cloak against 200 ly gives 50 ly effective range."
+    }
+  ],
+  "setup": {
+    "baseline": "A cloaked fleet and a scanner with known range.",
+    "variable": "Cloak percentage and scanner range."
+  },
+  "procedure": [
+    "Place a fleet at the edge of scanner range and record detection.",
+    "Vary cloak percentage and repeat.",
+    "Test multiple cloaks and a Tachyon Detector.",
+    "Confirm same-location detection."
+  ],
+  "expected": {
+    "documented": [
+      "Cloaking reduces effective scanner range by a percentage; maximum cloak is 98% (documented-only).",
+      "A 75% cloak reduces a 200 ly scanner to 50 ly effective range (documented-only).",
+      "A cloaked object is always visible to another fleet at the same location (documented-only)."
+    ]
+  },
+  "observed": null,
+  "unresolved": [
+    "Exact stacking/rounding and detector interaction are not fully decoded.",
+    "Super-Stealth inherent cloak interaction is unknown."
+  ],
+  "downstream_prs": [
+    "PR11"
+  ],
+  "notes": ""
+}

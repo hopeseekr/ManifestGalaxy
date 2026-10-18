@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "id": "SCN-RACE-POINTS-COST-002",
+  "title": "Advantage-point formula from the decompiled CAdvantagePoints",
+  "rule_ids": [
+    "RULE-RACE-POINTS-COST-001"
+  ],
+  "status": "statically-derived",
+  "confidence": "high",
+  "provenance": [
+    {
+      "source": "stars26i.exe",
+      "sha256": "5770dade2db0e11918631d5c128c0bf7ab48e371f7b2267a4ff02531bb8e198e",
+      "kind": "executable",
+      "location": "dialog #146-#151 file offsets 0x2fa480-0x2facc0: wizard pages whose controls this formula prices",
+      "note": "The product's own binary. The formula itself is read from the decompilation of stars26jrc3.exe, a later build of the same game; this binary supplies the control inventory, not the arithmetic."
+    },
+    {
+      "source": "operator-notes",
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "kind": "operator-notes",
+      "location": "stars-decompile/race.c CAdvantagePoints() lines 61-365 and LInnateRaceHabitability() lines 492-735, translated from NB09 CodeView symbols appended to stars26jrc3.exe",
+      "note": "stars26jrc3.exe is not supplied in this repository, so it has no recorded hash. The decompilation is recorded as operator notes so the citation states plainly that the formula source is an unsupplied input."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 1690878 (0x0019ccfe), HLP file offset 428787 (0x00068af3), topic 247 'Custom Race Wizard'",
+      "note": "Sign convention and the non-negative gate only; the help has no numeric cost table."
+    }
+  ],
+  "setup": {
+    "baseline": "A race record with rgEnvVar/rgEnvVarMin/rgEnvVarMax, pctIdealGrowth, rgAttr[0..14] and grbitAttr set as described in docs/rules/advantage-points.md.",
+    "variable": "Any single field or trait bit, or any combination the product allows."
+  },
+  "procedure": [
+    "Start the accumulator at 550*3 and apply the terms in the documented order.",
+    "Divide by 3 exactly once, at the end, truncating toward zero.",
+    "Compare each term against the stated constant or curve in docs/rules/advantage-points.md."
+  ],
+  "expected": {
+    "static": [
+      "Starting balance is 550 displayed points, held as 1650 third-points.",
+      "rgRacePrimaryTrait[10] = {40, 95, 45, 10, -100, -150, 120, 180, 90, -66} indexed by RaceAttribute 0..9.",
+      "rgRaceAdvDisPts[14] = {-235, -25, -159, -201, 40, -240, -155, 160, 240, 255, 325, 180, 70, 30}.",
+      "rgRaceDisEnvPts[6] = {150, 330, 540, 780, 1050, 1380} for net cheaper research fields.",
+      "Growth bonus by rate: 1-5 pay (6-g)*4200; 6 pays 3600; 7 pays 2250; 8 pays 600; 9 pays 225; 10-20 pay 0.",
+      "Growth remap: 1..5 -> g; 6..13 -> 5+2*(g-5); 14..19 -> 29+3*(g-13); 20 -> 45.",
+      "Resource generation curve: <=7 pays 2400; 8 pays 1260; 9 pays 600; 10 pays 0; 11-25 pays -120*(R-10).",
+      "Net research cost: 130*d^2 for d>0 with add-backs at d=5 and d=6; rgRaceDisEnvPts for d<0.",
+      "Alternate Reality replaces both efficiency blocks with a flat +210.",
+      "The 50-point leftover cap in create.c:1284 is real, not a label."
+    ]
+  },
+  "observed": null,
+  "unresolved": [
+    "Ultimate Recycling's price is inferred from the table's unexplained index 5; the enum has no bit 5.",
+    "The decompilation overruns its 14-entry trait array when iterating bits up to 32; the specification restricts the iteration and labels the correction designed.",
+    "The single anchor (Humanoids -> 25) has no recorded provenance.",
+    "Cheap Engines being a net +240 gain is transcribed but not independently confirmed."
+  ],
+  "downstream_prs": [
+    "PR5"
+  ],
+  "notes": "Records the formula and constants, not behaviour of the product binary. No original game was executed; observed stays null. Two decompilation defects are corrected and labelled designed in the specification."
+}

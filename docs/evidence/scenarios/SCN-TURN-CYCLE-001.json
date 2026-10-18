@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "id": "SCN-TURN-CYCLE-001",
+  "title": "Turn cycle and submission",
+  "rule_ids": [
+    "RULE-TURN-CYCLE-001"
+  ],
+  "status": "documented-only",
+  "confidence": "help-only",
+  "provenance": [
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 2050103 (0x001f4837), HLP file offset 517676 (0x0007e62c), topic 314 'Host Mode Dialog'",
+      "note": "Host generates a new turn; games start in 2400."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 167544 (0x00028e78), HLP file offset 48237 (0x0000bc6d), topic 21 'What Each Player Needs to Do in a Multi-Player Game'",
+      "note": "Players submit turns; host generates new year."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 932 (0x000003a4), HLP file offset 4505 (0x00001199), topic 2 'Setup and Hosting'",
+      "note": "Single-player computer acts as host and generates each year."
+    }
+  ],
+  "setup": {
+    "baseline": "Single-player game with one human and one AI.",
+    "variable": "Turn submission and host generation trigger."
+  },
+  "procedure": [
+    "Record the year, submitted state and generation trigger for each turn.",
+    "Generate turns manually and automatically; record whether unsaved changes are lost.",
+    "Record the exact ordering of messages and visible year changes.",
+    "Repeat with three AIs and with an inactive player slot."
+  ],
+  "expected": {
+    "documented": [
+      "The host collects submitted turns and generates a new year; in single-player the computer hosts (documented-only).",
+      "All games start in the year 2400 (documented-only).",
+      "Unsaved changes are lost when the host forces generation (documented-only for multi-player host mode)."
+    ]
+  },
+  "observed": null,
+  "unresolved": [
+    "The exact generation pipeline is unknown; see SCN-TURN-ORDER-001.",
+    "Whether the AI acts before or after the human within a year is unknown."
+  ],
+  "downstream_prs": [
+    "PR4",
+    "PR15"
+  ],
+  "notes": ""
+}

@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "id": "SCN-PLANET-FACTORIES-001",
+  "title": "Factory output and build cost",
+  "rule_ids": [
+    "RULE-PLANET-FACTORIES-001"
+  ],
+  "status": "documented-only",
+  "confidence": "help-only",
+  "provenance": [
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 378393 (0x0005c619), HLP file offset 99342 (0x0001840e), topic 45 'Factories'",
+      "note": "Factories produce resources; 4 kT germanium or 3 kT with Costs One Less."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 640900 (0x0009c784), HLP file offset 165241 (0x00028579), topic 71 'Conditions that Affect Production'",
+      "note": "Examples: factories produce 15 resources/year, cost five resources, colonists operate 25."
+    }
+  ],
+  "setup": {
+    "baseline": "An owned planet with a controlled population and factory count.",
+    "variable": "Factory count, population and Costs One Less."
+  },
+  "procedure": [
+    "Record resources before and after adding one factory.",
+    "Vary population to find the operated-factory cap.",
+    "Build a factory and record mineral and resource cost.",
+    "Test the Costs One Less checkbox and the factory-cost boundary."
+  ],
+  "expected": {
+    "documented": [
+      "Factories increase resources and consume no minerals after construction (documented-only).",
+      "A factory costs 4 kT germanium, or 3 kT with Costs One Less; the help example gives 15 resources/factory and five resources to build (documented-only)."
+    ]
+  },
+  "observed": null,
+  "unresolved": [
+    "The help examples are not necessarily defaults for every race; the race-dependent values must be read from the wizard and measured.",
+    "Rounding of fractional resources is unknown."
+  ],
+  "downstream_prs": [
+    "PR8"
+  ],
+  "notes": ""
+}

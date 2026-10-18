@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "id": "SCN-RACE-POINTS-COST-001",
+  "title": "Trait exclusions and valid lesser-trait combinations",
+  "rule_ids": [
+    "RULE-RACE-TRAIT-EXCLUSIONS-001",
+    "RULE-RACE-COMPAT-001"
+  ],
+  "status": "unknown",
+  "confidence": "unknown",
+  "provenance": [
+    {
+      "source": "stars26i.exe",
+      "sha256": "5770dade2db0e11918631d5c128c0bf7ab48e371f7b2267a4ff02531bb8e198e",
+      "kind": "executable",
+      "location": "dialog #151 file offset 0x2facc0; 18 cost-choice radio controls and one all-fields checkbox",
+      "note": "Choices exist; costs do not appear in the template captions."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 1690878 (0x0019ccfe), HLP file offset 428787 (0x00068af3), topic 247 'Custom Race Wizard'",
+      "note": "Help states costs exist and balance must be non-negative but gives no numeric table."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 1804225 (0x001b87c1), HLP file offset 456118 (0x0006f5b6), topic 268 'Step 3: Lesser Traits (Player Race)'",
+      "note": "Help lists lesser traits but no point values or exclusion matrix."
+    }
+  ],
+  "setup": {
+    "baseline": "A fixed neutral race and wizard state.",
+    "variable": "One trait, range or efficiency setting at a time."
+  },
+  "procedure": [
+    "Measure the balance delta for every trait and every field-range/efficiency setting using the operator scenario template.",
+    "Test every pair of traits and record whether either disables the other or changes its cost.",
+    "Test all 24 traits against each research-cost choice and each immunity.",
+    "Record results as observed values with at least three trials where UI behavior is ambiguous.",
+    "Do not infer a formula from a single point sample."
+  ],
+  "expected": {},
+  "observed": null,
+  "unresolved": [
+    "No trait exclusion matrix or full valid-combination set was recovered from help or the point calculation.",
+    "No original-game execution or disassembly was performed; exclusions were not observed."
+  ],
+  "downstream_prs": [
+    "PR5",
+    "PR13"
+  ],
+  "notes": "Gap scenario for exclusions and compatible combinations only. The numeric cost formula is specified separately in SCN-RACE-POINTS-COST-002 and docs/rules/advantage-points.md; this scenario asserts no exclusion rule."
+}

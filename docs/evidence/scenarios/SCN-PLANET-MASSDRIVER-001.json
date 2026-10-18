@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "id": "SCN-PLANET-MASSDRIVER-001",
+  "title": "Mass-driver packet launch and catch",
+  "rule_ids": [
+    "RULE-PLANET-MASSDRIVER-001"
+  ],
+  "status": "documented-only",
+  "confidence": "help-only",
+  "provenance": [
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 444882 (0x0006c9d2), HLP file offset 116679 (0x0001c7c7), topic 51 'Mass Driver Basics'",
+      "note": "Mass drivers fling mineral packets."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 1033026 (0x000fc342), HLP file offset 262455 (0x00040137), topic 122 'Flinging Mass Packets'",
+      "note": "Targeting, catch, impact and decay."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 2261577 (0x00228249), HLP file offset 569406 (0x0008b03e), topic 343 'Alternate Reality Races'",
+      "note": "Mass driver guts topic link."
+    }
+  ],
+  "setup": {
+    "baseline": "Two planets, one with a mass driver and one with an equal/greater or lesser catcher.",
+    "variable": "Driver rating, packet speed and target."
+  },
+  "procedure": [
+    "Target the driver and build a packet.",
+    "Record launch year, first-year travel, arrival year and decay.",
+    "Catch with equal/greater and lesser/no driver; record loss and damage.",
+    "Test speeds above the rated speed and Packet Physics/Interstellar Traveler modifiers."
+  ],
+  "expected": {
+    "documented": [
+      "A packet is caught safely only by a driver of equal or greater capacity; otherwise some or all colonists/installations are destroyed and 2/3 of minerals are lost on an uninhabited impact (documented-only).",
+      "Below-rated speeds can be caught by lesser drivers; above-rated speeds are unstable and decay 10/20/50% per warp level (documented-only).",
+      "Packets travel half the normal distance in their first year (documented-only)."
+    ]
+  },
+  "observed": null,
+  "unresolved": [
+    "Exact damage, catch capacity and packet cost formulas are unknown.",
+    "Trait-specific decay/efficiency modifiers need runtime measurement."
+  ],
+  "downstream_prs": [
+    "PR8",
+    "PR10"
+  ],
+  "notes": ""
+}

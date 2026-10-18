@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "id": "SCN-PLANET-TERRAFORM-001",
+  "title": "Terraforming technology and resource cost",
+  "rule_ids": [
+    "RULE-PLANET-TERRAFORM-001"
+  ],
+  "status": "documented-only",
+  "confidence": "help-only",
+  "provenance": [
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 477028 (0x00074764), HLP file offset 124249 (0x0001e559), topic 52 'Terraforming'",
+      "note": "Terraforming changes environment toward habitability."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 493178 (0x0007867a), HLP file offset 128111 (0x0001f46f), topic 53 'How to Terraform'",
+      "note": "Min/Max auto-build and manual Terraform Environment; order chosen by habitability improvement."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 510938 (0x0007cbda), HLP file offset 133583 (0x000209cf), topic 54 'Types of Terraforming Technology'",
+      "note": "Each attribute technology improves 3% minimum to 15% maximum without Total Terraforming."
+    },
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 525488 (0x000804b0), HLP file offset 135845 (0x000212a5), topic 55 'Total Terraforming'",
+      "note": "Total Terraforming details."
+    }
+  ],
+  "setup": {
+    "baseline": "An owned planet with a known environment and no terraforming technology.",
+    "variable": "Terraforming technology level, attribute and task type."
+  },
+  "procedure": [
+    "Record environment and habitability before and after one terraform task.",
+    "Test temperature, gravity and radiation separately.",
+    "Measure resource cost per 1% improvement.",
+    "Compare Min, Max and manual Terraform Environment.",
+    "Repeat with Total Terraforming and Claim Adjuster."
+  ],
+  "expected": {
+    "documented": [
+      "Terraforming technologies improve gravity, temperature or radiation; without Total Terraforming each improves at least 3% and at most 15% (documented-only).",
+      "Terraforming tasks use only possessed technology and act first on the attribute that most improves habitability (documented-only).",
+      "Total Terraforming starts at 3%, reaches 30%, costs 30% fewer resources and requires only Biotechnology research (documented-only)."
+    ]
+  },
+  "observed": null,
+  "unresolved": [
+    "Exact resource cost per percentage is unknown.",
+    "The ordering of simultaneous Min/Max tasks is only partly documented.",
+    "Claim Adjuster temporary terraforming interaction is unknown."
+  ],
+  "downstream_prs": [
+    "PR8",
+    "PR13"
+  ],
+  "notes": ""
+}

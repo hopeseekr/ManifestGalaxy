@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "id": "SCN-LRT-NRSE-001",
+  "title": "No Ramscoop Engines trait evidence and controlled observation",
+  "rule_ids": [
+    "RULE-RACE-LRT-NRSE"
+  ],
+  "status": "documented-only",
+  "confidence": "help-only",
+  "provenance": [
+    {
+      "source": "stars!.hlp",
+      "sha256": "9c5cb10fd5e5d201813fcf6f470c495f290b322ee21e1795418a8412393270d1",
+      "kind": "help-topic",
+      "location": "TOPICPOS 1821323 (0x001bca8b), HLP file offset 460928 (0x00070880), topic 276 'No Ramscoop Engines'",
+      "note": "Decoded help topic for No Ramscoop Engines; documented-only claim, not a runtime observation."
+    },
+    {
+      "source": "stars26i.exe",
+      "sha256": "5770dade2db0e11918631d5c128c0bf7ab48e371f7b2267a4ff02531bb8e198e",
+      "kind": "executable",
+      "location": "dialog #150 resource at file offset 0x2fab00, candidate control 298 (caption empty; position-based lead only); no literal 'No Ramscoop Engines' ASCII string was found in the executable by exact-byte search",
+      "note": "Executable location of the trait name/control is a lead; it does not prove runtime mechanics."
+    }
+  ],
+  "setup": {
+    "baseline": "A custom race with no other selected trait and otherwise identical wizard choices.",
+    "variable": "Select only No Ramscoop Engines and record the advantage-point balance and observable effects.",
+    "universe": "Single-player, fixed small universe with one Turindrones opponent if the runtime exposes it (otherwise record the actual opponent), fixed difficulty, no random events; keep the same seed/settings across trials."
+  },
+  "procedure": [
+    "Create the baseline race and record the step 1-6 settings and advantage-point balance.",
+    "Create the same race with only No Ramscoop Engines changed; record the exact advantage-point balance and any disabled controls.",
+    "Start the game and record starting technology, planets, fleets, installations and available catalog entries.",
+    "Run a controlled comparison for each documented effect, varying one input at a time and repeating at least three trials where randomness may apply.",
+    "Record the observed result, game year, settings and any discrepancy from the documented claim."
+  ],
+  "expected": {
+    "documented": [
+      "The Radiating Hydro-Ram Scoop, Sub-Galactic Fuel Scoop, Trans-Galactic Fuel Scoop, Trans-Galactic Super Scoop, Trans-Galactic Mizer Scoop and Galaxy Scoop are unavailable (documented-only).",
+      "The Interspace-10 engine is available and can travel warp 10 without taking damage (documented-only)."
+    ]
+  },
+  "observed": null,
+  "unresolved": [
+    "Exact advantage-point cost is unknown.",
+    "The exact engine catalog identifiers and the full exclusion set are not decoded.",
+    "Warp-10 damage immunity and its interaction with Cheap Engines are unknown."
+  ],
+  "downstream_prs": [
+    "PR5",
+    "PR6",
+    "PR9",
+    "PR10",
+    "PR13"
+  ],
+  "notes": "The help is dated January 1998 and its applicability to stars26i.exe is unverified. No original-game execution is claimed by PR2."
+}
