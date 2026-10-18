@@ -40,8 +40,8 @@ code, browser target or original game assets. It provides:
   otherwise use the Python standard library.
 
 Linux window-system development packages may be needed to build the desktop
-package; CI installs `libwayland-dev` and `libxkbcommon-dev`. A working Vulkan
-or compatible wgpu adapter is required at runtime.
+package; install `libwayland-dev` and `libxkbcommon-dev` locally. A working
+Vulkan or compatible wgpu adapter is required at runtime.
 
 ## Build, run and test
 
@@ -92,8 +92,9 @@ the worker handle, which requests shutdown and joins the worker thread.
 | `crates/stars-tools` | Headless scenarios, evidence conversion, comparisons and benchmarks | `stars-core`, `stars-ai` when running games |
 
 Core deliberately has no UI, operating-system, clock, filesystem or thread
-dependencies. The CI dependency-boundary check fails if core gains
-dependencies or if the AI/tools packages pull in the desktop/UI stack.
+dependencies. Verify the boundary locally with `cargo tree -p stars-core`; it
+must list no dependencies. The AI and tools packages must not pull in the
+desktop/UI stack.
 
 ## Chosen dependency versions
 
@@ -121,13 +122,15 @@ The following status is recorded honestly rather than inferred:
 |---|---|
 | Linux x86_64 build, clippy, unit and shell tests | Executed locally |
 | Linux window startup with wgpu (Vulkan adapter) | Executed locally; the process was stopped by an external timeout after startup, so this is not a window-close smoke test |
-| Windows native build and runtime | CI build job defined; not executed locally, and a local cross-check could not run because the pinned toolchain lacks the Windows target standard library |
-| macOS native build and runtime | CI build job defined; not executed locally |
+| Windows native build and runtime | Not executed locally; the cross-platform workflow is parked until the final PR, and a local cross-check could not run because the pinned toolchain lacks the Windows target standard library |
+| macOS native build and runtime | Not executed locally; the cross-platform workflow is parked until the final PR |
 | Manual 100/150/200% OS scaling and mixed-DPI window movement | Not executed locally; headless layout tests run at 100/150/200% UI scale with several window aspect ratios |
 | Manual OS window-close test | Not executed locally; worker shutdown and model behavior are covered by tests |
 
-The GitHub Actions workflow builds on Ubuntu, Windows and macOS, and runs
-formatting, compilation, Clippy and tests on Linux.
+GitHub Actions is intentionally disabled until the final PR. The intended
+Ubuntu/Windows/macOS workflow is preserved as
+`.github/workflows/ci.yml.disabled`; GitHub does not run files with that
+extension. All current validation is performed locally.
 
 ## PR1 analysis tools
 
@@ -217,7 +220,7 @@ crates/stars-core/       Deterministic core contracts (no dependencies)
 crates/stars-ai/         Turindrones opponent boundary
 crates/stars-desktop/    egui/eframe shell and background worker
 crates/stars-tools/      Headless workspace utility
-.github/workflows/       Format, lint, test and cross-platform build jobs
+.github/workflows/       Parked CI workflow (ci.yml.disabled, not run)
 tools/analysis/          PR1 Python inspection, help-decoding and PDF tools
 tools/analysis/tests/    Synthetic NE/HLP/PDF tests
 docs/evidence/           Committed evidence index and findings

@@ -10,18 +10,20 @@ PR1 (binary evidence inventory and extraction tools) and PR2 (documented
 recovered rules and reference scenarios) are integrated on `trunk`.
 
 PR3 adds four Rust packages, a pinned Rust 1.96.0 toolchain, `Cargo.lock`, a
-format/lint/test/cross-platform CI workflow, and a runnable egui/eframe desktop
-shell. The shell has a menu, resizable map area, inspector, status area,
-configurable UI scale, keyboard focus, procedural placeholder rendering, and a
-desktop-owned background worker with request IDs and typed errors. It contains
-no gameplay, economy, AI policy, persistence or original assets.
+parked cross-platform workflow, and a runnable egui/eframe desktop shell. The
+shell has a menu, resizable map area, inspector, status area, configurable UI
+scale, keyboard focus, procedural placeholder rendering, and a desktop-owned
+background worker with request IDs and typed errors. It contains no gameplay,
+economy, AI policy, persistence or original assets.
+GitHub Actions is intentionally disabled until the final PR, per the project
+owner; all validation is currently local.
 
 ## Scope
 
 - In scope (implemented): root Cargo configuration, `rust-toolchain.toml`,
   `Cargo.lock`, `crates/stars-core`, `crates/stars-ai`, `crates/stars-desktop`,
-  `crates/stars-tools`, `.github/workflows/ci.yml`, `README.md`, this status
-  file, and the PR3 checklist entry in `PLAN.md`.
+  `crates/stars-tools`, `.github/workflows/ci.yml.disabled`, `README.md`, this
+  status file, and the PR3 checklist entry in `PLAN.md`.
 - Out of scope: gameplay rules, universe generation, custom-race builder,
   Turindrones planning, persistence, network or browser targets, execution of
   the original game, push, publish or merge.
@@ -44,8 +46,9 @@ no gameplay, economy, AI policy, persistence or original assets.
 - [x] Worker shutdown and join when the handle is dropped
 - [x] Headless shell-model and worker tests (`cargo test -p stars-desktop --test shell`)
 - [x] Headless layout exercise at 100/150/200% UI scale and multiple aspect ratios
-- [x] Linux, Windows and macOS build jobs; Linux format, lint and test job
-- [x] CI dependency-boundary check
+- [x] Cross-platform workflow prepared and parked as `.github/workflows/ci.yml.disabled`
+      until the final PR; GitHub Actions is not enabled
+- [x] Local dependency-boundary verification
 - [x] README build, run, test, dependency and platform-status documentation
 - [x] PLAN.md PR3 checkbox, after acceptance
 
@@ -70,10 +73,10 @@ Results:
 - The desktop process started with the wgpu/Vulkan backend on Linux and stayed
   running until an external timeout stopped it. This confirms startup, not an
   in-window close or a manual scaling check.
-- Windows and macOS builds are defined in CI but were not executed locally.
-  A local `cargo check --target x86_64-pc-windows-gnu` attempt could not start
-  because the pinned toolchain does not have that target's `core`/`std`
-  installed; this was not a source-code failure.
+- Windows and macOS builds are described in the parked workflow but were not
+  executed locally. A local `cargo check --target x86_64-pc-windows-gnu` attempt
+  could not start because the pinned toolchain does not have that target's
+  `core`/`std` installed; this was not a source-code failure.
 - Manual operating-system HiDPI scaling, mixed-DPI movement and window-close
   smoke checks were not executed locally. The headless layout test covers
   100/150/200% UI scale and arbitrary window proportions; worker shutdown and

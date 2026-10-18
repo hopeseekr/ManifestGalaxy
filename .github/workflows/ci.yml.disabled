@@ -1,3 +1,6 @@
+# PARKED until the final PR at the project owner's request.
+# GitHub only runs .yml/.yaml workflow files, so the .disabled suffix prevents
+# this workflow from running. To re-enable it, rename the file back to ci.yml.
 name: CI
 
 on:
