@@ -1,39 +1,142 @@
 # Stars! remake
 
 A desktop-only Rust + egui/eframe reimplementation of Stars!, with a complete
-custom-race builder and Turindrones AI opponents. The project is being built in
+custom-race builder and Turindrones AI opponents. The project is built in
 staged PRs described in [PLAN.md](PLAN.md); gameplay rules and implementation
 must be backed by evidence, not invented.
 
 ## Current status
 
-PR1 — binary evidence inventory and extraction tools — is complete on branch
-`pr1-binary-evidence`. There is no game executable and no Rust workspace yet;
-the Rust foundation starts in PR3.
+PR1 (binary evidence) and PR2 (rules specification and controlled scenarios)
+are integrated on `trunk`. PR3 adds the Rust workspace and a resizable desktop
+foundation shell on branch `pr3-rust-foundation`.
 
-PR1 provides Python tools that inspect the supplied 16-bit Windows executable
-and Windows help file without executing either one. See
-[docs/evidence/inventory.md](docs/evidence/inventory.md) for findings,
-confidence levels, limitations, and open PR2 questions.
+The shell contains no gameplay rules, economy, AI policy, persistence, network
+code, browser target or original game assets. It provides:
+
+- a windowed egui/eframe shell with a menu, resizable map area, inspector and
+  status area;
+- UI scale controls at 100%, 125%, 150% and 200%, plus a continuous inspector
+  slider;
+- original procedural placeholder rendering (the map preview is synthetic, not
+  a game universe);
+- keyboard focus and shortcuts: `Tab` moves focus, `F5` starts a synthetic
+  scan, `Ctrl+Q` closes the window;
+- a desktop-owned background worker with request IDs, progress, completed
+  snapshots and typed failures;
+- a headless shell model that ignores stale results and retains the last
+  accepted snapshot when a worker request fails.
 
 ## Prerequisites
 
-- Python 3.11 or newer (validated with Python 3.14.8)
+- Rust 1.96.0. The repository pins this stable release in
+  [`rust-toolchain.toml`](rust-toolchain.toml), with `rustfmt` and `clippy`.
+- Python 3.11 or newer for the PR1 inspection tools (validated with Python
+  3.14.8).
 - The supplied `stars26i.exe` and `Stars! - RIP/stars!.hlp` in the repository
-  root. These original payloads are ignored by Git.
+  root for evidence work. These original payloads are ignored by Git.
 - For the private PDF converter only: Pillow and ReportLab
   (`python3 -m pip install Pillow reportlab`). The inspection and test tools
   otherwise use the Python standard library.
 
-## Run the tests
+Linux window-system development packages may be needed to build the desktop
+package; CI installs `libwayland-dev` and `libxkbcommon-dev`. A working Vulkan
+or compatible wgpu adapter is required at runtime.
+
+## Build, run and test
+
+```sh
+cargo run -p stars-desktop
+cargo run -p stars-tools
+```
+
+Run the required checks from the repository root:
+
+```sh
+cargo fmt --all -- --check
+cargo check --workspace --all-targets
+cargo clippy --workspace --all-targets -- -D warnings
+cargo test -p stars-desktop --test shell
+cargo test --workspace --all-targets
+```
+
+`stars-tools` is a headless foundation check; it prints the core contract
+version and opponent name and does not simulate a game yet.
+
+Run the PR1/PR2 Python tests with:
 
 ```sh
 python3 -m unittest discover -s tools/analysis/tests -v
 ```
 
-Expected result: `69 tests ... OK`.
+## Desktop foundation
 
-## Inventory the executable
+The window starts at 1280x800 with a 640x420 minimum. It is freely resizable
+and has no fixed aspect ratio. The inspector can be dragged wider or narrower;
+the map consumes the remaining space. Text and controls scale with the UI scale
+factor in addition to the operating system's HiDPI scale.
+
+The synthetic worker generates a deterministic map preview from integer
+coordinates. It reports progress between rows. Applying a completed result is
+atomic and one-shot. A failure leaves the previously accepted preview visible,
+and responses from superseded request IDs are ignored. Closing the window drops
+the worker handle, which requests shutdown and joins the worker thread.
+
+## Workspace layout
+
+| Package | Responsibility | Dependencies |
+|---|---|---|
+| `crates/stars-core` | State, race validation, rules, orders, views, events, deterministic turn execution | None |
+| `crates/stars-ai` | Turindrones planning and serializable AI memory | `stars-core` |
+| `crates/stars-desktop` | egui/eframe UI, worker ownership, local I/O, packaging entry point | `stars-core`, `stars-ai` |
+| `crates/stars-tools` | Headless scenarios, evidence conversion, comparisons and benchmarks | `stars-core`, `stars-ai` when running games |
+
+Core deliberately has no UI, operating-system, clock, filesystem or thread
+dependencies. The CI dependency-boundary check fails if core gains
+dependencies or if the AI/tools packages pull in the desktop/UI stack.
+
+## Chosen dependency versions
+
+Versions are recorded here and pinned by the committed `Cargo.lock`.
+
+| Dependency | Version | Role |
+|---|---|---|
+| Rust | 1.96.0 | Pinned stable toolchain |
+| `eframe` | 0.36.2 | Native window, event loop and wgpu integration |
+| `egui` | 0.36.2 | Immediate-mode UI and procedural painting |
+| `wgpu` | 30.0.1 | Renderer selected through eframe's `wgpu` feature |
+| `winit` | 0.30.13 | Native windowing backend |
+| `env_logger` | 0.11.11 | Opt-in diagnostics via `RUST_LOG` |
+| `log` | 0.4.34 | Logging facade |
+
+Egui/eframe 0.36.2 requires Rust 1.95 or newer and uses Rust 2024 edition. The
+font set is eframe's bundled, licensed default set; no extracted game art or
+copyrighted help images are used.
+
+## Platform checks
+
+The following status is recorded honestly rather than inferred:
+
+| Check | Status |
+|---|---|
+| Linux x86_64 build, clippy, unit and shell tests | Executed locally |
+| Linux window startup with wgpu (Vulkan adapter) | Executed locally; the process was stopped by an external timeout after startup, so this is not a window-close smoke test |
+| Windows native build and runtime | CI build job defined; not executed locally, and a local cross-check could not run because the pinned toolchain lacks the Windows target standard library |
+| macOS native build and runtime | CI build job defined; not executed locally |
+| Manual 100/150/200% OS scaling and mixed-DPI window movement | Not executed locally; headless layout tests run at 100/150/200% UI scale with several window aspect ratios |
+| Manual OS window-close test | Not executed locally; worker shutdown and model behavior are covered by tests |
+
+The GitHub Actions workflow builds on Ubuntu, Windows and macOS, and runs
+formatting, compilation, Clippy and tests on Linux.
+
+## PR1 analysis tools
+
+The Python tools inspect the supplied 16-bit Windows executable and Windows
+help file without executing either one. See
+[docs/evidence/inventory.md](docs/evidence/inventory.md) for findings,
+confidence levels, limitations and open questions.
+
+### Inventory the executable
 
 ```sh
 python3 tools/analysis/inventory.py stars26i.exe --output analysis/inventory.json
@@ -43,7 +146,7 @@ This writes `analysis/inventory.json`, which is ignored by Git. The tool does
 not execute the game. It parses the DOS/NE headers, segments, resources, names,
 imports, entry table, dialog templates, and a bounded set of selected strings.
 
-## Inspect the help file
+### Inspect the help file
 
 ```sh
 python3 tools/analysis/help.py 'Stars! - RIP/stars!.hlp' \
@@ -51,15 +154,11 @@ python3 tools/analysis/help.py 'Stars! - RIP/stars!.hlp' \
   --text-output analysis/help/topics.txt
 ```
 
-This writes:
+This writes container metadata and a topic index plus decoded help text. Both
+outputs are ignored by Git. The decoded help is documentation evidence, not
+proof that the executable implements the same behavior.
 
-- `analysis/help/inventory.json` — container metadata and topic index
-- `analysis/help/topics.txt` — decoded help text
-
-Both outputs are ignored by Git. The decoded help is documentation evidence,
-not proof that the executable implements the same behavior.
-
-## Generate a private PDF
+### Generate a private PDF
 
 ```sh
 python3 tools/analysis/hlp_to_pdf.py 'Stars! - RIP/stars!.hlp' \
@@ -76,7 +175,7 @@ images are copyright Mare Crisium, LLC; keep the generated PDF private and do
 not redistribute it without permission. See the conversion-notes page inside
 the PDF for the remaining decoding limits.
 
-### How the PDF conversion works
+#### How the PDF conversion works
 
 - `help.py` emits markers such as `[[IMAGE |bm12 align=center]]` in decoded
   topic text.
@@ -111,35 +210,34 @@ The executable hash must match the master plan:
 5770dade2db0e11918631d5c128c0bf7ab48e371f7b2267a4ff02531bb8e198e
 ```
 
-## CLI options
-
-```sh
-python3 tools/analysis/inventory.py --help
-python3 tools/analysis/help.py --help
-python3 tools/analysis/hlp_to_pdf.py --help
-```
-
 ## Repository layout
 
 ```text
+crates/stars-core/       Deterministic core contracts (no dependencies)
+crates/stars-ai/         Turindrones opponent boundary
+crates/stars-desktop/    egui/eframe shell and background worker
+crates/stars-tools/      Headless workspace utility
+.github/workflows/       Format, lint, test and cross-platform build jobs
 tools/analysis/          PR1 Python inspection, help-decoding and PDF tools
 tools/analysis/tests/    Synthetic NE/HLP/PDF tests
 docs/evidence/           Committed evidence index and findings
+docs/rules/              PR2 rules ledger, gap ledger and turn-order notes
 analysis/inventory.json  Ignored executable inventory
 analysis/help/           Ignored decoded help, images and private PDF
 Stars! - RIP/            Ignored supplied help/archive files
 stars26i.exe             Ignored supplied executable
 ```
 
-Gameplay packages (`crates/stars-core`, `stars-ai`, `stars-desktop`,
-`stars-tools`) do not exist yet. `cargo run` will not work until PR3 introduces
-the Rust workspace.
-
 ## Notes for future agents
 
 - PR1 findings are evidence leads, not recovered rules. Read
-  [docs/evidence/inventory.md](docs/evidence/inventory.md) and keep observed,
-  statically derived, documented-only, inferred and unknown claims separate.
+  [docs/evidence/inventory.md](docs/evidence/inventory.md) and
+  [docs/rules/README.md](docs/rules/README.md), and keep observed, statically
+  derived, documented-only, inferred and unknown claims separate.
+- The PR3 map preview and worker are foundation scaffolding only. Do not treat
+  them as gameplay rules or universe generation.
+- PR4 owns the deterministic game-state, order and turn-processing contracts.
+  Keep worker timing and UI animation out of rules and RNG consumption.
 - Regenerate derived artifacts with the commands above; never commit
   `analysis/`, the supplied executables/help files, extracted images, or the
   PDF.

@@ -1,0 +1,10 @@
+[package]
+name = "stars-core"
+description = "Deterministic Stars! remake rules and state contracts"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]

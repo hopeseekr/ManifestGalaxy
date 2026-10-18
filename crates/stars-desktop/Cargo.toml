@@ -1,0 +1,15 @@
+[package]
+name = "stars-desktop"
+description = "Offline egui desktop application for the Stars! remake"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+eframe = { version = "=0.36.2", features = ["wgpu"] }
+env_logger = "=0.11.11"
+log = "=0.4.34"
+stars-ai.workspace = true
+stars-core.workspace = true

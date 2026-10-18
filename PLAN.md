@@ -16,7 +16,7 @@ This package is a set of execution prompts, not an already reverse-engineered sp
 - `Stars! - RIP/stars!.hlp` is a WinHelp 3.1 container titled “Stars! Player's Guide (Jan 10, 1998)”. PR1 decoded its title, January 1998 generation date, 142 internal files and 419 topics. Check its applicability to this executable; neither the game's 1995 origin nor a filename establishes version-specific rules.
 - PR1 also produced a private local PDF rendering of the help (`analysis/help/Stars-Player-Guide-1998.pdf`). It is an ignored convenience artifact, not committed evidence and not a source of gameplay rules. See “Local help PDF” below.
 - No point formula, full catalog, turn ordering, combat rule, RNG algorithm, or AI policy has yet been recovered and verified. No original game was executed during the initial inspection or PR1.
-- The workspace is a Git repository. The integration branch is `trunk`; PR1 is merged on `trunk`. PR2 is complete on `pr2-rules-specification` and is not merged by this plan.
+- The workspace is a Git repository. The integration branch is `trunk`; PR1 and PR2 are merged on `trunk`.
 
 ## Architecture and interfaces
 
@@ -142,7 +142,7 @@ The prerequisite for each PR after PR1 is its predecessor's authorized integrati
 |---|---|---|
 | [x] | [PR1: binary evidence](PLAN-pr1-description.md) | Established the binary evidence inventory and extraction tools. |
 | [x] | [PR2: rules specification](PLAN-pr2-description.md) | Documented recovered rules and reference scenarios. |
-| [ ] | [PR3: rust foundation](PLAN-pr3-description.md) | Added the Rust workspace and desktop application foundation. |
+| [x] | [PR3: rust foundation](PLAN-pr3-description.md) | Added the Rust workspace and desktop application foundation. |
 | [ ] | [PR4: simulation contracts](PLAN-pr4-description.md) | Added deterministic game state and turn-processing contracts. |
 | [ ] | [PR5: custom race builder](PLAN-pr5-description.md) | Implemented the custom race builder and point calculations. |
 | [ ] | [PR6: universe setup](PLAN-pr6-description.md) | Implemented universe generation and new-game setup. |

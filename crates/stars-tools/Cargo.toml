@@ -1,0 +1,12 @@
+[package]
+name = "stars-tools"
+description = "Headless workspace utilities for the Stars! remake"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+stars-ai.workspace = true
+stars-core.workspace = true
