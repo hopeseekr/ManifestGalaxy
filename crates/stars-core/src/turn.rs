@@ -634,7 +634,7 @@ impl GameSession {
                         &mut events,
                         EventVisibility::Public,
                         EventKind::TurnStarted { year: start_year },
-                    );
+                    )?;
                     for (command_id, action) in &resolved {
                         apply_command(&mut candidate, batch.player, *command_id, action);
                         push_event(
@@ -645,7 +645,7 @@ impl GameSession {
                                 command: *command_id,
                                 player: batch.player,
                             },
-                        );
+                        )?;
                         match action {
                             ResolvedCommand::SetReady(ready) => push_event(
                                 &mut candidate,
@@ -655,7 +655,7 @@ impl GameSession {
                                     player: batch.player,
                                     ready: *ready,
                                 },
-                            ),
+                            )?,
                             ResolvedCommand::RenameFleet { fleet, name } => push_event(
                                 &mut candidate,
                                 &mut events,
@@ -664,7 +664,7 @@ impl GameSession {
                                     fleet: *fleet,
                                     name: name.clone(),
                                 },
-                            ),
+                            )?,
                         }
                     }
                     push_event(
@@ -672,7 +672,7 @@ impl GameSession {
                         &mut events,
                         EventVisibility::Public,
                         EventKind::PhaseCompleted { phase },
-                    );
+                    )?;
                 }
                 Phase::Snapshot => {
                     let next_turn = candidate
@@ -690,7 +690,7 @@ impl GameSession {
                         &mut events,
                         EventVisibility::Public,
                         EventKind::PhaseCompleted { phase },
-                    );
+                    )?;
                     push_event(
                         &mut candidate,
                         &mut events,
@@ -699,7 +699,7 @@ impl GameSession {
                             batch: batch.id,
                             year: next_year,
                         },
-                    );
+                    )?;
                 }
                 _ => {
                     push_event(
@@ -707,7 +707,7 @@ impl GameSession {
                         &mut events,
                         EventVisibility::Public,
                         EventKind::PhaseNotImplemented { phase },
-                    );
+                    )?;
                 }
             }
         }
@@ -822,14 +822,21 @@ fn push_event(
     events: &mut Vec<GameEvent>,
     visibility: EventVisibility,
     kind: EventKind,
-) {
+) -> Result<(), OrderError> {
     events.push(GameEvent {
         sequence: state.next_event_sequence,
         turn: state.turn,
         visibility,
         kind,
     });
-    state.next_event_sequence = state.next_event_sequence.wrapping_add(1);
+    // An exhausted sequence would wrap to zero and break the strictly
+    // increasing event-order contract, so reject the batch instead. The
+    // candidate is discarded on error, keeping the commit atomic.
+    state.next_event_sequence = state
+        .next_event_sequence
+        .checked_add(1)
+        .ok_or(OrderError::EventSequenceExhausted)?;
+    Ok(())
 }
 
 /// Returns the visible event subset in original order.

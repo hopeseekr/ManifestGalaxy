@@ -147,6 +147,9 @@ pub enum OrderError {
     },
     /// The current turn number cannot advance without integer overflow.
     TurnLimitReached,
+    /// The event sequence cannot advance without breaking strictly
+    /// increasing event ordering.
+    EventSequenceExhausted,
     /// The authoritative state itself is invalid.
     InvalidState(String),
 }
@@ -189,6 +192,9 @@ impl fmt::Display for OrderError {
                 owner.raw()
             ),
             Self::TurnLimitReached => formatter.write_str("turn number limit reached"),
+            Self::EventSequenceExhausted => {
+                formatter.write_str("event sequence exhausted its range")
+            }
             Self::InvalidState(message) => write!(formatter, "invalid state: {message}"),
         }
     }

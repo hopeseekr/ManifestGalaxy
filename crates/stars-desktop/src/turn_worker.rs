@@ -118,7 +118,6 @@ enum TurnWorkerCommand {
         request_id: RequestId,
         batch: OrderBatch,
     },
-    Shutdown,
 }
 
 /// Handle to the desktop turn worker.
@@ -179,9 +178,9 @@ impl TurnWorkerHandle {
     }
 
     fn stop(&mut self) {
-        if let Some(commands) = self.commands.take() {
-            let _ = commands.send(TurnWorkerCommand::Shutdown);
-        }
+        // Dropping the sender closes the channel, so the worker exits its
+        // receive loop immediately instead of draining a queued backlog.
+        self.commands.take();
         if let Some(join) = self.join.take() {
             let _ = join.join();
         }
@@ -248,7 +247,6 @@ fn turn_worker_loop(
                     }
                 }
             }
-            TurnWorkerCommand::Shutdown => break,
         }
     }
 }

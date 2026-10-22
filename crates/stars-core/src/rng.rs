@@ -125,12 +125,16 @@ impl RngStreamKey {
 
     /// Deterministic stream selector mixed into the root seed.
     ///
-    /// This is an integer mix over the stable key fields; it does not use the
+    /// The game-wide stream uses the reserved selector input 0; player streams
+    /// use the player identifier plus one, so no player stream shares an input
+    /// with the global stream; only the unreachable identifier `u64::MAX`
+    /// could collide with it. This is an integer mix over the stable key
+    /// fields; it does not use the
     /// standard library's hasher, whose output is not part of this contract.
     #[must_use]
     pub const fn selector(self) -> u64 {
         let player = match self.player {
-            Some(player) => player.raw(),
+            Some(player) => player.raw().wrapping_add(1),
             None => 0,
         };
         mix64(
@@ -296,6 +300,14 @@ pub const fn mix64(mut value: u64) -> u64 {
 mod tests {
     use super::{RNG_ALGORITHM_VERSION, RngState, RngStreamKey, RngSubsystem};
     use crate::model::PlayerId;
+
+    #[test]
+    fn global_and_player_zero_streams_do_not_collide() {
+        assert_ne!(
+            RngStreamKey::global(RngSubsystem::Movement).selector(),
+            RngStreamKey::for_player(PlayerId::from_raw(0), RngSubsystem::Movement).selector()
+        );
+    }
 
     #[test]
     fn identical_seed_and_stream_yield_identical_values() {
