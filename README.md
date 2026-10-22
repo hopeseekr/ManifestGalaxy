@@ -80,7 +80,9 @@ The synthetic worker generates a deterministic map preview from integer
 coordinates. It reports progress between rows. Applying a completed result is
 atomic and one-shot. A failure leaves the previously accepted preview visible,
 and responses from superseded request IDs are ignored. Closing the window drops
-the worker handle, which requests shutdown and joins the worker thread.
+the worker handle, which requests shutdown and joins the worker thread. A
+shutdown request also interrupts the worker's between-row delay, so a long
+`step_delay` cannot hold the window open.
 
 ## Workspace layout
 

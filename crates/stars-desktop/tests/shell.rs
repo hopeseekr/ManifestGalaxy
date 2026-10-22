@@ -1,7 +1,7 @@
 //! Headless acceptance tests for the desktop shell model and worker protocol.
 
 use std::sync::mpsc::RecvTimeoutError;
-use std::time::Duration;
+use std::time::{Duration, Instant};
 
 use stars_desktop::StarsApp;
 use stars_desktop::preview::{DEFAULT_PREVIEW_COLUMNS, PreviewSnapshot, preview_snapshot};
@@ -190,6 +190,46 @@ fn injected_worker_failure_is_reported_with_its_request_id() {
     }
 
     worker.shutdown();
+}
+
+#[test]
+fn shutdown_interrupts_a_long_step_delay_instead_of_waiting_it_out() {
+    let (worker, messages) = WorkerHandle::spawn().expect("worker starts");
+    let request = RequestId::new(60);
+
+    worker
+        .submit(SyntheticJob::new(
+            request,
+            11,
+            4,
+            8,
+            Duration::from_secs(30),
+        ))
+        .expect("job submitted");
+
+    let first = messages
+        .recv_timeout(Duration::from_secs(10))
+        .expect("worker reports its first row");
+    assert!(
+        matches!(
+            first,
+            WorkerMessage::Progress {
+                request_id,
+                completed_rows: 1,
+                total_rows: 4,
+            } if request_id == request
+        ),
+        "expected progress for the first row, got {first:?}"
+    );
+
+    let started = Instant::now();
+    worker.shutdown();
+    let elapsed = started.elapsed();
+
+    assert!(
+        elapsed < Duration::from_secs(5),
+        "shutdown waited {elapsed:?} for a 30s step delay; the delay must observe cancellation"
+    );
 }
 
 #[test]

@@ -10,11 +10,11 @@
 //! adapter that follows the same request/result discipline.
 
 use std::fmt;
-use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::mpsc::{self, Receiver, Sender};
+use std::sync::{Arc, Condvar, Mutex, PoisonError};
 use std::thread::{self, JoinHandle};
-use std::time::Duration;
+use std::time::{Duration, Instant};
 
 use crate::preview::{PreviewSnapshot, preview_row};
 
@@ -85,6 +85,9 @@ pub struct SyntheticJob {
     /// Number of columns inspected per row.
     pub columns: u32,
     /// Delay between rows, used to make progress observable in the shell.
+    ///
+    /// Shutdown interrupts a pending delay instead of waiting for it to
+    /// elapse, so this value never delays closing the window.
     pub step_delay: Duration,
     /// If set, the job reports an error when it reaches this row.
     pub fail_at_row: Option<u32>,
@@ -163,13 +166,70 @@ enum WorkerCommand {
     Shutdown,
 }
 
+/// Shutdown flag that can also wake a worker parked in a paced delay.
+///
+/// The worker waits on a condition variable rather than calling
+/// [`thread::sleep`], so a shutdown request interrupts a long
+/// [`SyntheticJob::step_delay`] immediately. Dropping the handle therefore
+/// joins the thread promptly instead of blocking until the delay elapses.
+struct Cancellation {
+    cancelled: AtomicBool,
+    mutex: Mutex<()>,
+    waker: Condvar,
+}
+
+impl Cancellation {
+    fn new() -> Self {
+        Self {
+            cancelled: AtomicBool::new(false),
+            mutex: Mutex::new(()),
+            waker: Condvar::new(),
+        }
+    }
+
+    fn is_cancelled(&self) -> bool {
+        self.cancelled.load(Ordering::SeqCst)
+    }
+
+    fn cancel(&self) {
+        // Store and notify while holding the lock so a worker cannot miss the
+        // wakeup between checking the flag and starting to wait.
+        let _guard = self.lock();
+        self.cancelled.store(true, Ordering::SeqCst);
+        self.waker.notify_all();
+    }
+
+    /// Waits for `delay`, returning early once cancellation is requested.
+    fn wait(&self, delay: Duration) {
+        let mut guard = self.lock();
+        let started = Instant::now();
+
+        while !self.is_cancelled() {
+            let remaining = delay.saturating_sub(started.elapsed());
+            if remaining.is_zero() {
+                return;
+            }
+
+            let (next_guard, _) = self
+                .waker
+                .wait_timeout(guard, remaining)
+                .unwrap_or_else(PoisonError::into_inner);
+            guard = next_guard;
+        }
+    }
+
+    fn lock(&self) -> std::sync::MutexGuard<'_, ()> {
+        self.mutex.lock().unwrap_or_else(PoisonError::into_inner)
+    }
+}
+
 /// Handle to the desktop worker thread.
 ///
 /// Dropping the handle requests shutdown and joins the thread, so closing the
 /// window does not leave background work running.
 pub struct WorkerHandle {
     commands: Option<Sender<WorkerCommand>>,
-    cancelled: Arc<AtomicBool>,
+    cancelled: Arc<Cancellation>,
     join: Option<JoinHandle<()>>,
 }
 
@@ -183,7 +243,7 @@ impl WorkerHandle {
     pub fn spawn() -> Result<(Self, Receiver<WorkerMessage>), WorkerError> {
         let (command_sender, command_receiver) = mpsc::channel();
         let (message_sender, message_receiver) = mpsc::channel();
-        let cancelled = Arc::new(AtomicBool::new(false));
+        let cancelled = Arc::new(Cancellation::new());
         let worker_cancelled = Arc::clone(&cancelled);
 
         let join = thread::Builder::new()
@@ -222,7 +282,7 @@ impl WorkerHandle {
     }
 
     fn stop(&mut self) {
-        self.cancelled.store(true, Ordering::SeqCst);
+        self.cancelled.cancel();
         if let Some(commands) = self.commands.take() {
             let _ = commands.send(WorkerCommand::Shutdown);
         }
@@ -241,7 +301,7 @@ impl Drop for WorkerHandle {
 fn worker_loop(
     commands: &Receiver<WorkerCommand>,
     messages: &Sender<WorkerMessage>,
-    cancelled: &AtomicBool,
+    cancelled: &Cancellation,
 ) {
     while let Ok(command) = commands.recv() {
         match command {
@@ -251,11 +311,11 @@ fn worker_loop(
     }
 }
 
-fn run_job(job: &SyntheticJob, messages: &Sender<WorkerMessage>, cancelled: &AtomicBool) {
+fn run_job(job: &SyntheticJob, messages: &Sender<WorkerMessage>, cancelled: &Cancellation) {
     let mut stars = Vec::new();
 
     for row in 0..job.rows {
-        if cancelled.load(Ordering::SeqCst) {
+        if cancelled.is_cancelled() {
             return;
         }
 
@@ -282,11 +342,12 @@ fn run_job(job: &SyntheticJob, messages: &Sender<WorkerMessage>, cancelled: &Ato
         }
 
         if !job.step_delay.is_zero() {
-            thread::sleep(job.step_delay);
+            // Wait, rather than sleep, so shutdown can interrupt the pace.
+            cancelled.wait(job.step_delay);
         }
     }
 
-    if cancelled.load(Ordering::SeqCst) {
+    if cancelled.is_cancelled() {
         return;
     }
 
