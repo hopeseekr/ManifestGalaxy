@@ -419,6 +419,46 @@ impl GameState {
             self.fleets.keys().map(|id| id.raw()),
         )?;
 
+        // Each entity's own identifier must match its map key; encoding uses
+        // the entity field while decoding re-keys by it, so a mismatch would
+        // produce bytes that decode into a different state.
+        for (key, player) in &self.players {
+            if player.id != *key {
+                return Err(StateValidationError::EntityIdMismatch {
+                    kind: "player",
+                    key: key.raw(),
+                    entity: player.id.raw(),
+                });
+            }
+        }
+        for (key, design) in &self.designs {
+            if design.id != *key {
+                return Err(StateValidationError::EntityIdMismatch {
+                    kind: "design",
+                    key: key.raw(),
+                    entity: design.id.raw(),
+                });
+            }
+        }
+        for (key, planet) in &self.planets {
+            if planet.id != *key {
+                return Err(StateValidationError::EntityIdMismatch {
+                    kind: "planet",
+                    key: key.raw(),
+                    entity: planet.id.raw(),
+                });
+            }
+        }
+        for (key, fleet) in &self.fleets {
+            if fleet.id != *key {
+                return Err(StateValidationError::EntityIdMismatch {
+                    kind: "fleet",
+                    key: key.raw(),
+                    entity: fleet.id.raw(),
+                });
+            }
+        }
+
         for design in self.designs.values() {
             if !self.players.contains_key(&design.owner) {
                 return Err(StateValidationError::UnknownPlayer {
@@ -658,6 +698,16 @@ pub enum StateValidationError {
         /// Missing design.
         design: DesignId,
     },
+    /// A stored entity's `id` field does not match the map key it is stored
+    /// under, so canonical encoding and decoding would disagree.
+    EntityIdMismatch {
+        /// Entity kind.
+        kind: &'static str,
+        /// Map key the entity is stored under.
+        key: u64,
+        /// Identifier recorded inside the entity.
+        entity: u64,
+    },
     /// A fleet references a planet that is not present.
     UnknownPlanet {
         /// Referring fleet.
@@ -701,6 +751,10 @@ impl fmt::Display for StateValidationError {
                 "fleet {} references missing planet {}",
                 fleet.raw(),
                 planet.raw()
+            ),
+            Self::EntityIdMismatch { kind, key, entity } => write!(
+                formatter,
+                "{kind} entity id {entity} does not match its map key {key}"
             ),
             Self::EventSequenceExhausted => {
                 write!(formatter, "next event sequence exhausted its range")

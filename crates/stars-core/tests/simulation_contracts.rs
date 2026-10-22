@@ -657,6 +657,24 @@ fn exhausted_event_sequence_is_rejected_as_invalid_state() {
 }
 
 #[test]
+fn entity_id_mismatch_with_its_map_key_is_rejected() {
+    let fixture = fixture();
+    let mut state = fixture.state;
+    let id = state
+        .planets
+        .keys()
+        .copied()
+        .next()
+        .expect("fixture has a planet");
+    let planet = state.planets.get_mut(&id).expect("planet present");
+    planet.id = PlanetId::from_raw(id.raw() + 1);
+    assert!(matches!(
+        state.validate_integrity(),
+        Err(stars_core::model::StateValidationError::EntityIdMismatch { .. })
+    ));
+}
+
+#[test]
 fn committed_events_are_filtered_per_player() {
     let fixture = fixture();
     let mut session = GameSession::new(fixture.state.clone()).expect("valid fixture");
