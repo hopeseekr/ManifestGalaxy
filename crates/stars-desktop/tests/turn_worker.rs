@@ -185,14 +185,12 @@ fn worker_commits_a_turn_with_ordered_progress_and_a_filtered_view() {
     assert_eq!(outcome.player, fixture.human);
     assert_eq!(outcome.turn, 1);
     assert_eq!(outcome.year, 2401);
-    assert_eq!(
-        outcome.state.fleets[&fixture.human_fleet].name,
-        "Alpha Prime"
-    );
-    assert!(outcome.state.players[&fixture.human].ready);
     assert_eq!(outcome.view.player, fixture.human);
     assert_eq!(outcome.view.fleets.len(), 1);
     assert_eq!(outcome.view.fleets[0].id, fixture.human_fleet);
+    assert_eq!(outcome.view.fleets[0].name, "Alpha Prime");
+    assert!(outcome.view.ready);
+    assert!(outcome.view.turn == 1 && outcome.view.year == 2401);
     assert!(
         !outcome
             .view
@@ -232,10 +230,7 @@ fn worker_failure_leaves_authoritative_state_unchanged_and_continues() {
     let (_, outcome) = collect_until_completed(&messages);
     assert_eq!(outcome.turn, 1);
     assert_eq!(outcome.year, 2401);
-    assert_eq!(
-        outcome.state.fleets[&fixture.human_fleet].name,
-        "Alpha Prime"
-    );
+    assert_eq!(outcome.view.fleets[0].name, "Alpha Prime");
     worker.shutdown();
 }
 
@@ -285,11 +280,16 @@ fn worker_rejects_non_monotonic_request_ids_without_running_the_batch() {
 #[test]
 fn delayed_completion_cannot_overwrite_a_newer_request() {
     let fixture = fixture();
-    let old = make_outcome(&fixture.state, &valid_batch(&fixture, 1, 0));
-    let newer = make_outcome(&old.state, &valid_batch(&fixture, 2, 1));
+    let mut session = GameSession::new(fixture.state.clone()).expect("valid fixture state");
+    let old = session
+        .commit(&valid_batch(&fixture, 1, 0))
+        .expect("first batch commits");
+    let old_view = old.view.clone();
+    let newer = session
+        .commit(&valid_batch(&fixture, 2, 1))
+        .expect("second batch commits");
 
     let mut model = TurnSessionModel::new();
-    let old_state = old.state.clone();
     assert!(model.begin_request(RequestId::new(1)));
     assert!(model.begin_request(RequestId::new(2)));
 
@@ -300,9 +300,9 @@ fn delayed_completion_cannot_overwrite_a_newer_request() {
         }),
         TurnApplyOutcome::Applied
     );
-    // The worker committed request 1, so its snapshot is applied, but the
-    // newer active request stays active.
-    assert_eq!(model.snapshot(), Some(&old_state));
+    // The worker committed request 1, so its view is applied, but the newer
+    // active request stays active.
+    assert_eq!(model.view(), Some(&old_view));
     assert_eq!(model.active_request(), Some(RequestId::new(2)));
     assert_eq!(model.last_accepted_request(), Some(RequestId::new(1)));
 
@@ -313,13 +313,12 @@ fn delayed_completion_cannot_overwrite_a_newer_request() {
         }),
         TurnApplyOutcome::Applied
     );
-    assert_eq!(model.snapshot(), Some(&newer.state));
     assert_eq!(model.view(), Some(&newer.view));
     assert_eq!(model.last_accepted_request(), Some(RequestId::new(2)));
 }
 
 #[test]
-fn model_failure_retains_the_last_committed_snapshot() {
+fn model_failure_retains_the_last_committed_view() {
     let fixture = fixture();
     let accepted = make_outcome(&fixture.state, &valid_batch(&fixture, 1, 0));
 
@@ -342,7 +341,6 @@ fn model_failure_retains_the_last_committed_snapshot() {
         TurnApplyOutcome::Applied
     );
 
-    assert_eq!(model.snapshot(), Some(&accepted.state));
     assert_eq!(model.view(), Some(&accepted.view));
     assert_eq!(model.last_accepted_request(), Some(RequestId::new(1)));
     assert_eq!(model.active_request(), None);

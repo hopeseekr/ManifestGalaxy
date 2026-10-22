@@ -89,7 +89,7 @@ pub enum TurnWorkerMessage {
     Completed {
         /// Request that completed.
         request_id: RequestId,
-        /// Authoritative outcome including the snapshot and player view.
+        /// Outcome of the committed batch, with the player-filtered view.
         outcome: Box<TurnOutcome>,
     },
     /// The request failed without changing authoritative state.
@@ -295,7 +295,6 @@ pub enum TurnActivity {
 pub struct TurnSessionModel {
     active_request: Option<RequestId>,
     last_accepted_request: Option<RequestId>,
-    snapshot: Option<GameState>,
     view: Option<PlayerView>,
     activity: TurnActivity,
 }
@@ -307,13 +306,12 @@ impl Default for TurnSessionModel {
 }
 
 impl TurnSessionModel {
-    /// Creates an idle model with no committed snapshot.
+    /// Creates an idle model with no committed view.
     #[must_use]
     pub const fn new() -> Self {
         Self {
             active_request: None,
             last_accepted_request: None,
-            snapshot: None,
             view: None,
             activity: TurnActivity::Idle,
         }
@@ -344,13 +342,13 @@ impl TurnSessionModel {
 
     /// Applies one worker message atomically.
     ///
-    /// Completion replaces both the snapshot and the filtered view. A
-    /// completion for a request newer than the last accepted one is always
-    /// applied — even if that request was superseded while active — because
-    /// the worker commits batches serially and its authoritative state already
-    /// includes it. Such a completion does not clear a newer active request.
-    /// Failure retains the last committed snapshot and view. Other messages
-    /// for a non-active request are ignored.
+    /// Completion replaces the filtered view; the authoritative state stays in
+    /// the worker session. A completion for a request newer than the last
+    /// accepted one is always applied — even if that request was superseded
+    /// while active — because the worker commits batches serially and its
+    /// authoritative state already includes it. Such a completion does not
+    /// clear a newer active request. Failure retains the last committed view.
+    /// Other messages for a non-active request are ignored.
     pub fn apply(&mut self, message: TurnWorkerMessage) -> TurnApplyOutcome {
         match &message {
             TurnWorkerMessage::Progress {
@@ -380,7 +378,6 @@ impl TurnSessionModel {
                 }
 
                 self.last_accepted_request = Some(*request_id);
-                self.snapshot = Some(outcome.state.clone());
                 self.view = Some(outcome.view.clone());
                 if is_active {
                     self.active_request = None;
@@ -417,12 +414,6 @@ impl TurnSessionModel {
     #[must_use]
     pub const fn last_accepted_request(&self) -> Option<RequestId> {
         self.last_accepted_request
-    }
-
-    /// Last committed authoritative snapshot, retained across failures.
-    #[must_use]
-    pub const fn snapshot(&self) -> Option<&GameState> {
-        self.snapshot.as_ref()
     }
 
     /// Last committed player-filtered view, retained across failures.

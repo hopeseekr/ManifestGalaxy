@@ -12,7 +12,7 @@ use stars_core::orders::{Command, CommandAction, CommandId, OrderBatch, OrderErr
 use stars_core::rng::{RNG_ALGORITHM_VERSION, RngStreamKey, RngSubsystem};
 use stars_core::turn::{
     EventKind, EventVisibility, GameEvent, GameSession, Phase, PhaseCapability, PhasePlan,
-    PhasePlanSource, TurnOutcome,
+    PhasePlanSource,
 };
 use stars_core::view::{PlayerView, ViewError, ViewLocation};
 
@@ -195,30 +195,27 @@ fn human_batch(fixture: &Fixture, id: u64) -> OrderBatch {
         ))
 }
 
-fn commit(fixture: &Fixture, batch: &OrderBatch) -> TurnOutcome {
-    let mut session = GameSession::new(fixture.state.clone()).expect("valid fixture state");
-    session.commit(batch).expect("batch commits")
-}
-
 #[test]
 fn identical_state_seed_and_orders_produce_identical_state_and_event_order() {
     let fixture = fixture();
     let batch = human_batch(&fixture, 1);
 
-    let first = commit(&fixture, &batch);
-    let second = commit(&fixture, &batch);
+    let mut first_session = GameSession::new(fixture.state.clone()).expect("valid fixture state");
+    let first = first_session.commit(&batch).expect("batch commits");
+    let mut second_session = GameSession::new(fixture.state.clone()).expect("valid fixture state");
+    let second = second_session.commit(&batch).expect("batch commits");
 
     assert_eq!(
-        first.state.encode_canonical(),
-        second.state.encode_canonical()
+        first_session.state().encode_canonical(),
+        second_session.state().encode_canonical()
     );
     assert_eq!(first.events, second.events);
     assert_eq!(first.view, second.view);
     assert_eq!(first.turn, 1);
     assert_eq!(first.year, 2401);
 
-    let mut first_rng = first.state.rng.clone();
-    let mut second_rng = second.state.rng.clone();
+    let mut first_rng = first_session.state().rng.clone();
+    let mut second_rng = second_session.state().rng.clone();
     let key = RngStreamKey::for_player(fixture.human, RngSubsystem::Movement);
     for _ in 0..16 {
         assert_eq!(first_rng.draw_u64(key), second_rng.draw_u64(key));

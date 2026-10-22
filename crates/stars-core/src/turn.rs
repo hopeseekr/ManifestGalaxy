@@ -532,8 +532,6 @@ pub struct TurnOutcome {
     pub year: u32,
     /// Ordered events produced by this generation.
     pub events: Vec<GameEvent>,
-    /// Complete authoritative snapshot after the commit.
-    pub state: GameState,
     /// Filtered view for the submitting player.
     pub view: PlayerView,
 }
@@ -719,16 +717,18 @@ impl GameSession {
         let view = PlayerView::build(&candidate, batch.player, &events)
             .map_err(|error| OrderError::InvalidState(error.to_string()))?;
 
-        self.state = candidate.clone();
+        let turn = candidate.turn;
+        let year = candidate.year;
+
+        self.state = candidate;
         self.last_events = events.clone();
 
         Ok(TurnOutcome {
             batch: batch.id,
             player: batch.player,
-            turn: candidate.turn,
-            year: candidate.year,
+            turn,
+            year,
             events,
-            state: candidate,
             view,
         })
     }
