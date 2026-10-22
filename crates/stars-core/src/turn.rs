@@ -336,6 +336,14 @@ impl PhasePlan {
             })
         })?;
         let count = reader.read_len("phase_plan.phases")?;
+        // Enforce the phase limit before allocating so a corrupt or hostile
+        // count cannot reserve memory for a plan that validation would reject.
+        if count as usize > 256 {
+            return Err(reader.error(StateDecodeErrorKind::InvalidLength {
+                field: "phase_plan.phases",
+                length: count,
+            }));
+        }
         let mut phases = Vec::with_capacity(count as usize);
         for _ in 0..count {
             let code = reader.read_u8("phase_plan.phase")?;

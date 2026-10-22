@@ -394,6 +394,10 @@ impl GameState {
             .validate()
             .map_err(StateValidationError::PhasePlan)?;
 
+        if self.next_event_sequence == u64::MAX {
+            return Err(StateValidationError::EventSequenceExhausted);
+        }
+
         check_allocator(
             "player",
             self.next_ids.next_player,
@@ -661,6 +665,9 @@ pub enum StateValidationError {
         /// Missing planet.
         planet: PlanetId,
     },
+    /// The next event sequence has exhausted its range, so the next event
+    /// would wrap to zero and break strictly increasing ordering.
+    EventSequenceExhausted,
 }
 
 impl fmt::Display for StateValidationError {
@@ -695,6 +702,9 @@ impl fmt::Display for StateValidationError {
                 fleet.raw(),
                 planet.raw()
             ),
+            Self::EventSequenceExhausted => {
+                write!(formatter, "next event sequence exhausted its range")
+            }
         }
     }
 }

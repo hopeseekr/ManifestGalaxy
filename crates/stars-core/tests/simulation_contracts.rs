@@ -14,7 +14,7 @@ use stars_core::turn::{
     EventKind, EventVisibility, GameEvent, GameSession, Phase, PhaseCapability, PhasePlan,
     PhasePlanSource, TurnOutcome,
 };
-use stars_core::view::{PlayerView, ViewError};
+use stars_core::view::{PlayerView, ViewError, ViewLocation};
 
 struct Fixture {
     state: GameState,
@@ -609,6 +609,50 @@ fn player_views_omit_hidden_and_foreign_entities_and_events() {
             .map(|event| event.sequence)
             .collect::<Vec<_>>(),
         vec![0, 2]
+    );
+}
+
+#[test]
+fn visible_fleet_orbiting_a_hidden_planet_does_not_leak_the_planet() {
+    let fixture = fixture();
+    let mut state = fixture.state;
+    let scout = state.allocate_fleet_id().expect("fleet id");
+    state.fleets.insert(
+        scout,
+        Fleet {
+            id: scout,
+            owner: fixture.human,
+            name: "Probe".to_owned(),
+            design: fixture.human_design,
+            ships: 1,
+            location: FleetLocation::AtPlanet(fixture.hidden_planet),
+            visibility: EntityVisibility::OwnerOnly,
+        },
+    );
+
+    let view = PlayerView::build(&state, fixture.human, &[]).expect("human view");
+    let fleet = view
+        .fleets
+        .iter()
+        .find(|fleet| fleet.id == scout)
+        .expect("visible fleet");
+    assert_eq!(fleet.location, ViewLocation::UnknownOrbit);
+    assert!(
+        !view
+            .planets
+            .iter()
+            .any(|planet| planet.id == fixture.hidden_planet)
+    );
+}
+
+#[test]
+fn exhausted_event_sequence_is_rejected_as_invalid_state() {
+    let fixture = fixture();
+    let mut state = fixture.state;
+    state.next_event_sequence = u64::MAX;
+    assert_eq!(
+        state.validate_integrity(),
+        Err(stars_core::model::StateValidationError::EventSequenceExhausted)
     );
 }
 

@@ -104,8 +104,10 @@ emits `PhaseNotImplemented`; no skipped phase reads or writes gameplay values.
 The worker reports each phase through progress messages in this order.
 
 Event sequence numbers are deterministic and strictly increasing within a
-game. `TurnOutcome` includes the complete post-commit state, the ordered events
-and the submitting player's filtered view.
+game. The sequence never wraps: a state whose next event sequence has
+exhausted its `u64` range is rejected as invalid. `TurnOutcome` includes the
+complete post-commit state, the ordered events and the submitting player's
+filtered view.
 
 ## RNG streams
 

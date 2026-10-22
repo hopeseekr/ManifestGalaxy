@@ -47,6 +47,9 @@ pub enum ViewLocation {
         /// Integer position copied from the planet for presentation.
         position: GalacticPosition,
     },
+    /// In orbit around a planet whose identity and position are not visible
+    /// to this player.
+    UnknownOrbit,
     /// In deep space.
     InSpace(GalacticPosition),
 }
@@ -147,9 +150,15 @@ impl PlayerView {
                                 fleet: fleet.id,
                                 planet: planet_id,
                             })?;
-                    ViewLocation::AtPlanet {
-                        planet: planet_id,
-                        position: planet.position,
+                    // A visible fleet must not disclose the identity or
+                    // position of a planet this player cannot see.
+                    if is_visible(planet.visibility, planet.owner, player) {
+                        ViewLocation::AtPlanet {
+                            planet: planet_id,
+                            position: planet.position,
+                        }
+                    } else {
+                        ViewLocation::UnknownOrbit
                     }
                 }
                 FleetLocation::InSpace(position) => ViewLocation::InSpace(position),
