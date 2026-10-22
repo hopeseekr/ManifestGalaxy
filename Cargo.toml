@@ -1,0 +1,19 @@
+[workspace]
+members = [
+    "crates/stars-core",
+    "crates/stars-ai",
+    "crates/stars-desktop",
+    "crates/stars-tools",
+]
+resolver = "3"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.96"
+license = "CC-BY-ND-4.0"
+authors = ["Stars! remake contributors"]
+
+[workspace.dependencies]
+stars-core = { path = "crates/stars-core" }
+stars-ai = { path = "crates/stars-ai" }
