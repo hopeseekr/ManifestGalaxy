@@ -346,9 +346,13 @@ impl TurnSessionModel {
 
     /// Applies one worker message atomically.
     ///
-    /// Completion replaces both the snapshot and the filtered view. Failure
-    /// retains the last committed snapshot and view. Messages for any other
-    /// request are ignored.
+    /// Completion replaces both the snapshot and the filtered view. A
+    /// completion for a request newer than the last accepted one is always
+    /// applied — even if that request was superseded while active — because
+    /// the worker commits batches serially and its authoritative state already
+    /// includes it. Such a completion does not clear a newer active request.
+    /// Failure retains the last committed snapshot and view. Other messages
+    /// for a non-active request are ignored.
     pub fn apply(&mut self, message: TurnWorkerMessage) -> TurnApplyOutcome {
         match &message {
             TurnWorkerMessage::Progress {
@@ -368,19 +372,26 @@ impl TurnSessionModel {
                 request_id,
                 outcome,
             } => {
-                if self.active_request != Some(*request_id) {
+                let is_active = self.active_request == Some(*request_id);
+                if !is_active
+                    && self
+                        .last_accepted_request
+                        .is_some_and(|accepted| *request_id <= accepted)
+                {
                     return TurnApplyOutcome::IgnoredStale;
                 }
 
-                self.active_request = None;
                 self.last_accepted_request = Some(*request_id);
                 self.snapshot = Some(outcome.state.clone());
                 self.view = Some(outcome.view.clone());
-                self.activity = TurnActivity::Applied {
-                    request_id: *request_id,
-                    turn: outcome.turn,
-                    year: outcome.year,
-                };
+                if is_active {
+                    self.active_request = None;
+                    self.activity = TurnActivity::Applied {
+                        request_id: *request_id,
+                        turn: outcome.turn,
+                        year: outcome.year,
+                    };
+                }
                 TurnApplyOutcome::Applied
             }
             TurnWorkerMessage::Failed { request_id, error } => {

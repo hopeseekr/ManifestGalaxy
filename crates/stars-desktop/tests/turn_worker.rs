@@ -289,6 +289,7 @@ fn delayed_completion_cannot_overwrite_a_newer_request() {
     let newer = make_outcome(&old.state, &valid_batch(&fixture, 2, 1));
 
     let mut model = TurnSessionModel::new();
+    let old_state = old.state.clone();
     assert!(model.begin_request(RequestId::new(1)));
     assert!(model.begin_request(RequestId::new(2)));
 
@@ -297,10 +298,13 @@ fn delayed_completion_cannot_overwrite_a_newer_request() {
             request_id: RequestId::new(1),
             outcome: Box::new(old),
         }),
-        TurnApplyOutcome::IgnoredStale
+        TurnApplyOutcome::Applied
     );
-    assert!(model.snapshot().is_none());
+    // The worker committed request 1, so its snapshot is applied, but the
+    // newer active request stays active.
+    assert_eq!(model.snapshot(), Some(&old_state));
     assert_eq!(model.active_request(), Some(RequestId::new(2)));
+    assert_eq!(model.last_accepted_request(), Some(RequestId::new(1)));
 
     assert_eq!(
         model.apply(TurnWorkerMessage::Completed {
