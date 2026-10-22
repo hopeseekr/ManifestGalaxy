@@ -6,8 +6,15 @@
 //! deterministic state transitions belong here and must remain independent of
 //! the desktop front end.
 //!
-//! PR3 establishes only the package boundary and stable identifier primitive.
-//! Game state, orders, views and turn processing arrive in PR4.
+//! PR4 adds the deterministic state, order, turn, view, event and RNG
+//! contracts. The phase order and RNG are designed remake choices recorded as
+//! such; they are not claimed to reproduce unrecovered original behaviour.
+
+pub mod model;
+pub mod orders;
+pub mod rng;
+pub mod turn;
+pub mod view;
 
 /// Version of the public core contract.
 ///
