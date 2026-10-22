@@ -8,6 +8,7 @@
 pub mod app;
 pub mod preview;
 pub mod shell;
+pub mod turn_worker;
 pub mod worker;
 
 pub use app::StarsApp;

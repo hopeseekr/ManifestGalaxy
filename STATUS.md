@@ -2,55 +2,74 @@
 
 ## Current
 
-PR3 (Rust workspace and desktop application foundation) is implemented on
-branch `pr3-rust-foundation`, created from `trunk` after PR2 was integrated in
-merge commit `bb6dc56` (`Merge pull request #2 from hopeseekr/pr2-rules-specification`).
+PR4 (deterministic game state and turn-processing contracts) is implemented on
+branch `pr4-simulation-contracts`, created from `trunk` after PR3 was integrated
+in merge commit `4fbdfc4` (`Merge pull request #3 from hopeseekr/pr3-rust-foundation`).
 
-PR1 (binary evidence inventory and extraction tools) and PR2 (documented
-recovered rules and reference scenarios) are integrated on `trunk`.
+PR1 (binary evidence inventory and extraction tools), PR2 (documented recovered
+rules and reference scenarios) and PR3 (Rust workspace and desktop foundation)
+are integrated on `trunk`.
 
-PR3 adds four Rust packages, a pinned Rust 1.96.0 toolchain, `Cargo.lock`, a
-parked cross-platform workflow, and a runnable egui/eframe desktop shell. The
-shell has a menu, resizable map area, inspector, status area, configurable UI
-scale, keyboard focus, procedural placeholder rendering, and a desktop-owned
-background worker with request IDs and typed errors. It contains no gameplay,
-economy, AI policy, persistence or original assets.
+PR4 adds:
+
+- typed `u64` identifiers for players, planets, fleets, designs, batches and
+  commands, plus monotonic serialized allocators;
+- integer-only authoritative positions and ordered `BTreeMap` collections;
+- `GameState`, `OrderBatch`, `PlayerView`, `TurnOutcome`, typed order/view/state
+  errors and canonical little-endian state encoding with version checks;
+- validation before mutation, whole-batch rollback and atomic commit;
+- a versioned designed phase plan with explicit `Implemented` versus
+  `NotImplemented` capability for every phase;
+- a versioned designed RNG with independent streams keyed by player and
+  subsystem, serialized draw counters and no clock/hash/platform seed;
+- player-filtered views and events with synthetic visibility fixtures;
+- a desktop turn worker that owns the authoritative session, reports ordered
+  phase progress and returns one completed snapshot or one typed failure;
+- a headless `TurnSessionModel` that ignores stale responses and retains the
+  last committed snapshot and view after a failure.
+
+Only administrative `SetReady` and `RenameFleet` commands are implemented.
+Economy, research, construction, movement, scanning, combat, packets, victory,
+AI policy, persistence and all gameplay formulas remain owned by later PRs.
+Every gameplay phase is an explicit not-implemented no-op, not a silent success.
+The phase order and RNG are designed remake choices, not recovered original
+behaviour; `GAP-TURN-001` and `GAP-RNG-001` remain open.
+
 GitHub Actions is intentionally disabled until the final PR, per the project
 owner; all validation is currently local.
 
 ## Scope
 
-- In scope (implemented): root Cargo configuration, `rust-toolchain.toml`,
-  `Cargo.lock`, `crates/stars-core`, `crates/stars-ai`, `crates/stars-desktop`,
-  `crates/stars-tools`, `.github/workflows/ci.yml.disabled`, `README.md`, this
-  status file, and the PR3 checklist entry in `PLAN.md`.
-- Out of scope: gameplay rules, universe generation, custom-race builder,
-  Turindrones planning, persistence, network or browser targets, execution of
-  the original game, push, publish or merge.
+- In scope (implemented): `crates/stars-core/src/{model,orders,turn,view,rng}.rs`,
+  `crates/stars-desktop/src/turn_worker.rs`, the named contract test targets,
+  `docs/contracts/simulation-contracts.md`, updated evidence limitation notes,
+  `README.md`, this status file, and the PR4 checklist entry in `PLAN.md`.
+- Out of scope: gameplay rules and formulas, universe generation, custom-race
+  builder, Turindrones planning, persistence, network or browser targets,
+  execution of the original game, push, publish or merge.
 
 ## Checklist
 
-- [x] Four packages with Rust 2024 edition and pinned stable Rust 1.96.0
-- [x] `Cargo.lock` committed; chosen dependency versions recorded in README
-- [x] `stars-core` has no dependencies; AI depends on core; desktop on core/AI;
-      tools on core/AI
-- [x] egui/eframe 0.36.2 with the wgpu renderer
-- [x] Desktop shell with menu, resizable map area, inspector and status area
-- [x] Scalable text, UI scale presets (100/125/150/200%) and continuous slider
-- [x] Keyboard focus, `F5` synthetic scan and `Ctrl+Q` exit shortcuts
-- [x] Original procedural placeholder map; no extracted game art
-- [x] Background worker with request IDs, progress, completed snapshot and
-      typed failure messages
-- [x] Atomic one-shot result application; stale results ignored; last accepted
-      snapshot retained on failure
-- [x] Worker shutdown and join when the handle is dropped
-- [x] Headless shell-model and worker tests (`cargo test -p stars-desktop --test shell`)
-- [x] Headless layout exercise at 100/150/200% UI scale and multiple aspect ratios
-- [x] Cross-platform workflow prepared and parked as `.github/workflows/ci.yml.disabled`
-      until the final PR; GitHub Actions is not enabled
-- [x] Local dependency-boundary verification
-- [x] README build, run, test, dependency and platform-status documentation
-- [x] PLAN.md PR3 checkbox, after acceptance
+- [x] Stable typed IDs; ordered authoritative collections; explicit integer
+      widths; display projection kept out of authoritative positions
+- [x] `GameState`, `OrderBatch`, `PlayerView` and `TurnOutcome` contracts
+- [x] Batch validation rejects unauthorized, stale, duplicate and invalid
+      requests before mutation
+- [x] Atomic commits retain the previous state, events and RNG on failure
+- [x] Versioned RNG state with independent player/subsystem streams
+- [x] Canonical state serialization records phase-plan and RNG versions
+- [x] Versioned phase dispatcher with explicit capability status and no-op
+      scaffolding for unimplemented gameplay
+- [x] Player-filtered views and events omit hidden entities and hidden events
+- [x] Desktop turn worker with request IDs, ordered progress, completed
+      snapshots, typed failures and stale-request rejection
+- [x] Headless UI model ignores delayed/stale completions and retains the last
+      committed snapshot on failure
+- [x] Empty-game and dangling-reference view checks
+- [x] `cargo test -p stars-core --test simulation_contracts` (13 tests)
+- [x] `cargo test -p stars-desktop --test turn_worker` (6 tests)
+- [x] PLAN.md PR4 checkbox, after acceptance
+- [ ] Original global turn order and RNG remain unresolved (tracked gaps)
 
 ## Validation
 
@@ -60,31 +79,34 @@ Commands run locally:
 cargo fmt --all -- --check
 cargo check --workspace --all-targets
 cargo clippy --workspace --all-targets -- -D warnings
-cargo test -p stars-desktop --test shell
+cargo test -p stars-core --test simulation_contracts
+cargo test -p stars-desktop --test turn_worker
 cargo test --workspace --all-targets
-cargo run -p stars-tools
-timeout 8s cargo run -p stars-desktop
 ```
 
 Results:
 
-- Formatting, compilation, Clippy, workspace tests and the named shell test
-  target pass.
-- The desktop process started with the wgpu/Vulkan backend on Linux and stayed
-  running until an external timeout stopped it. This confirms startup, not an
-  in-window close or a manual scaling check.
-- Windows and macOS builds are described in the parked workflow but were not
-  executed locally. A local `cargo check --target x86_64-pc-windows-gnu` attempt
-  could not start because the pinned toolchain does not have that target's
-  `core`/`std` installed; this was not a source-code failure.
-- Manual operating-system HiDPI scaling, mixed-DPI movement and window-close
-  smoke checks were not executed locally. The headless layout test covers
-  100/150/200% UI scale and arbitrary window proportions; worker shutdown and
-  the failure-retains-snapshot behavior are covered by Rust tests.
+- Formatting, compilation, Clippy, both named test targets and the full
+  workspace test set pass.
+- The core target covers identical serialized state and event order for
+  identical inputs, all validation rejections, whole-batch rollback, phase
+  progress and capability labels, RNG continuation after serialization,
+  canonical decoding failures, allocator continuation, and player-view filtering
+  including empty games and dangling references.
+- The desktop target uses the real worker thread to cover ordered progress, a
+  committed snapshot and filtered view, failure retention, non-monotonic request
+  rejection and delayed-completion handling.
+- No original game was executed. Windows and macOS builds and native window
+  smoke checks were not executed in this PR; GitHub Actions remains parked.
 
 ## Remaining blockers
 
-No known blocker for the PR3 foundation scope. Gameplay required by later PRs
-remains blocked or uncertain exactly as recorded in
-[docs/rules/gap-ledger.md](docs/rules/gap-ledger.md); PR3 did not invent any of
-those rules.
+- `GAP-TURN-001`: the original global cross-phase order is unknown. The PR4
+  pipeline is explicitly labelled designed and can be replaced when evidence
+  arrives.
+- `GAP-RNG-001`: the original RNG algorithm, seed and consumption order are
+  unknown. The PR4 RNG is explicitly labelled designed and cannot be claimed as
+  original-fidelity replay.
+- Gameplay required by later PRs remains blocked or uncertain exactly as
+  recorded in [docs/rules/gap-ledger.md](docs/rules/gap-ledger.md); PR4 did not
+  invent any of those rules.

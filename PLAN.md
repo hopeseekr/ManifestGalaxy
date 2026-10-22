@@ -143,7 +143,7 @@ The prerequisite for each PR after PR1 is its predecessor's authorized integrati
 | [x] | [PR1: binary evidence](PLAN-pr1-description.md) | Established the binary evidence inventory and extraction tools. |
 | [x] | [PR2: rules specification](PLAN-pr2-description.md) | Documented recovered rules and reference scenarios. |
 | [x] | [PR3: rust foundation](PLAN-pr3-description.md) | Added the Rust workspace and desktop application foundation. |
-| [ ] | [PR4: simulation contracts](PLAN-pr4-description.md) | Added deterministic game state and turn-processing contracts. |
+| [x] | [PR4: simulation contracts](PLAN-pr4-description.md) | Added deterministic game state and turn-processing contracts. |
 | [ ] | [PR5: custom race builder](PLAN-pr5-description.md) | Implemented the custom race builder and point calculations. |
 | [ ] | [PR6: universe setup](PLAN-pr6-description.md) | Implemented universe generation and new-game setup. |
 | [ ] | [PR7: map and reports](PLAN-pr7-description.md) | Added the star map and empire management interface. |

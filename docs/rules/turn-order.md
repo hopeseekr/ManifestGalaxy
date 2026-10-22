@@ -150,12 +150,20 @@ That is a software contract, not a claim about the original game. A dependency
 graph or phase list chosen before the operator measurements must be labelled
 `designed`, not `verified original`.
 
+PR4 delivered this contract as `docs/contracts/simulation-contracts.md`
+with the phase plan and RNG version serialized in state. The pipeline currently
+implements only administrative order intake and the terminal snapshot; all
+gameplay phases are explicit `NotImplemented` no-ops. GAP-TURN-001 remains open
+until the operator measurements in section 4 establish the original order.
+
 ## 6. Current completion status
 
 - Local ordering constraints: documented-only, with citations.
-- Global phase order: unknown.
-- RNG algorithm/seed/consumption: unknown.
+- Global phase order: unknown. PR4 provides a versioned, replaceable designed
+  pipeline without claiming original fidelity.
+- RNG algorithm/seed/consumption: unknown. PR4 provides a versioned designed
+  streamed RNG without claiming original fidelity.
 - Original-game observation: none.
-- Required resolution gate: PR4 for the deterministic pipeline and PR8-PR12 for
-  the affected mechanics. A dependent feature cannot claim original fidelity
-  while its required order is unresolved.
+- Required resolution gate: PR4 for the deterministic pipeline (delivered) and
+  PR8-PR12 for the affected mechanics. A dependent feature cannot claim original
+  fidelity while its required order is unresolved.
