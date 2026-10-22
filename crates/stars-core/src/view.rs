@@ -63,8 +63,8 @@ pub struct FleetView {
     pub owner: PlayerId,
     /// Display name.
     pub name: String,
-    /// Referenced design.
-    pub design: DesignId,
+    /// Referenced design, if that design is visible to this player.
+    pub design: Option<DesignId>,
     /// Number of ships.
     pub ships: u32,
     /// Visible location.
@@ -163,12 +163,20 @@ impl PlayerView {
                 }
                 FleetLocation::InSpace(position) => ViewLocation::InSpace(position),
             };
-            if is_visible(fleet.visibility, Some(fleet.owner), player) {
+            let fleet_visible = is_visible(fleet.visibility, Some(fleet.owner), player);
+            if fleet_visible {
+                // A visible fleet must not disclose the identity of a design
+                // this player cannot see; the design list omits it too.
+                let design = state
+                    .designs
+                    .get(&fleet.design)
+                    .is_some_and(|design| is_visible(design.visibility, Some(design.owner), player))
+                    .then_some(fleet.design);
                 fleets.push(FleetView {
                     id: fleet.id,
                     owner: fleet.owner,
                     name: fleet.name.clone(),
-                    design: fleet.design,
+                    design,
                     ships: fleet.ships,
                     location,
                 });

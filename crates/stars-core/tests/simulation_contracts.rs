@@ -646,6 +646,39 @@ fn visible_fleet_orbiting_a_hidden_planet_does_not_leak_the_planet() {
 }
 
 #[test]
+fn visible_fleet_does_not_leak_a_hidden_design() {
+    let fixture = fixture();
+    let mut state = fixture.state;
+    let probe = state.allocate_fleet_id().expect("fleet id");
+    state.fleets.insert(
+        probe,
+        Fleet {
+            id: probe,
+            owner: fixture.human,
+            name: "Mystery".to_owned(),
+            design: fixture.hidden_design,
+            ships: 1,
+            location: FleetLocation::InSpace(GalacticPosition::new(1, 2)),
+            visibility: EntityVisibility::OwnerOnly,
+        },
+    );
+
+    let view = PlayerView::build(&state, fixture.human, &[]).expect("human view");
+    let fleet = view
+        .fleets
+        .iter()
+        .find(|fleet| fleet.id == probe)
+        .expect("visible fleet");
+    assert_eq!(fleet.design, None);
+    assert!(
+        !view
+            .designs
+            .iter()
+            .any(|design| design.id == fixture.hidden_design)
+    );
+}
+
+#[test]
 fn exhausted_event_sequence_is_rejected_as_invalid_state() {
     let fixture = fixture();
     let mut state = fixture.state;
