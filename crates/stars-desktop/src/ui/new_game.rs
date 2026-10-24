@@ -7,6 +7,7 @@
 //! failure leaves the previous game intact.
 
 use std::fmt;
+use std::path::{Path, PathBuf};
 use std::sync::mpsc::{self, Receiver, RecvTimeoutError, Sender};
 use std::thread::{self, JoinHandle};
 use std::time::Duration;
@@ -20,6 +21,7 @@ use stars_core::universe::{
     generate_universe_with_progress,
 };
 
+use crate::race_file::load_race_json;
 use crate::worker::RequestId;
 
 /// A typed failure from a universe-generation request.
@@ -250,6 +252,13 @@ pub enum NewGameError {
     InvalidSettings(Vec<UniverseSettingsError>),
     /// The seed text is not a non-negative 64-bit integer.
     SeedNotANumber(String),
+    /// A race file could not be read, decoded or validated.
+    RaceFile {
+        /// Path that was attempted.
+        path: String,
+        /// Typed race-file error text.
+        message: String,
+    },
     /// The worker rejected the request.
     Worker(String),
 }
@@ -276,6 +285,9 @@ impl fmt::Display for NewGameError {
             }
             Self::SeedNotANumber(text) => {
                 write!(formatter, "seed {text:?} is not a 64-bit integer")
+            }
+            Self::RaceFile { path, message } => {
+                write!(formatter, "race file {path:?} could not be used: {message}")
             }
             Self::Worker(message) => formatter.write_str(message),
         }
@@ -325,6 +337,10 @@ pub struct NewGameState {
     settings: UniverseSettings,
     seed_text: String,
     race: Option<RaceSpec>,
+    race_from_file: bool,
+    race_file_path: String,
+    available_race_files: Vec<PathBuf>,
+    race_files_loaded: bool,
     errors: Vec<NewGameError>,
     universe: Option<GeneratedUniverse>,
     activity: NewGameActivity,
@@ -350,6 +366,10 @@ impl NewGameState {
             seed_text: settings.seed.to_string(),
             settings,
             race: None,
+            race_from_file: false,
+            race_file_path: String::new(),
+            available_race_files: Vec::new(),
+            race_files_loaded: false,
             errors: Vec::new(),
             universe: None,
             activity: NewGameActivity::Idle,
@@ -395,14 +415,138 @@ impl NewGameState {
         self.race.as_ref()
     }
 
-    /// Assigns or clears the human race.
+    /// Assigns or clears the human race from the race builder.
     pub fn set_race(&mut self, race: Option<RaceSpec>) {
+        self.race_from_file = false;
         if self.race != race {
             self.race = race;
             self.errors.clear();
             if matches!(self.activity, NewGameActivity::Invalid) {
                 self.activity = NewGameActivity::Idle;
             }
+        }
+    }
+
+    /// Assigns the builder race unless a race file is explicitly selected.
+    pub fn set_builder_race(&mut self, race: Option<RaceSpec>) {
+        if !self.race_from_file {
+            self.set_race(race);
+        }
+    }
+
+    /// Whether the current race came from a loaded race file.
+    #[must_use]
+    pub const fn race_from_file(&self) -> bool {
+        self.race_from_file
+    }
+
+    /// Current race-file path text.
+    #[must_use]
+    pub fn race_file_path(&self) -> &str {
+        &self.race_file_path
+    }
+
+    /// Mutable race-file path text.
+    pub fn race_file_path_mut(&mut self) -> &mut String {
+        &mut self.race_file_path
+    }
+
+    /// Race JSON files discovered in `races/`.
+    #[must_use]
+    pub fn available_race_files(&self) -> &[PathBuf] {
+        &self.available_race_files
+    }
+
+    /// Whether the race-file directory has been scanned.
+    #[must_use]
+    pub const fn race_files_loaded(&self) -> bool {
+        self.race_files_loaded
+    }
+
+    /// Scans the default `races/` directory for race JSON files.
+    pub fn refresh_race_files(&mut self) {
+        self.refresh_race_files_in(Path::new("races"));
+    }
+
+    /// Scans an explicit directory for race JSON files.
+    pub fn refresh_race_files_in(&mut self, directory: &Path) {
+        self.race_files_loaded = true;
+        self.available_race_files.clear();
+        let Ok(entries) = std::fs::read_dir(directory) else {
+            return;
+        };
+        for entry in entries.flatten() {
+            let path = entry.path();
+            if path
+                .extension()
+                .is_some_and(|extension| extension == "json")
+            {
+                self.available_race_files.push(path);
+            }
+        }
+        self.available_race_files.sort();
+        if self.race_file_path.trim().is_empty()
+            && let Some(first) = self.available_race_files.first()
+        {
+            self.race_file_path = first.display().to_string();
+        }
+    }
+
+    /// Loads, decodes and validates a race file.
+    ///
+    /// A failed load leaves the current race and universe untouched.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`NewGameError::RaceFile`] with the path and decoder detail.
+    pub fn load_race_file(&mut self, path: &Path) -> Result<(), NewGameError> {
+        match load_race_json(path) {
+            Ok(race) => {
+                self.race = Some(race);
+                self.race_from_file = true;
+                self.race_file_path = path.display().to_string();
+                self.errors.clear();
+                if matches!(self.activity, NewGameActivity::Invalid) {
+                    self.activity = NewGameActivity::Idle;
+                }
+                Ok(())
+            }
+            Err(error) => {
+                let error = NewGameError::RaceFile {
+                    path: path.display().to_string(),
+                    message: error.to_string(),
+                };
+                self.errors = vec![error.clone()];
+                Err(error)
+            }
+        }
+    }
+
+    /// Loads the race file named by the editable path.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`NewGameError::RaceFile`] for an empty path or any load failure.
+    pub fn load_selected_race_file(&mut self) -> Result<(), NewGameError> {
+        let path = self.race_file_path.trim().to_owned();
+        if path.is_empty() {
+            let error = NewGameError::RaceFile {
+                path,
+                message: "enter a race file path".to_owned(),
+            };
+            self.errors = vec![error.clone()];
+            return Err(error);
+        }
+        self.load_race_file(Path::new(&path))
+    }
+
+    /// Clears a loaded race file so the builder race can be used again.
+    pub fn clear_race_file_source(&mut self) {
+        self.race_from_file = false;
+        self.race = None;
+        self.errors.clear();
+        if matches!(self.activity, NewGameActivity::Invalid) {
+            self.activity = NewGameActivity::Idle;
         }
     }
 
@@ -663,6 +807,8 @@ impl NewGameState {
     pub fn draw(&mut self, ui: &mut egui::Ui) {
         self.drain_messages();
         let mut generate = false;
+        let mut load_race = false;
+        let mut refresh_races = false;
 
         egui::ScrollArea::vertical().show(ui, |ui| {
             ui.heading("New Game");
@@ -828,15 +974,54 @@ impl NewGameState {
 
             ui.add_space(8.0);
             ui.heading("Human race");
+            ui.horizontal(|ui| {
+                ui.label("Race file");
+                ui.text_edit_singleline(&mut self.race_file_path);
+                if ui.button("Load").clicked() {
+                    load_race = true;
+                }
+                if ui.button("Refresh").clicked() {
+                    refresh_races = true;
+                }
+            });
+            if !self.available_race_files.is_empty() {
+                let selected = Path::new(self.race_file_path.trim())
+                    .file_name()
+                    .map_or_else(
+                        || "Choose a saved race".to_owned(),
+                        |name| name.to_string_lossy().into_owned(),
+                    );
+                egui::ComboBox::from_id_salt("race_file_choice")
+                    .selected_text(selected)
+                    .show_ui(ui, |ui| {
+                        for path in &self.available_race_files {
+                            let label = path.file_name().map_or_else(
+                                || path.display().to_string(),
+                                |name| name.to_string_lossy().into_owned(),
+                            );
+                            let value = path.display().to_string();
+                            ui.selectable_value(&mut self.race_file_path, value, label);
+                        }
+                    });
+            }
             match &self.race {
                 Some(race) => {
                     ui.label(format!("{} ({})", race.name, race.primary.abbreviation()));
-                    ui.label("Validated custom race from the race builder.");
+                    if self.race_from_file {
+                        ui.horizontal(|ui| {
+                            ui.label(format!("Loaded from {}.", self.race_file_path));
+                            if ui.button("Clear loaded race").clicked() {
+                                self.clear_race_file_source();
+                            }
+                        });
+                    } else {
+                        ui.label("Validated custom race from the race builder.");
+                    }
                 }
                 None => {
                     ui.colored_label(
                         egui::Color32::from_rgb(210, 150, 80),
-                        "No validated race. Finish the custom-race builder first.",
+                        "No validated race. Finish the custom-race builder or load a race file.",
                     );
                 }
             }
@@ -896,6 +1081,12 @@ impl NewGameState {
             });
         });
 
+        if refresh_races {
+            self.refresh_race_files();
+        }
+        if load_race {
+            let _ = self.load_selected_race_file();
+        }
         if generate {
             let _ = self.generate();
         }

@@ -18,10 +18,10 @@ persistence remain with later PRs.
 | `crates/stars-core/src/universe/turindrones.rs` | Four recovered Turindrones race records as typed races |
 | `crates/stars-core/src/universe/mod.rs` | Public universe API |
 | `crates/stars-core/src/model.rs` | Planet environment/mineral/inventory fields and player starting technology; state format version 3 |
-| `crates/stars-desktop/src/ui/new_game.rs` | Headless new-game form, generation worker, progress, typed errors and atomic retention |
+| `crates/stars-desktop/src/ui/new_game.rs` | Headless new-game form, saved-race loading, generation worker, progress, typed errors and atomic retention |
 | `crates/stars-desktop/src/app.rs` | New-game menu, window and inspector summary |
 | `crates/stars-core/tests/universe_generation.rs` | 12 focused core acceptance tests, including the PR7 fixture |
-| `crates/stars-desktop/tests/new_game.rs` | 7 focused desktop acceptance tests |
+| `crates/stars-desktop/tests/new_game.rs` | 10 focused desktop acceptance tests |
 | `docs/rules/universe-generation.md` | Recovered formulas, wizard inventory, starting conditions, Turindrones records, designed choices and gaps |
 | `docs/rules/rule-ledger.md`, `docs/rules/gap-ledger.md` | Updated evidence notes and limitations |
 | `docs/contracts/simulation-contracts.md` | Version-3 state contract note |
@@ -47,6 +47,9 @@ persistence remain with later PRs.
 - Invalid settings and races return typed errors before a state is produced.
   The desktop form retains the previously committed universe after validation,
   worker or generation failures.
+- The form discovers saved race JSON files, loads and revalidates them, and uses
+  an explicitly loaded file until the user clears it. A failed race-file load
+  retains both the current race and the current universe.
 - The generation worker reports progress checkpoints, one completed universe or
   a typed failure, and rejects stale request identifiers.
 - The PR7 fixture is pinned by seed, settings, planet count and homeworld IDs.
@@ -73,7 +76,7 @@ Results:
 
 - Formatting, compilation and Clippy pass.
 - `universe_generation`: 12 passed.
-- `new_game`: 7 passed.
+- `new_game`: 10 passed.
 - `simulation_contracts`: 17 passed.
 - `race_builder`: 21 passed.
 - `turn_worker`: 6 passed.

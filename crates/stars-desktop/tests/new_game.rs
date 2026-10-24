@@ -1,6 +1,8 @@
 //! PR6 acceptance tests for the desktop new-game form and worker.
 
 use std::collections::BTreeSet;
+use std::path::PathBuf;
+use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::Duration;
 
 use eframe::egui;
@@ -9,11 +11,22 @@ use stars_core::race::{PrimaryTrait, RaceSpec};
 use stars_core::universe::{
     Density, Difficulty, GalaxySize, PlayerPositions, UniverseSettings, VictoryConditionKind,
 };
+use stars_desktop::race_file::encode_race_json;
 use stars_desktop::ui::new_game::{
     NewGameActivity, NewGameError, NewGameState, UniverseJob, UniverseWorkerError,
     UniverseWorkerHandle, UniverseWorkerMessage,
 };
 use stars_desktop::worker::RequestId;
+
+static TEMP_SEQUENCE: AtomicU64 = AtomicU64::new(0);
+
+fn temp_race_directory() -> PathBuf {
+    let sequence = TEMP_SEQUENCE.fetch_add(1, Ordering::Relaxed);
+    std::env::temp_dir().join(format!(
+        "stars-new-game-race-{}-{sequence}",
+        std::process::id()
+    ))
+}
 
 fn valid_race() -> RaceSpec {
     let mut race = RaceSpec::humanoids_anchor();
@@ -256,4 +269,93 @@ fn worker_rejects_a_stale_request_identifier() {
     }
     worker.shutdown();
     assert!(completed && stale);
+}
+
+#[test]
+fn loads_a_saved_validated_race_file_and_uses_it_for_generation() {
+    let directory = temp_race_directory();
+    std::fs::create_dir_all(&directory).expect("temporary directory");
+    let path = directory.join("alteran.json");
+    let mut saved = valid_race();
+    saved.name = "Alteran".to_owned();
+    saved.plural_name = "Alterans".to_owned();
+    std::fs::write(&path, encode_race_json(&saved).expect("encode race")).expect("write race");
+
+    let mut state = NewGameState::new();
+    state.refresh_race_files_in(&directory);
+    assert_eq!(state.available_race_files(), std::slice::from_ref(&path));
+    assert!(state.race_files_loaded());
+
+    state.load_race_file(&path).expect("load race");
+    assert!(state.race_from_file());
+    assert_eq!(state.race().map(|race| race.name.as_str()), Some("Alteran"));
+
+    // A later builder race must not silently override an explicitly loaded file.
+    let mut builder_race = valid_race();
+    builder_race.name = "Builder Race".to_owned();
+    state.set_builder_race(Some(builder_race));
+    assert_eq!(state.race().map(|race| race.name.as_str()), Some("Alteran"));
+
+    state.settings_mut().opponent_count = 1;
+    state.generate_blocking().expect("generated from file");
+    let universe = state.universe().expect("universe");
+    assert_eq!(
+        universe
+            .state
+            .players
+            .get(&universe.human)
+            .and_then(|player| player.race.as_ref())
+            .map(|race| race.name.as_str()),
+        Some("Alteran")
+    );
+
+    state.clear_race_file_source();
+    assert!(!state.race_from_file());
+    assert!(state.race().is_none());
+    state.set_builder_race(Some(valid_race()));
+    assert_eq!(
+        state.race().map(|race| race.name.as_str()),
+        Some("Humanoids")
+    );
+
+    std::fs::remove_file(&path).expect("remove race");
+    std::fs::remove_dir(&directory).expect("remove directory");
+}
+
+#[test]
+fn an_invalid_race_file_retains_the_current_universe_and_race() {
+    let directory = temp_race_directory();
+    std::fs::create_dir_all(&directory).expect("temporary directory");
+    let path = directory.join("broken.json");
+    std::fs::write(&path, "{ not a race").expect("write invalid race");
+
+    let mut state = configured();
+    state.generate_blocking().expect("initial universe");
+    let committed = state.universe().cloned().expect("universe");
+    let race_name = state.race().map(|race| race.name.clone());
+
+    let error = state.load_race_file(&path).expect_err("invalid file");
+    assert!(matches!(error, NewGameError::RaceFile { .. }));
+    assert_eq!(state.universe(), Some(&committed));
+    assert_eq!(state.race().map(|race| race.name.clone()), race_name);
+    assert!(
+        state
+            .errors()
+            .iter()
+            .any(|error| matches!(error, NewGameError::RaceFile { .. }))
+    );
+
+    std::fs::remove_file(&path).expect("remove race");
+    std::fs::remove_dir(&directory).expect("remove directory");
+}
+
+#[test]
+fn invalid_race_files_are_reported_without_replacing_the_race() {
+    let mut state = configured();
+    let race_name = state.race().map(|race| race.name.clone());
+    let error = state
+        .load_selected_race_file()
+        .expect_err("empty path is rejected");
+    assert!(matches!(error, NewGameError::RaceFile { .. }));
+    assert_eq!(state.race().map(|race| race.name.clone()), race_name);
 }

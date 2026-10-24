@@ -26,8 +26,9 @@ PR6 adds:
   outside Tiny galaxies, including the 4/5 and 2/5 population split;
 - the four recovered Turindrones race records as the sole built-in AI
   configuration, with distinct player identities and player-keyed RNG streams;
-- a new-game form with race validation, seed entry, progress, typed errors and
-  atomic replacement of the active universe only on success;
+- a new-game form with race-builder or saved-race-file selection, validation,
+  seed entry, progress, typed errors and atomic replacement of the active
+  universe only on success;
 - a desktop-owned universe worker with request IDs, progress checkpoints,
   completed snapshots and typed failures;
 - `CORE_API_VERSION` and `STATE_FORMAT_VERSION` bumped to 3 for planet details
@@ -67,11 +68,13 @@ claimed.
       records
 - [x] Distinct opponent identities and player-keyed RNG streams
 - [x] New-game form validates a `RaceSpec` before submission
+- [x] Saved race JSON files are discovered under `races/`, loaded and revalidated
+- [x] A loaded race file is not silently replaced by the builder race
 - [x] Generation runs on a desktop worker and reports progress
 - [x] Failed validation or generation retains the previous universe
 - [x] Reproducible PR7 fixture
 - [x] `cargo test -p stars-core --test universe_generation` (12 tests)
-- [x] `cargo test -p stars-desktop --test new_game` (7 tests)
+- [x] `cargo test -p stars-desktop --test new_game` (10 tests)
 - [x] PLAN.md PR6 checkbox, after acceptance
 - [ ] Starting ship designs and starbase components remain PR9/PR12 work
 - [ ] Original AI policy remains PR14 work
@@ -108,7 +111,8 @@ Results:
   BBS, invalid settings/races and the PR7 fixture.
 - The desktop tests cover resizable multi-scale rendering of every control,
   worker progress/completion, validation retention, worker-failure retention,
-  distinct opponent identities and stale request rejection.
+  saved-race loading and revalidation, distinct opponent identities and stale
+  request rejection.
 - No original game was executed. Windows and macOS builds and native window
   smoke checks were not executed in this PR; GitHub Actions remains parked.
 

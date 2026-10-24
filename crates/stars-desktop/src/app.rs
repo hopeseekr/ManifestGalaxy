@@ -489,8 +489,11 @@ impl StarsApp {
             return;
         }
 
+        if !self.new_game.race_files_loaded() {
+            self.new_game.refresh_race_files();
+        }
         self.new_game
-            .set_race(self.race_builder.validated_race().cloned());
+            .set_builder_race(self.race_builder.validated_race().cloned());
 
         let mut open = self.show_new_game;
         egui::Window::new("New Game Setup")

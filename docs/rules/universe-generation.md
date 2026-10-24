@@ -54,7 +54,10 @@ subset:
 - Easy, Standard, Tough or Expert proficiency;
 - seven victory conditions with documented ranges and a must-meet count;
 - minimum game years;
-- explicit seed entry and display.
+- explicit seed entry and display;
+- human race from the race builder or a versioned race JSON file. The form
+  discovers `.json` files under `races/`, allows an explicit path, and validates
+  the file again before it can be used.
 
 The original basic dialog also exposes predefined races, the tutorial and the
 player race dropdown. Predefined-race presets and the tutorial are excluded by
