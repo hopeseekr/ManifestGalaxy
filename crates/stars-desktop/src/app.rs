@@ -414,10 +414,10 @@ impl StarsApp {
         egui::Window::new("Custom Race Builder")
             .open(&mut open)
             .resizable(true)
-            .default_width(660.0)
-            .default_height(620.0)
-            .min_width(420.0)
-            .min_height(380.0)
+            .default_width(820.0)
+            .default_height(760.0)
+            .min_width(560.0)
+            .min_height(480.0)
             .show(ctx, |ui| {
                 self.race_builder.draw(ui);
             });
