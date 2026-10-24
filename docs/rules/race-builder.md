@@ -100,6 +100,15 @@ Implementation rule identifiers map every term to the umbrella evidence rule
 | `RULE-RACE-POINTS-AR-RESEARCH-001` | Alternate Reality research adjustment |
 | `RULE-RACE-POINTS-FINAL-001` | Final truncating division |
 
+### Step 6 research-cost direction
+
+Dialog `#151` maps control 271 ("Costs 75% extra") to stored value `0`, standard
+to `1` and "Costs 50% less" to `2`. The builder radios follow that original
+order. The recovered `cCur = sum(value - 1)` makes a 75%-extra field a
+disadvantage that adds advantage points, while a 50%-less field is an advantage
+that subtracts them. The Alternate Reality research adjustment applies when the
+first field is "Costs 50% less" (stored value `2`).
+
 ### Alternate Reality Step 5
 
 Help topics 266 and 5751 document that Alternate Reality races cannot build

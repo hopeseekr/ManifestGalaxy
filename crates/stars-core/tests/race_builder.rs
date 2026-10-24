@@ -343,7 +343,7 @@ fn primary_trait_costs_match_the_recovered_table() {
 fn a_negative_raw_balance_truncates_toward_zero() {
     let mut race = RaceSpec::humanoids_anchor();
     race.lesser.extend(LesserTrait::ALL);
-    race.research.costs = [stars_core::race::ResearchCost::Extra; 6];
+    race.research.costs = [stars_core::race::ResearchCost::Cheaper; 6];
     let evaluation = evaluate_race(&race, &ReferenceHabitability);
     assert!(evaluation.raw < 0);
     assert_eq!(evaluation.displayed, (evaluation.raw / 3) as i32);

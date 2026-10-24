@@ -601,9 +601,9 @@ impl RaceBuilderState {
                 ui.label(egui::RichText::new(*field).strong());
                 ui.horizontal_wrapped(|ui| {
                     for choice in [
-                        ResearchCost::Cheaper,
-                        ResearchCost::Standard,
                         ResearchCost::Extra,
+                        ResearchCost::Standard,
+                        ResearchCost::Cheaper,
                     ] {
                         ui.radio_value(
                             &mut self.draft.research.costs[index],

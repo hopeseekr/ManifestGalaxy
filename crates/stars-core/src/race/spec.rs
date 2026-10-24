@@ -188,12 +188,15 @@ pub enum ResearchCost {
 
 impl ResearchCost {
     /// The stored `rsTechBonus` value.
+    ///
+    /// Dialog `#151` maps control 271 ("Costs 75% extra") to 0, 272
+    /// ("Costs standard amount") to 1 and 273 ("Costs 50% less") to 2.
     #[must_use]
     pub const fn value(self) -> u8 {
         match self {
-            Self::Cheaper => 0,
+            Self::Extra => 0,
             Self::Standard => 1,
-            Self::Extra => 2,
+            Self::Cheaper => 2,
         }
     }
 
@@ -201,9 +204,9 @@ impl ResearchCost {
     #[must_use]
     pub const fn from_value(value: u8) -> Option<Self> {
         match value {
-            0 => Some(Self::Cheaper),
+            0 => Some(Self::Extra),
             1 => Some(Self::Standard),
-            2 => Some(Self::Extra),
+            2 => Some(Self::Cheaper),
             _ => None,
         }
     }

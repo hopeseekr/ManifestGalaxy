@@ -81,7 +81,7 @@ The race is a `PLAYER`-shaped record. Inputs used by the calculation:
 | `rgAttr[rsMineProd]` | `5..25` | Mines produced per 10 000 colonists. |
 | `rgAttr[rsMineBuild]` | `2..15` | Mine cost. |
 | `rgAttr[rsMineOperate]` | `5..25` | Mines operated per 10 000 colonists. |
-| `rgAttr[rsTechBonus1..6]` | `0..2` | `0` = cheaper, `1` = standard, `2` = 75% extra. |
+| `rgAttr[rsTechBonus1..6]` | `0..2` | `0` = 75% extra, `1` = standard, `2` = 50% less. |
 | `rgAttr[rsMajorAdv]` | `0..9` | Primary trait index (see below). |
 | `grbitAttr` | bit set | Lesser traits and option flags (see below). |
 
@@ -372,8 +372,13 @@ Only when that trait is selected (`race.c:323-330`):
 
 ### 12. Research cost
 
-`cCur = sum(rsTechBonus1..6) - 6`, i.e. the net count of 75%-extra fields minus
-50%-less fields (`race.c:333-353`).
+`cCur = sum(rsTechBonus1..6) - 6`, i.e. the net count of 50%-less fields minus
+75%-extra fields (`race.c:333-353`). Dialog `#151` maps "Costs 75% extra" to
+stored value `0`, standard to `1` and "Costs 50% less" to `2`, so an extra-cost
+field contributes `-1` and a cheaper field contributes `+1`.
+
+A more expensive field is a disadvantage, so `cCur < 0` adds advantage points.
+A cheaper field is an advantage, so `cCur > 0` subtracts them.
 
 ```text
 if cCur > 0:  raw -= cCur*cCur*130
@@ -385,7 +390,7 @@ if cCur < 0:  raw += rgRaceDisEnvPts[-cCur - 1]
 
 `rgRaceDisEnvPts = {150, 330, 540, 780, 1050, 1380}` (`race.c:14`).
 
-Worked values for `cCur > 0` (net 75%-extra fields):
+Worked values for `cCur > 0` (net 50%-less fields, an advantage):
 
 | `cCur` | Raw change | Derivation |
 |---:|---:|---|
@@ -400,7 +405,8 @@ The add-backs at 5 and 6 make those two steps *cheaper* than the plain square
 would be: 3250 instead of 4680 at six fields. The curve still rises
 monotonically. This is in the source and is preserved.
 
-Worked values for `cCur < 0` (net 50%-less fields), i.e. `k = -cCur`:
+Worked values for `cCur < 0` (net 75%-extra fields, a disadvantage), i.e.
+`k = -cCur`:
 
 | `k` | Raw gain |
 |---:|---:|
@@ -424,7 +430,7 @@ if primary == Alternate Reality and rsTechBonus1 == 2:  raw -= 100
 ```
 
 The source conditions on `rsTechBonus1` specifically, not on the sum
-(`race.c:360-361`).
+(`race.c:360-361`). Stored value `2` is "Costs 50% less", the cheaper choice.
 
 ### 15. Result
 

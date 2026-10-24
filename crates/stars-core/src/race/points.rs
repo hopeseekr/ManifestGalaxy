@@ -332,7 +332,7 @@ pub fn evaluate_race(spec: &RaceSpec, habitability: &dyn HabitabilityModel) -> R
     });
 
     let alternate_reality_research =
-        if spec.primary.is_alternate_reality() && spec.research.costs[0] == ResearchCost::Extra {
+        if spec.primary.is_alternate_reality() && spec.research.costs[0] == ResearchCost::Cheaper {
             -100
         } else {
             0
@@ -617,9 +617,9 @@ mod tests {
             for (index, cost) in race.research.costs.iter_mut().enumerate() {
                 let index_value = i64::try_from(index).expect("index");
                 *cost = if net > 0 && index_value < net {
-                    ResearchCost::Extra
-                } else if net < 0 && index_value < -net {
                     ResearchCost::Cheaper
+                } else if net < 0 && index_value < -net {
+                    ResearchCost::Extra
                 } else {
                     ResearchCost::Standard
                 };
@@ -716,16 +716,35 @@ mod tests {
     fn alternate_reality_research_adjustment_uses_the_first_field_only() {
         let mut race = spec();
         race.primary = PrimaryTrait::AlternateReality;
-        race.research.costs[0] = ResearchCost::Extra;
+        race.research.costs[0] = ResearchCost::Cheaper;
         assert_eq!(evaluate(&race).term_raw("alternate_reality_research"), -100);
 
         let mut other_field = spec();
         other_field.primary = PrimaryTrait::AlternateReality;
-        other_field.research.costs[1] = ResearchCost::Extra;
+        other_field.research.costs[1] = ResearchCost::Cheaper;
         assert_eq!(
             evaluate(&other_field).term_raw("alternate_reality_research"),
             0
         );
+    }
+
+    #[test]
+    fn extra_research_costs_add_points_and_cheaper_costs_subtract_points() {
+        let mut one_extra = spec();
+        one_extra.research.costs[0] = ResearchCost::Extra;
+        assert_eq!(evaluate(&one_extra).term_raw("research_cost"), 150);
+
+        let mut one_cheaper = spec();
+        one_cheaper.research.costs[0] = ResearchCost::Cheaper;
+        assert_eq!(evaluate(&one_cheaper).term_raw("research_cost"), -130);
+
+        let mut all_extra = spec();
+        all_extra.research.costs = [ResearchCost::Extra; 6];
+        assert_eq!(evaluate(&all_extra).term_raw("research_cost"), 1380);
+
+        let mut all_cheaper = spec();
+        all_cheaper.research.costs = [ResearchCost::Cheaper; 6];
+        assert_eq!(evaluate(&all_cheaper).term_raw("research_cost"), -3250);
     }
 
     #[test]

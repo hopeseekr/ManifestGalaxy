@@ -209,6 +209,27 @@ fn finish_rejects_an_overspent_race_and_reports_the_advantage_point_field() {
 }
 
 #[test]
+fn making_research_more_expensive_adds_advantage_points() {
+    let mut builder = RaceBuilderState::new();
+    *builder.draft_mut() = RaceDraft::from_spec(&RaceSpec::humanoids_anchor());
+    let baseline = builder.evaluation().expect("baseline").displayed;
+
+    builder.draft_mut().research.costs[0] = ResearchCost::Extra;
+    let extra = builder.evaluation().expect("extra").displayed;
+    assert!(
+        extra > baseline,
+        "75% extra should add points: baseline {baseline}, extra {extra}"
+    );
+
+    builder.draft_mut().research.costs[0] = ResearchCost::Cheaper;
+    let cheaper = builder.evaluation().expect("cheaper").displayed;
+    assert!(
+        cheaper < baseline,
+        "50% less should cost points: baseline {baseline}, cheaper {cheaper}"
+    );
+}
+
+#[test]
 fn alternate_reality_efficiency_uses_only_the_resource_generation_coefficient() {
     let context = egui::Context::default();
     let mut builder = RaceBuilderState::new();
