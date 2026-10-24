@@ -698,6 +698,21 @@ mod tests {
     }
 
     #[test]
+    fn alternate_reality_uses_the_resource_generation_coefficient_only() {
+        let mut race = spec();
+        race.primary = PrimaryTrait::AlternateReality;
+        race.efficiency.resource_generation = 7;
+        race.efficiency.factory_production = 15;
+        race.efficiency.mine_cost = 2;
+        let evaluation = evaluate(&race);
+
+        assert_eq!(evaluation.term_raw("resource_generation"), -2400);
+        assert_eq!(evaluation.term_raw("alternate_reality_block"), 210);
+        assert!(evaluation.term("factory_block").is_none());
+        assert!(evaluation.term("mine_block").is_none());
+    }
+
+    #[test]
     fn alternate_reality_research_adjustment_uses_the_first_field_only() {
         let mut race = spec();
         race.primary = PrimaryTrait::AlternateReality;

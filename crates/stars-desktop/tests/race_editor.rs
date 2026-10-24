@@ -209,6 +209,24 @@ fn finish_rejects_an_overspent_race_and_reports_the_advantage_point_field() {
 }
 
 #[test]
+fn alternate_reality_efficiency_uses_only_the_resource_generation_coefficient() {
+    let context = egui::Context::default();
+    let mut builder = RaceBuilderState::new();
+    *builder.draft_mut() = RaceDraft::from_spec(&RaceSpec::humanoids_anchor());
+    builder.draft_mut().primary = Some(stars_core::race::PrimaryTrait::AlternateReality);
+    builder.draft_mut().efficiency.resource_generation = 7;
+    builder.set_page(RacePage::Efficiency);
+
+    render(&mut builder, &context, egui::vec2(900.0, 700.0));
+
+    let evaluation = builder.evaluation().expect("live evaluation");
+    assert_eq!(evaluation.term_raw("resource_generation"), -2400);
+    assert_eq!(evaluation.term_raw("alternate_reality_block"), 210);
+    assert!(evaluation.term("factory_block").is_none());
+    assert!(evaluation.term("mine_block").is_none());
+}
+
+#[test]
 fn finish_rejects_a_habitability_band_narrower_than_five_points() {
     let mut builder = RaceBuilderState::new();
     *builder.draft_mut() = RaceDraft::from_spec(&RaceSpec::humanoids_anchor());

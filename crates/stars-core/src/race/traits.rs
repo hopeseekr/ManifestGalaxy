@@ -200,6 +200,17 @@ impl PrimaryTrait {
         matches!(self, Self::AlternateReality)
     }
 
+    /// Whether the race can build planetary installations such as factories,
+    /// mines and defenses.
+    ///
+    /// The help documents that Alternate Reality races cannot build planetary
+    /// installations; their Step 5 efficiency page therefore exposes only the
+    /// resource-generation coefficient.
+    #[must_use]
+    pub const fn has_planetary_installations(self) -> bool {
+        !self.is_alternate_reality()
+    }
+
     /// Later PRs that own the runtime effect.
     #[must_use]
     pub const fn effect_owner_prs(self) -> &'static [&'static str] {
@@ -602,6 +613,17 @@ mod tests {
                 evidence: super::CostEvidence::Inferred
             }
         );
+    }
+
+    #[test]
+    fn only_alternate_reality_lacks_planetary_installations() {
+        for trait_value in PrimaryTrait::ALL {
+            assert_eq!(
+                trait_value.has_planetary_installations(),
+                trait_value != PrimaryTrait::AlternateReality,
+                "{trait_value}"
+            );
+        }
     }
 
     #[test]

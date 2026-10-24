@@ -519,6 +519,24 @@ impl RaceBuilderState {
     }
 
     fn show_efficiency(&mut self, ui: &mut egui::Ui) {
+        let alternate_reality = self
+            .draft
+            .primary
+            .is_some_and(|primary| !primary.has_planetary_installations());
+
+        if alternate_reality {
+            ui.label(egui::RichText::new("Efficiency coefficient").strong());
+            ui.add(
+                egui::Slider::new(
+                    &mut self.draft.efficiency.resource_generation,
+                    RESOURCE_GENERATION_BOUNDS.min..=RESOURCE_GENERATION_BOUNDS.max,
+                )
+                .text("Colonists per resource"),
+            );
+            ui.label("Resource output grows with Energy technology.");
+            return;
+        }
+
         ui.add(
             egui::Slider::new(
                 &mut self.draft.efficiency.resource_generation,

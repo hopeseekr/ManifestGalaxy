@@ -100,6 +100,22 @@ Implementation rule identifiers map every term to the umbrella evidence rule
 | `RULE-RACE-POINTS-AR-RESEARCH-001` | Alternate Reality research adjustment |
 | `RULE-RACE-POINTS-FINAL-001` | Final truncating division |
 
+### Alternate Reality Step 5
+
+Help topics 266 and 5751 document that Alternate Reality races cannot build
+planetary installations and that their resources are:
+
+```text
+Resources = Habitability_Value * sqrt(Population * Energy_Tech_Level / Efficiency_Coefficient)
+```
+
+Help topic 5751 states that the Efficiency Coefficient is specified in the
+Custom Race wizard. The decompiled `CResourcesAtPlanet()` uses `rsResGen` as
+that coefficient. Step 5 therefore shows only the resource-generation slider
+for Alternate Reality; the factory, mine and CheapFact controls are hidden.
+The advantage-point calculation still prices `rsResGen` normally and replaces
+the factory and mine blocks with the recovered Alternate Reality adjustment.
+
 ### Deliberate decisions
 
 - The mine block keeps the recovered `+80` raw at neutral settings. It is not
