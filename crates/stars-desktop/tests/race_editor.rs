@@ -132,13 +132,32 @@ fn keyboard_shortcuts_move_pages_and_reset() {
     output.drop_without_applying_deltas();
     assert_eq!(builder.page(), RacePage::Primary);
 
+    // The primary-trait page refuses to advance without a selection.
+    let output = context.run_ui(press(egui::Key::PageDown, egui::Modifiers::NONE), |ui| {
+        builder.draw(ui);
+    });
+    output.drop_without_applying_deltas();
+    assert_eq!(builder.page(), RacePage::Primary);
+
+    builder.draft_mut().primary = Some(stars_core::race::PrimaryTrait::WarMonger);
+    let output = context.run_ui(press(egui::Key::PageDown, egui::Modifiers::NONE), |ui| {
+        builder.draw(ui);
+    });
+    output.drop_without_applying_deltas();
+    assert_eq!(builder.page(), RacePage::Lesser);
+
+    let output = context.run_ui(press(egui::Key::PageUp, egui::Modifiers::NONE), |ui| {
+        builder.draw(ui);
+    });
+    output.drop_without_applying_deltas();
+    assert_eq!(builder.page(), RacePage::Primary);
+
     let output = context.run_ui(press(egui::Key::PageUp, egui::Modifiers::NONE), |ui| {
         builder.draw(ui);
     });
     output.drop_without_applying_deltas();
     assert_eq!(builder.page(), RacePage::Basic);
 
-    builder.draft_mut().primary = Some(stars_core::race::PrimaryTrait::WarMonger);
     let output = context.run_ui(press(egui::Key::R, egui::Modifiers::COMMAND), |ui| {
         builder.draw(ui)
     });

@@ -175,9 +175,23 @@ impl RaceBuilderState {
         self.page = page;
     }
 
-    /// Advances one page.
-    pub fn next_page(&mut self) {
+    /// Whether the wizard may leave the current page.
+    ///
+    /// The primary-trait page requires an explicit selection before advancing.
+    #[must_use]
+    pub fn can_advance(&self) -> bool {
+        self.page != RacePage::Primary || self.draft.primary.is_some()
+    }
+
+    /// Advances one page when the current page permits it.
+    ///
+    /// Returns `false` on the primary-trait page until a trait is selected.
+    pub fn next_page(&mut self) -> bool {
+        if !self.can_advance() {
+            return false;
+        }
         self.page = self.page.next();
+        true
     }
 
     /// Moves back one page.
@@ -377,7 +391,8 @@ impl RaceBuilderState {
             } else {
                 let next_label = format!("Next: {}", self.page.next().title());
                 if ui
-                    .add(
+                    .add_enabled(
+                        self.can_advance(),
                         egui::Button::new(next_label)
                             .min_size(egui::vec2(190.0, 28.0))
                             .fill(ui.visuals().selection.bg_fill),
@@ -453,6 +468,12 @@ impl RaceBuilderState {
 
     fn show_primary(&mut self, ui: &mut egui::Ui) {
         ui.label("Exactly one primary trait is required.");
+        if self.draft.primary.is_none() {
+            ui.label(
+                egui::RichText::new("Select a primary trait to continue.")
+                    .color(egui::Color32::from_rgb(235, 190, 110)),
+            );
+        }
         for trait_value in stars_core::race::PrimaryTrait::ALL {
             let label = format!("{} ({})", trait_value.name(), trait_value.abbreviation());
             ui.radio_value(&mut self.draft.primary, Some(trait_value), label);
@@ -977,6 +998,20 @@ mod tests {
         let range = state.cursor.char_range().expect("selection");
         assert_eq!(range.as_sorted_char_range().start.0, 0);
         assert_eq!(range.as_sorted_char_range().end.0, 5);
+    }
+
+    #[test]
+    fn primary_trait_must_be_selected_before_advancing() {
+        let mut builder = RaceBuilderState::new();
+        builder.set_page(RacePage::Primary);
+        assert!(!builder.can_advance());
+        assert!(!builder.next_page());
+        assert_eq!(builder.page(), RacePage::Primary);
+
+        builder.draft_mut().primary = Some(PrimaryTrait::JackOfAllTrades);
+        assert!(builder.can_advance());
+        assert!(builder.next_page());
+        assert_eq!(builder.page(), RacePage::Lesser);
     }
 
     #[test]

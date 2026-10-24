@@ -53,6 +53,8 @@ failure:
 
 - exactly one primary trait is structurally required; an editable `RaceDraft`
   may hold `None` and reports `MissingPrimaryTrait`;
+- the primary-trait page blocks Next, PageDown and Alt+Right until a trait is
+  selected; Back remains available;
 - names are non-empty and at most 31 bytes;
 - emblem is `0..=31`;
 - growth is `1..=20`;
