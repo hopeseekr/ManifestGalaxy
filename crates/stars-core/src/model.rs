@@ -17,8 +17,9 @@ use crate::turn::{PhasePlan, PhasePlanError};
 
 /// Version of the canonical state encoding produced by this module.
 ///
-/// Version 2 adds the optional validated race stored on each player.
-pub const STATE_FORMAT_VERSION: u16 = 2;
+/// Version 3 adds generated planet details and each player's starting
+/// technology.
+pub const STATE_FORMAT_VERSION: u16 = 3;
 
 /// Magic bytes at the start of every canonical state encoding.
 pub const STATE_MAGIC: [u8; 4] = *b"STC4";
@@ -174,10 +175,60 @@ pub struct Player {
     pub ready: bool,
     /// Validated custom race for this player slot.
     ///
-    /// PR5 supplies the human custom race; computer opponents receive theirs in
-    /// PR14. PR6 enforces per-role presence when a game is created. Unfinished
-    /// setup slots use `None`, and loading validates any race that is present.
+    /// PR5 supplies the human custom race; PR6 supplies the built-in
+    /// Turindrones configuration for computer opponents. Unfinished setup slots
+    /// use `None`, and loading validates any race that is present.
     pub race: Option<crate::race::RaceSpec>,
+    /// Starting technology level in each of the six research fields.
+    ///
+    /// Index order is Energy, Weapons, Propulsion, Construction, Electronics and
+    /// Biotechnology. PR6 derives these values from the recovered starting-tech
+    /// rules; PR9 owns later research progress.
+    pub starting_technology: [u8; 6],
+}
+
+/// Environmental values of one planet.
+///
+/// The original stores each value as a byte in `1..=100`, with `-1` marking an
+/// immune race axis. A planet itself never has an immune axis, so this struct
+/// uses unsigned bytes. Values are retained as generated; the reference
+/// habitability reconstruction treats them as percentages.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct PlanetEnvironment {
+    /// Gravity value.
+    pub gravity: u8,
+    /// Temperature value.
+    pub temperature: u8,
+    /// Radiation value.
+    pub radiation: u8,
+}
+
+impl PlanetEnvironment {
+    /// Creates an environment from its three values.
+    #[must_use]
+    pub const fn new(gravity: u8, temperature: u8, radiation: u8) -> Self {
+        Self {
+            gravity,
+            temperature,
+            radiation,
+        }
+    }
+
+    /// Returns the three values in gravity, temperature, radiation order.
+    #[must_use]
+    pub const fn values(self) -> [u8; 3] {
+        [self.gravity, self.temperature, self.radiation]
+    }
+
+    /// Returns the values as signed integers for the habitability model.
+    #[must_use]
+    pub const fn signed_values(self) -> [i32; 3] {
+        [
+            self.gravity as i32,
+            self.temperature as i32,
+            self.radiation as i32,
+        ]
+    }
 }
 
 /// One planet in the authoritative state.
@@ -193,6 +244,24 @@ pub struct Planet {
     pub owner: Option<PlayerId>,
     /// Synthetic visibility fixture consumed by player views.
     pub visibility: EntityVisibility,
+    /// Generated environmental values.
+    pub environment: PlanetEnvironment,
+    /// Mineral concentration for ironium, boranium and germanium, in `0..=200`.
+    pub mineral_concentration: [u8; 3],
+    /// Surface minerals for ironium, boranium and germanium.
+    pub surface_minerals: [u32; 3],
+    /// Colonist population in individuals.
+    pub population: u32,
+    /// Completed factories.
+    pub factories: u32,
+    /// Completed mines.
+    pub mines: u32,
+    /// Completed planetary defenses.
+    pub defenses: u32,
+    /// Whether this is a player's primary starting world.
+    pub homeworld: bool,
+    /// Whether a starbase is present at the start of the game.
+    pub starbase: bool,
 }
 
 /// One ship design owned by a player.
@@ -446,6 +515,19 @@ impl GameState {
                     field: error.field_key(),
                 });
             }
+            if let Some((field, value)) = player
+                .starting_technology
+                .iter()
+                .copied()
+                .enumerate()
+                .find(|(_, value)| *value > 26)
+            {
+                return Err(StateValidationError::InvalidStartingTechnology {
+                    player: player.id,
+                    field,
+                    value,
+                });
+            }
         }
         for (key, design) in &self.designs {
             if design.id != *key {
@@ -463,6 +545,33 @@ impl GameState {
                     key: key.raw(),
                     entity: planet.id.raw(),
                 });
+            }
+            if let Some(value) = planet
+                .environment
+                .values()
+                .into_iter()
+                .find(|value| *value > 100)
+            {
+                return Err(StateValidationError::InvalidPlanetEnvironment {
+                    planet: planet.id,
+                    value,
+                });
+            }
+            if let Some(value) = planet
+                .mineral_concentration
+                .into_iter()
+                .find(|value| *value > 200)
+            {
+                return Err(StateValidationError::InvalidMineralConcentration {
+                    planet: planet.id,
+                    value,
+                });
+            }
+            if planet.homeworld && planet.owner.is_none() {
+                return Err(StateValidationError::HomeworldWithoutOwner { planet: planet.id });
+            }
+            if planet.homeworld && !planet.starbase {
+                return Err(StateValidationError::HomeworldWithoutStarbase { planet: planet.id });
             }
         }
         for (key, fleet) in &self.fleets {
@@ -741,6 +850,39 @@ pub enum StateValidationError {
         /// First offending field key.
         field: &'static str,
     },
+    /// A stored starting technology level exceeds the recovered maximum.
+    InvalidStartingTechnology {
+        /// Player carrying the value.
+        player: PlayerId,
+        /// Research field index.
+        field: usize,
+        /// Offending value.
+        value: u8,
+    },
+    /// A planet environment value exceeds 100.
+    InvalidPlanetEnvironment {
+        /// Planet carrying the value.
+        planet: PlanetId,
+        /// Offending value.
+        value: u8,
+    },
+    /// A mineral concentration exceeds 200.
+    InvalidMineralConcentration {
+        /// Planet carrying the value.
+        planet: PlanetId,
+        /// Offending value.
+        value: u8,
+    },
+    /// A homeworld has no owner.
+    HomeworldWithoutOwner {
+        /// Offending planet.
+        planet: PlanetId,
+    },
+    /// A homeworld has no starting starbase.
+    HomeworldWithoutStarbase {
+        /// Offending planet.
+        planet: PlanetId,
+    },
 }
 
 impl fmt::Display for StateValidationError {
@@ -787,6 +929,31 @@ impl fmt::Display for StateValidationError {
                 "player {} has an invalid race field {field}",
                 player.raw()
             ),
+            Self::InvalidStartingTechnology {
+                player,
+                field,
+                value,
+            } => write!(
+                formatter,
+                "player {} has starting technology {value} in field {field}",
+                player.raw()
+            ),
+            Self::InvalidPlanetEnvironment { planet, value } => write!(
+                formatter,
+                "planet {} has environment value {value} above 100",
+                planet.raw()
+            ),
+            Self::InvalidMineralConcentration { planet, value } => write!(
+                formatter,
+                "planet {} has mineral concentration {value} above 200",
+                planet.raw()
+            ),
+            Self::HomeworldWithoutOwner { planet } => {
+                write!(formatter, "homeworld {} has no owner", planet.raw())
+            }
+            Self::HomeworldWithoutStarbase { planet } => {
+                write!(formatter, "homeworld {} has no starbase", planet.raw())
+            }
         }
     }
 }
@@ -1029,6 +1196,7 @@ impl CanonicalEncode for Player {
             }
             None => out.push(0),
         }
+        out.extend_from_slice(&self.starting_technology);
     }
 }
 
@@ -1049,12 +1217,16 @@ impl Player {
         } else {
             None
         };
+        let technology = reader.read_exact("player.starting_technology", 6)?;
+        let mut starting_technology = [0_u8; 6];
+        starting_technology.copy_from_slice(technology);
         Ok(Self {
             id,
             name,
             role,
             ready,
             race,
+            starting_technology,
         })
     }
 }
@@ -1118,6 +1290,17 @@ impl CanonicalEncode for Planet {
             None => out.push(0),
         }
         out.push(self.visibility.code());
+        out.extend_from_slice(&self.environment.values());
+        out.extend_from_slice(&self.mineral_concentration);
+        for value in self.surface_minerals {
+            out.extend_from_slice(&value.to_le_bytes());
+        }
+        out.extend_from_slice(&self.population.to_le_bytes());
+        out.extend_from_slice(&self.factories.to_le_bytes());
+        out.extend_from_slice(&self.mines.to_le_bytes());
+        out.extend_from_slice(&self.defenses.to_le_bytes());
+        out.push(u8::from(self.homeworld));
+        out.push(u8::from(self.starbase));
     }
 }
 
@@ -1138,12 +1321,32 @@ impl Planet {
                 value: visibility_code,
             })
         })?;
+        let environment = reader.read_exact("planet.environment", 3)?;
+        let environment = PlanetEnvironment::new(environment[0], environment[1], environment[2]);
+        let concentration = reader.read_exact("planet.mineral_concentration", 3)?;
+        let mut mineral_concentration = [0_u8; 3];
+        mineral_concentration.copy_from_slice(concentration);
+
+        let mut surface_minerals = [0_u32; 3];
+        for value in &mut surface_minerals {
+            *value = reader.read_u32("planet.surface_minerals")?;
+        }
+
         Ok(Self {
             id,
             name,
             position,
             owner,
             visibility,
+            environment,
+            mineral_concentration,
+            surface_minerals,
+            population: reader.read_u32("planet.population")?,
+            factories: reader.read_u32("planet.factories")?,
+            mines: reader.read_u32("planet.mines")?,
+            defenses: reader.read_u32("planet.defenses")?,
+            homeworld: reader.read_bool("planet.homeworld")?,
+            starbase: reader.read_bool("planet.starbase")?,
         })
     }
 }

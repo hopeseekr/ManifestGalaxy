@@ -43,6 +43,7 @@ fn fixture() -> Fixture {
             role: PlayerRole::Human,
             ready: false,
             race: None,
+            starting_technology: [0; 6],
         },
     );
     let rival = state.allocate_player_id().expect("player id");
@@ -54,6 +55,7 @@ fn fixture() -> Fixture {
             role: PlayerRole::Computer,
             ready: false,
             race: None,
+            starting_technology: [0; 6],
         },
     );
 
@@ -66,6 +68,15 @@ fn fixture() -> Fixture {
             position: GalacticPosition::new(100, 200),
             owner: Some(human),
             visibility: EntityVisibility::OwnerOnly,
+            environment: stars_core::model::PlanetEnvironment::new(50, 50, 50),
+            mineral_concentration: [100; 3],
+            surface_minerals: [100; 3],
+            population: 25_000,
+            factories: 10,
+            mines: 10,
+            defenses: 10,
+            homeworld: true,
+            starbase: true,
         },
     );
     let rival_home = state.allocate_planet_id().expect("planet id");
@@ -77,6 +88,15 @@ fn fixture() -> Fixture {
             position: GalacticPosition::new(-300, 400),
             owner: Some(rival),
             visibility: EntityVisibility::OwnerOnly,
+            environment: stars_core::model::PlanetEnvironment::new(50, 50, 50),
+            mineral_concentration: [100; 3],
+            surface_minerals: [100; 3],
+            population: 25_000,
+            factories: 10,
+            mines: 10,
+            defenses: 10,
+            homeworld: true,
+            starbase: true,
         },
     );
     let hidden_planet = state.allocate_planet_id().expect("planet id");
@@ -88,6 +108,15 @@ fn fixture() -> Fixture {
             position: GalacticPosition::new(900, 900),
             owner: None,
             visibility: EntityVisibility::Hidden,
+            environment: stars_core::model::PlanetEnvironment::new(50, 50, 50),
+            mineral_concentration: [100; 3],
+            surface_minerals: [0; 3],
+            population: 0,
+            factories: 0,
+            mines: 0,
+            defenses: 0,
+            homeworld: false,
+            starbase: false,
         },
     );
 

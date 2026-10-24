@@ -140,5 +140,5 @@
     "PR14",
     "PR15"
   ],
-  "notes": ""
+  "notes": "PR6 implements the generation arithmetic from stars-decompile/create.c (a later 2.60j RC3 build), not from stars26i.exe. The help/decompilation Packed-count difference and the designed RNG mapping are documented in docs/rules/universe-generation.md; this scenario remains documented-only."
 }

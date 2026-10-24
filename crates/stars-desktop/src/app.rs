@@ -14,7 +14,7 @@ use crate::preview::{
     PreviewStar,
 };
 use crate::shell::ShellModel;
-use crate::ui::RaceBuilderState;
+use crate::ui::{NewGameState, RaceBuilderState};
 use crate::worker::{RequestId, SyntheticJob, WorkerError, WorkerHandle, WorkerMessage};
 
 /// Window title used by the native application.
@@ -40,6 +40,8 @@ pub struct StarsApp {
     show_about: bool,
     race_builder: RaceBuilderState,
     show_race_builder: bool,
+    new_game: NewGameState,
+    show_new_game: bool,
     text_style_applied: bool,
 }
 
@@ -63,6 +65,8 @@ impl StarsApp {
             show_about: false,
             race_builder: RaceBuilderState::new(),
             show_race_builder: false,
+            new_game: NewGameState::new(),
+            show_new_game: false,
             text_style_applied: false,
         })
     }
@@ -83,6 +87,17 @@ impl StarsApp {
     /// Opens the custom-race builder, if it is not already open.
     pub fn open_race_builder(&mut self) {
         self.show_race_builder = true;
+    }
+
+    /// Access the headless new-game form. Intended for tests.
+    #[must_use]
+    pub const fn new_game(&self) -> &NewGameState {
+        &self.new_game
+    }
+
+    /// Opens the new-game form.
+    pub fn open_new_game(&mut self) {
+        self.show_new_game = true;
     }
 
     /// Access the current UI scale factor.
@@ -112,6 +127,7 @@ impl StarsApp {
         self.show_inspector(ui);
         self.show_map(ui);
         self.show_race_builder_window(ui.ctx());
+        self.show_new_game_window(ui.ctx());
         self.show_about(ui.ctx());
 
         if self.shell.activity().is_running() {
@@ -192,6 +208,10 @@ impl StarsApp {
         egui::Panel::top("menu_bar").show(ui, |ui| {
             egui::MenuBar::new().ui(ui, |ui| {
                 ui.menu_button("File", |ui| {
+                    if ui.add(egui::Button::new("New Game...")).clicked() {
+                        self.open_new_game();
+                        ui.close();
+                    }
                     if ui
                         .add(egui::Button::new("Custom Race Builder..."))
                         .clicked()
@@ -310,6 +330,25 @@ impl StarsApp {
                     .clicked()
                 {
                     self.show_race_builder = true;
+                }
+
+                ui.add_space(8.0);
+                ui.label("New game");
+                if let Some(universe) = self.new_game.universe() {
+                    ui.label(format!(
+                        "{} planets, {} players, seed {}",
+                        universe.planet_count(),
+                        universe.state.players.len(),
+                        universe.settings.seed
+                    ));
+                } else {
+                    ui.label("No generated universe yet.");
+                }
+                if ui
+                    .add(egui::Button::new("Open new-game setup").min_size(egui::vec2(0.0, 28.0)))
+                    .clicked()
+                {
+                    self.show_new_game = true;
                 }
 
                 ui.add_space(8.0);
@@ -443,6 +482,28 @@ impl StarsApp {
                 self.race_builder.draw(ui);
             });
         self.show_race_builder = open;
+    }
+
+    fn show_new_game_window(&mut self, ctx: &egui::Context) {
+        if !self.show_new_game {
+            return;
+        }
+
+        self.new_game
+            .set_race(self.race_builder.validated_race().cloned());
+
+        let mut open = self.show_new_game;
+        egui::Window::new("New Game Setup")
+            .open(&mut open)
+            .resizable(true)
+            .default_width(860.0)
+            .default_height(800.0)
+            .min_width(600.0)
+            .min_height(460.0)
+            .show(ctx, |ui| {
+                self.new_game.draw(ui);
+            });
+        self.show_new_game = open;
     }
 
     fn show_about(&mut self, ctx: &egui::Context) {

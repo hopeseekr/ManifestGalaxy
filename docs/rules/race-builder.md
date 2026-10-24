@@ -190,8 +190,9 @@ tooltips, a point breakdown and a final summary. Tests render every page at
 100%, 150% and 200% zoom and with different window proportions.
 
 A validated `RaceSpec` is stored in the new optional `Player::race` field and in
-canonical state encoding. `CORE_API_VERSION` and `STATE_FORMAT_VERSION` are
-bumped to 2. PR6 consumes the validated race in the new-game form.
+canonical state encoding. PR5 bumped `CORE_API_VERSION` and
+`STATE_FORMAT_VERSION` to 2; PR6 bumps them to 3 when it adds planet details and
+starting technology. PR6 consumes the validated race in the new-game form.
 
 The review page shows an editable **Race file name**, prefilled from the race
 name as a safe slug plus `.json`. **Finish** validates the race and writes the

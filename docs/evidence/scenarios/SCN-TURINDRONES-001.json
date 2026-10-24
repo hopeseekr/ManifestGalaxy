@@ -38,12 +38,12 @@
   "expected": {},
   "observed": null,
   "unresolved": [
-    "No Turindrones race configuration or AI policy is recovered.",
+    "No Turindrones AI policy or starting fleet configuration is recovered.",
     "Whether the name is selectable at runtime is unknown.",
     "No original game was executed."
   ],
   "downstream_prs": [
     "PR14"
   ],
-  "notes": "PR14 may disclose designed policy differences, but numerical gameplay formulas still require evidence."
+  "notes": "PR6 recovers the four race records from stars-decompile/create.c vrgplrComp[1] (a later 2.60j RC3 build), not from stars26i.exe. That static derivation is documented in docs/rules/universe-generation.md; this scenario remains unknown because AI policy and runtime behavior are unobserved. PR14 may disclose designed policy differences, but numerical gameplay formulas still require evidence."
 }
