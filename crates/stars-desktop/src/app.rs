@@ -42,6 +42,7 @@ pub struct StarsApp {
     show_race_builder: bool,
     new_game: NewGameState,
     show_new_game: bool,
+    current_title: String,
     text_style_applied: bool,
 }
 
@@ -67,6 +68,7 @@ impl StarsApp {
             show_race_builder: false,
             new_game: NewGameState::new(),
             show_new_game: false,
+            current_title: APP_TITLE.to_owned(),
             text_style_applied: false,
         })
     }
@@ -95,6 +97,20 @@ impl StarsApp {
         &self.new_game
     }
 
+    /// Mutable access to the headless new-game form. Intended for tests.
+    pub fn new_game_mut(&mut self) -> &mut NewGameState {
+        &mut self.new_game
+    }
+
+    /// Title currently applied to the native window.
+    ///
+    /// Starts as [`APP_TITLE`] and includes the committed game name once a
+    /// universe has been generated.
+    #[must_use]
+    pub fn window_title(&self) -> &str {
+        &self.current_title
+    }
+
     /// Opens the new-game form.
     pub fn open_new_game(&mut self) {
         self.show_new_game = true;
@@ -119,6 +135,8 @@ impl StarsApp {
     pub fn draw(&mut self, ui: &mut egui::Ui) {
         self.apply_global_text_scale(ui);
         self.drain_worker_messages();
+        self.new_game.drain_messages();
+        self.sync_window_title(ui.ctx());
         self.handle_shortcuts(ui.ctx());
         self.apply_ui_scale(ui.ctx());
 
@@ -130,8 +148,19 @@ impl StarsApp {
         self.show_new_game_window(ui.ctx());
         self.show_about(ui.ctx());
 
-        if self.shell.activity().is_running() {
+        if self.shell.activity().is_running() || self.new_game.activity().is_generating() {
             ui.ctx().request_repaint_after(STATUS_REPAINT_INTERVAL);
+        }
+    }
+
+    fn sync_window_title(&mut self, ctx: &egui::Context) {
+        let title = self.new_game.game_name().map_or_else(
+            || APP_TITLE.to_owned(),
+            |game_name| format!("Stars! Remake - {game_name}"),
+        );
+        if title != self.current_title {
+            self.current_title = title.clone();
+            ctx.send_viewport_cmd(egui::ViewportCommand::Title(title));
         }
     }
 
@@ -336,7 +365,8 @@ impl StarsApp {
                 ui.label("New game");
                 if let Some(universe) = self.new_game.universe() {
                     ui.label(format!(
-                        "{} planets, {} players, seed {}",
+                        "\"{}\" - {} planets, {} players, seed {}",
+                        universe.settings.game_name.trim(),
                         universe.planet_count(),
                         universe.state.players.len(),
                         universe.settings.seed

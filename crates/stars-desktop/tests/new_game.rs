@@ -272,6 +272,45 @@ fn worker_rejects_a_stale_request_identifier() {
 }
 
 #[test]
+fn stale_completion_cannot_replace_the_active_request() {
+    let mut state = configured();
+    state.generate_blocking().expect("initial universe");
+    let committed = state.universe().cloned().expect("committed universe");
+    let accepted = state.last_accepted_request();
+
+    let older = state.generate().expect("older request submitted");
+    let newer = state.generate().expect("newer request submitted");
+    assert_ne!(older, newer);
+
+    let mut stale_settings = state.settings().clone();
+    stale_settings.seed ^= 0xffff;
+    let stale = stars_core::universe::generate_universe(
+        &stale_settings,
+        state.race().expect("validated race"),
+    )
+    .expect("stale universe");
+
+    state.apply(UniverseWorkerMessage::Completed {
+        request_id: older,
+        universe: Box::new(stale),
+    });
+
+    assert_eq!(
+        state.universe(),
+        Some(&committed),
+        "a completion for a superseded request must not replace the active game"
+    );
+    assert!(
+        matches!(
+            state.activity(),
+            NewGameActivity::Generating { request_id, .. } if *request_id == newer
+        ),
+        "the newer request must remain active after an older completion arrives"
+    );
+    assert_eq!(state.last_accepted_request(), accepted);
+}
+
+#[test]
 fn loads_a_saved_validated_race_file_and_uses_it_for_generation() {
     let directory = temp_race_directory();
     std::fs::create_dir_all(&directory).expect("temporary directory");

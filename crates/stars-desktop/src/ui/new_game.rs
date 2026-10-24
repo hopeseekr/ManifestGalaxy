@@ -568,6 +568,20 @@ impl NewGameState {
         self.universe.as_ref()
     }
 
+    /// Request whose universe was most recently committed.
+    #[must_use]
+    pub const fn last_accepted_request(&self) -> Option<RequestId> {
+        self.last_accepted_request
+    }
+
+    /// Name of the committed game, if a universe has been generated.
+    #[must_use]
+    pub fn game_name(&self) -> Option<&str> {
+        self.universe
+            .as_ref()
+            .map(|universe| universe.settings.game_name.trim())
+    }
+
     /// Validates the form and updates the parsed seed.
     ///
     /// # Errors
@@ -685,11 +699,10 @@ impl NewGameState {
                 request_id,
                 universe,
             } => {
-                if self.active_request != Some(request_id)
-                    && self
-                        .last_accepted_request
-                        .is_some_and(|accepted| request_id <= accepted)
-                {
+                // Only the active request may commit. Accepting a completion
+                // for an older request would replace the current game and clear
+                // the newer request that is still running.
+                if self.active_request != Some(request_id) {
                     return;
                 }
                 self.active_request = None;
@@ -1069,7 +1082,8 @@ impl NewGameState {
                 }
                 if let Some(universe) = &self.universe {
                     ui.label(format!(
-                        "Current game: {} planets, seed {}",
+                        "Current game: \"{}\" - {} planets, seed {}",
+                        universe.settings.game_name.trim(),
                         universe.planet_count(),
                         universe.settings.seed
                     ));

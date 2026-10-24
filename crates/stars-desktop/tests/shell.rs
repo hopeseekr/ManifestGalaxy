@@ -233,6 +233,32 @@ fn shutdown_interrupts_a_long_step_delay_instead_of_waiting_it_out() {
 }
 
 #[test]
+fn window_title_uses_the_committed_game_name() {
+    let mut app = StarsApp::new().expect("app starts");
+    assert_eq!(app.window_title(), stars_desktop::app::APP_TITLE);
+
+    let mut race = stars_core::race::RaceSpec::humanoids_anchor();
+    race.primary = stars_core::race::PrimaryTrait::JackOfAllTrades;
+    let new_game = app.new_game_mut();
+    new_game.set_race(Some(race));
+    new_game.settings_mut().game_name = "Desktop Acceptance".to_owned();
+    new_game.generate_blocking().expect("universe generated");
+
+    let context = eframe::egui::Context::default();
+    let input = eframe::egui::RawInput {
+        screen_rect: Some(eframe::egui::Rect::from_min_size(
+            eframe::egui::Pos2::ZERO,
+            eframe::egui::vec2(800.0, 600.0),
+        )),
+        ..Default::default()
+    };
+    let output = context.run_ui(input, |ui| app.draw(ui));
+    output.drop_without_applying_deltas();
+
+    assert_eq!(app.window_title(), "Stars! Remake - Desktop Acceptance");
+}
+
+#[test]
 fn shell_layout_runs_at_required_scales_and_arbitrary_aspect_ratios() {
     let mut app = StarsApp::new().expect("app starts");
     let context = eframe::egui::Context::default();
