@@ -6,8 +6,8 @@ Scoped commit message: `Implemented the custom race builder and point calculatio
 
 PR5 adds the custom race builder and the recovered advantage-point calculation.
 It did not execute the original game, push, publish or merge. Runtime trait
-effects, universe generation, new-game setup and race-file persistence remain
-with later PRs.
+effects, universe generation, new-game setup and the full save/recovery system
+remain with later PRs. PR5 now includes a focused validated-race JSON export.
 
 ## Deliverables
 
@@ -21,6 +21,7 @@ with later PRs.
 | `crates/stars-core/src/race/mod.rs` | Public exports, canonical state encoding for a race, trait coverage iterator |
 | `crates/stars-core/src/model.rs` | Optional validated `Player::race`; state format version 2 |
 | `crates/stars-desktop/src/ui/race_builder.rs` | Six-step wizard, review page, live totals, tooltips, keyboard navigation, reset and summary |
+| `crates/stars-desktop/src/race_file.rs` | Versioned validated-race JSON encode/decode, save and load |
 | `crates/stars-desktop/src/app.rs` | Menu/window integration and validated-race display |
 | `crates/stars-core/tests/race_builder.rs` | 19 focused core acceptance tests |
 | `crates/stars-desktop/tests/race_editor.rs` | 11 focused editor acceptance tests |
@@ -53,6 +54,8 @@ with later PRs.
   window proportions and accepts PageUp/PageDown and Ctrl+R.
 - A validated race round-trips through canonical state in the new optional
   `Player::race` field.
+- A validated race can be saved as versioned JSON on the review page and loaded
+  back through the validating decoder.
 
 ## Commands actually run
 

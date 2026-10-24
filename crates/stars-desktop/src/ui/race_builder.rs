@@ -13,6 +13,8 @@ use stars_core::race::{
     validate_race,
 };
 
+use crate::race_file::{default_race_path, save_race_json};
+
 pub use stars_core::race::spec::{
     EMBLEM_MAX, FACTORY_COST_BOUNDS, FACTORY_OPERATION_BOUNDS, FACTORY_PRODUCTION_BOUNDS,
     GROWTH_MAX, GROWTH_MIN, MINE_COST_BOUNDS, MINE_OPERATION_BOUNDS, MINE_PRODUCTION_BOUNDS,
@@ -115,6 +117,8 @@ pub struct RaceBuilderState {
     cached_evaluation: Option<RaceEvaluation>,
     validated: Option<RaceSpec>,
     focused_text_field: Option<&'static str>,
+    saved_race_path: Option<String>,
+    save_error: Option<String>,
 }
 
 impl Default for RaceBuilderState {
@@ -135,6 +139,8 @@ impl RaceBuilderState {
             cached_evaluation: None,
             validated: None,
             focused_text_field: None,
+            saved_race_path: None,
+            save_error: None,
         }
     }
 
@@ -149,6 +155,8 @@ impl RaceBuilderState {
     /// Any edit invalidates a previously validated race.
     pub fn draft_mut(&mut self) -> &mut RaceDraft {
         self.validated = None;
+        self.saved_race_path = None;
+        self.save_error = None;
         &mut self.draft
     }
 
@@ -208,6 +216,8 @@ impl RaceBuilderState {
         self.cached_evaluation = None;
         self.validated = None;
         self.focused_text_field = None;
+        self.saved_race_path = None;
+        self.save_error = None;
     }
 
     /// Evaluates the current draft, if a primary trait is selected.
@@ -255,6 +265,57 @@ impl RaceBuilderState {
                 Err(errors)
             }
         }
+    }
+
+    /// Validates the race and saves it to the default `races/<name>.json` path.
+    ///
+    /// # Errors
+    ///
+    /// Returns a human-readable message when validation or file writing fails.
+    pub fn save_json(&mut self) -> Result<(), String> {
+        let spec = self.validate_for_save()?;
+        self.save_json_to(&default_race_path(&spec))
+    }
+
+    /// Validates the race and saves it to an explicit path.
+    ///
+    /// # Errors
+    ///
+    /// Returns a human-readable message when validation or file writing fails.
+    pub fn save_json_to(&mut self, path: &std::path::Path) -> Result<(), String> {
+        self.save_error = None;
+        self.saved_race_path = None;
+        let spec = match self.draft.to_spec() {
+            Ok(spec) => spec,
+            Err(errors) => return Err(self.record_save_failure(&errors)),
+        };
+
+        save_race_json(&spec, path).map_err(|error| {
+            let message = error.to_string();
+            self.save_error = Some(message.clone());
+            message
+        })?;
+
+        self.validated = Some(spec);
+        self.saved_race_path = Some(path.display().to_string());
+        Ok(())
+    }
+
+    fn validate_for_save(&mut self) -> Result<RaceSpec, String> {
+        match self.finish() {
+            Ok(spec) => Ok(spec),
+            Err(errors) => Err(self.record_save_failure(&errors)),
+        }
+    }
+
+    fn record_save_failure(&mut self, errors: &[RaceValidationError]) -> String {
+        let message = errors
+            .iter()
+            .map(ToString::to_string)
+            .collect::<Vec<_>>()
+            .join("; ");
+        self.save_error = Some(message.clone());
+        message
     }
 
     /// Keyboard shortcuts that do not depend on a focused widget.
@@ -710,6 +771,25 @@ impl RaceBuilderState {
                 ui.end_row();
             });
 
+        ui.separator();
+        ui.horizontal_wrapped(|ui| {
+            if ui.button("Save race as JSON").clicked() {
+                let _ = self.save_json();
+            }
+            if let Some(path) = &self.saved_race_path {
+                ui.label(
+                    egui::RichText::new(format!("Saved to {path}"))
+                        .color(egui::Color32::from_rgb(120, 210, 140)),
+                );
+            }
+        });
+        if let Some(error) = &self.save_error {
+            ui.label(
+                egui::RichText::new(format!("Could not save race: {error}"))
+                    .color(egui::Color32::from_rgb(240, 130, 130)),
+            );
+        }
+
         if let Some(validated) = &self.validated {
             ui.label(
                 egui::RichText::new(format!(
@@ -956,7 +1036,9 @@ fn signed_i64(value: i64) -> String {
 mod tests {
     use super::{RaceBuilderState, RacePage, field_id};
     use eframe::egui;
-    use stars_core::race::{LesserTrait, PrimaryTrait, ReferenceHabitability, validate_race};
+    use stars_core::race::{
+        LesserTrait, PrimaryTrait, RaceDraft, RaceSpec, ReferenceHabitability, validate_race,
+    };
 
     #[test]
     fn range_handle_enforces_the_five_point_gap() {
@@ -998,6 +1080,28 @@ mod tests {
         let range = state.cursor.char_range().expect("selection");
         assert_eq!(range.as_sorted_char_range().start.0, 0);
         assert_eq!(range.as_sorted_char_range().end.0, 5);
+    }
+
+    #[test]
+    fn save_json_to_writes_a_validated_race() {
+        let mut builder = RaceBuilderState::new();
+        *builder.draft_mut() = RaceDraft::from_spec(&RaceSpec::humanoids_anchor());
+        builder.draft_mut().name = "Saved Race".to_owned();
+        let path = std::env::temp_dir().join(format!(
+            "stars-race-builder-save-{}.json",
+            std::process::id()
+        ));
+        let _ = std::fs::remove_file(&path);
+
+        builder.save_json_to(&path).expect("save");
+        let loaded = crate::race_file::load_race_json(&path).expect("load");
+        std::fs::remove_file(&path).expect("remove fixture");
+
+        assert_eq!(loaded.name, "Saved Race");
+        assert_eq!(
+            builder.saved_race_path.as_deref(),
+            Some(path.to_string_lossy().as_ref())
+        );
     }
 
     #[test]

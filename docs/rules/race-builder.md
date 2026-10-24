@@ -191,8 +191,16 @@ tooltips, a point breakdown and a final summary. Tests render every page at
 
 A validated `RaceSpec` is stored in the new optional `Player::race` field and in
 canonical state encoding. `CORE_API_VERSION` and `STATE_FORMAT_VERSION` are
-bumped to 2. PR6 consumes the validated race in the new-game form; PR16 owns
-standalone race-file persistence.
+bumped to 2. PR6 consumes the validated race in the new-game form.
+
+The review page also has **Save race as JSON**. It validates the race and writes
+a versioned JSON document to `races/<slug>.json` relative to the working
+directory, using a temporary file and replacement. The document contains the
+format marker `stars-remake-race`, version `1`, every `RaceSpec` field and the
+race-file password in plain text; it is a local race file, not a security
+boundary. Loading through `race_file::load_race_json` revalidates every field
+and the advantage-point balance before returning a `RaceSpec`. The broader
+game-save envelope, autosave and crash recovery remain owned by PR16.
 
 ## Known limitations
 
@@ -210,3 +218,5 @@ standalone race-file persistence.
   habitability component.
 - No original-game execution, native window smoke test or AI behavior is
   claimed.
+- The race JSON file is a focused PR5 export, not the PR16 game-save format.
+  It has no migration path yet because only version 1 exists.
