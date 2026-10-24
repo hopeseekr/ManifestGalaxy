@@ -14,6 +14,7 @@ use crate::preview::{
     PreviewStar,
 };
 use crate::shell::ShellModel;
+use crate::ui::RaceBuilderState;
 use crate::worker::{RequestId, SyntheticJob, WorkerError, WorkerHandle, WorkerMessage};
 
 /// Window title used by the native application.
@@ -31,6 +32,8 @@ pub struct StarsApp {
     ui_scale: f32,
     fail_next_run: bool,
     show_about: bool,
+    race_builder: RaceBuilderState,
+    show_race_builder: bool,
 }
 
 impl StarsApp {
@@ -51,6 +54,8 @@ impl StarsApp {
             ui_scale: 1.0,
             fail_next_run: false,
             show_about: false,
+            race_builder: RaceBuilderState::new(),
+            show_race_builder: false,
         })
     }
 
@@ -58,6 +63,18 @@ impl StarsApp {
     #[must_use]
     pub const fn shell(&self) -> &ShellModel {
         &self.shell
+    }
+
+    /// Access the headless custom-race builder. Intended for integration and
+    /// tests; the new-game form in PR6 consumes a validated race.
+    #[must_use]
+    pub const fn race_builder(&self) -> &RaceBuilderState {
+        &self.race_builder
+    }
+
+    /// Opens the custom-race builder, if it is not already open.
+    pub fn open_race_builder(&mut self) {
+        self.show_race_builder = true;
     }
 
     /// Access the current UI scale factor.
@@ -85,6 +102,7 @@ impl StarsApp {
         self.show_status(ui);
         self.show_inspector(ui);
         self.show_map(ui);
+        self.show_race_builder_window(ui.ctx());
         self.show_about(ui.ctx());
 
         if self.shell.activity().is_running() {
@@ -153,6 +171,14 @@ impl StarsApp {
         egui::Panel::top("menu_bar").show(ui, |ui| {
             egui::MenuBar::new().ui(ui, |ui| {
                 ui.menu_button("File", |ui| {
+                    if ui
+                        .add(egui::Button::new("Custom Race Builder..."))
+                        .clicked()
+                    {
+                        self.show_race_builder = true;
+                        ui.close();
+                    }
+                    ui.separator();
                     if ui
                         .add(egui::Button::new("Exit").shortcut_text("Ctrl+Q"))
                         .clicked()
@@ -241,6 +267,29 @@ impl StarsApp {
                         .snapshot()
                         .map_or(0, PreviewSnapshot::star_count)
                 ));
+
+                ui.add_space(8.0);
+                ui.separator();
+                ui.label("Custom race");
+                match self.race_builder.validated_race() {
+                    Some(race) => {
+                        ui.label(format!(
+                            "{} ({})",
+                            race.name,
+                            race.primary.abbreviation()
+                        ));
+                        ui.label("Validated and ready for the new-game form.");
+                    }
+                    None => {
+                        ui.label("No validated race yet.");
+                    }
+                }
+                if ui
+                    .add(egui::Button::new("Open custom race builder").min_size(egui::vec2(0.0, 28.0)))
+                    .clicked()
+                {
+                    self.show_race_builder = true;
+                }
 
                 ui.add_space(8.0);
                 if ui
@@ -354,6 +403,25 @@ impl StarsApp {
                 egui::Color32::from_rgb(105, 124, 148),
             );
         });
+    }
+
+    fn show_race_builder_window(&mut self, ctx: &egui::Context) {
+        if !self.show_race_builder {
+            return;
+        }
+
+        let mut open = self.show_race_builder;
+        egui::Window::new("Custom Race Builder")
+            .open(&mut open)
+            .resizable(true)
+            .default_width(660.0)
+            .default_height(620.0)
+            .min_width(420.0)
+            .min_height(380.0)
+            .show(ctx, |ui| {
+                self.race_builder.draw(ui);
+            });
+        self.show_race_builder = open;
     }
 
     fn show_about(&mut self, ctx: &egui::Context) {

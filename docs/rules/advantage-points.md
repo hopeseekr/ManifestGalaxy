@@ -686,3 +686,36 @@ rather than about the trait tables.
 | `GAP-VERSION-001` | unresolved | **not a blocker by product decision**: no original-build parity is required |
 | `GAP-PRIMARY-001` | static | **closed**: exactly one primary is enforced by the data model (`raNone` is Jack of All Trades) |
 | `GAP-POP-EFF-001` | not decoded | **closed**: all seven ranges and curves specified above |
+
+## PR5 implementation notes
+
+PR5 implements this specification in `crates/stars-core/src/race/` with the
+field inventory, validation contract, trait coverage checklist and deliberate
+decisions recorded in [`race-builder.md`](race-builder.md).
+
+- `evaluate_race` takes an injected `HabitabilityModel`. `ReferenceHabitability`
+  runs the recovered three-pass sampling with the integer reconstruction of
+  `PctPlanetDesirability()` from `stars-decompile/planet.c`;
+  `FixedHabitability` isolates formula terms in tests.
+- The reference `RaceSpec::humanoids_anchor()` record reproduces the decompilation's
+  own anchor of **25 displayed points** and **75 raw third-points**. That is an
+  internal consistency check against the decompiled default record, not an
+  observation of the original game.
+- Each term carries an implementation rule identifier (`RULE-RACE-POINTS-*`)
+  mapped to the umbrella evidence rule `RULE-RACE-POINTS-COST-001`. The mapping
+  is listed in [`race-builder.md`](race-builder.md#point-evaluation).
+- The recovered mine-block `+80` raw at neutral settings is kept, not
+  normalised. Ultimate Recycling's price remains `inferred`. The C1 array
+  overrun is not reproduced.
+- The environment ideal point is derived as the band midpoint, matching
+  `BoundsCheckPlayer()`; the builder exposes the band and immunity.
+- The Step 5 efficiency inventory is the seven recovered `RaceStat` fields.
+  The help's Step 5 text names colonists, mines and factories; it does not
+  recover a separate defense-efficiency field, and none was invented.
+- A race-file password from Step 1 is represented as a local-only field. It is
+  never logged and is not a security boundary; PR16 owns persistence.
+
+Remaining blockers are unchanged: no exclusion matrix (`GAP-EXCLUSIONS-001`),
+no proven lesser-checkbox mapping (`GAP-LESSER-MAP-001`), and no original-game
+execution (`GAP-VM-001`). The reference desirability reconstruction is a builder
+convenience until PR8 owns the authoritative planet economy.

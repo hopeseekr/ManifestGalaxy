@@ -180,6 +180,14 @@ runtime effects was observed against `stars26i.exe`.
   any cost. Cheap Engines being a net gain is what the table says; only its
   gameplay side is documented (help topic 277).
 
+**PR5 implementation.** The typed builder, field ranges, validation, point
+breakdown and all 24 trait selections are implemented in
+`crates/stars-core/src/race/` and `crates/stars-desktop/src/ui/race_builder.rs`.
+The term-by-term rule identifiers, deliberate decisions, reference Humanoids
+anchor and remaining limitations are recorded in
+[`race-builder.md`](race-builder.md). The exclusion matrix is still unknown, so
+PR5 accepts every priced combination rather than guessing a rejection rule.
+
 ### 1.6 Leftover advantage points
 
 Documented conversions (help topics 251-255):
