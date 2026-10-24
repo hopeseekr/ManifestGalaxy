@@ -274,7 +274,11 @@ impl RaceBuilderState {
         self.show_header(ui);
         ui.separator();
 
+        // Reserve room for the two-row footer so the navigation controls are
+        // never pushed below the visible window by the scroll area.
+        let scroll_height = (ui.available_height() - 82.0).max(80.0);
         egui::ScrollArea::vertical()
+            .max_height(scroll_height)
             .auto_shrink([false, false])
             .show(ui, |ui| {
                 match self.page {
@@ -353,23 +357,47 @@ impl RaceBuilderState {
             if ui.button("Reset").on_hover_text("Ctrl+R").clicked() {
                 self.reset();
             }
+        });
 
-            ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
-                if self.page == RacePage::Review {
-                    if ui.button("Finish").clicked() {
-                        let _ = self.finish();
-                    }
-                } else if ui.button("Next").on_hover_text("PageDown").clicked() {
-                    self.next_page();
-                }
+        ui.add_space(4.0);
+        ui.horizontal_wrapped(|ui| {
+            if ui
+                .add_enabled(
+                    self.page != RacePage::Basic,
+                    egui::Button::new("Back").min_size(egui::vec2(90.0, 28.0)),
+                )
+                .on_hover_text("PageUp or Alt+Left")
+                .clicked()
+            {
+                self.back_page();
+            }
+
+            if self.page == RacePage::Review {
                 if ui
-                    .add_enabled(self.page != RacePage::Basic, egui::Button::new("Back"))
-                    .on_hover_text("PageUp")
+                    .add(egui::Button::new("Finish").min_size(egui::vec2(110.0, 28.0)))
+                    .on_hover_text("Validate the race and pass it to the new-game flow")
                     .clicked()
                 {
-                    self.back_page();
+                    let _ = self.finish();
                 }
-            });
+            } else {
+                let next_label = format!("Next: {}", self.page.next().title());
+                if ui
+                    .add(
+                        egui::Button::new(next_label)
+                            .min_size(egui::vec2(190.0, 28.0))
+                            .fill(ui.visuals().selection.bg_fill),
+                    )
+                    .on_hover_text("PageDown or Alt+Right")
+                    .clicked()
+                {
+                    self.next_page();
+                }
+            }
+
+            ui.label(
+                egui::RichText::new("PageUp/PageDown or Alt+Left/Right move between steps.").weak(),
+            );
         });
 
         if let Some(validated) = &self.validated {
