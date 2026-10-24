@@ -16,7 +16,9 @@ use crate::rng::RngState;
 use crate::turn::{PhasePlan, PhasePlanError};
 
 /// Version of the canonical state encoding produced by this module.
-pub const STATE_FORMAT_VERSION: u16 = 1;
+///
+/// Version 2 adds the optional validated race stored on each player.
+pub const STATE_FORMAT_VERSION: u16 = 2;
 
 /// Magic bytes at the start of every canonical state encoding.
 pub const STATE_MAGIC: [u8; 4] = *b"STC4";
@@ -170,6 +172,12 @@ pub struct Player {
     pub role: PlayerRole,
     /// Whether this player has submitted orders for the current turn.
     pub ready: bool,
+    /// Validated custom race for this player slot.
+    ///
+    /// PR5 supplies the human custom race; computer opponents receive theirs in
+    /// PR14. PR6 enforces per-role presence when a game is created. Unfinished
+    /// setup slots use `None`, and loading validates any race that is present.
+    pub race: Option<crate::race::RaceSpec>,
 }
 
 /// One planet in the authoritative state.
@@ -428,6 +436,14 @@ impl GameState {
                     kind: "player",
                     key: key.raw(),
                     entity: player.id.raw(),
+                });
+            }
+            if let Some(race) = &player.race
+                && let Some(error) = crate::race::validate_race_fields(race).into_iter().next()
+            {
+                return Err(StateValidationError::InvalidRace {
+                    player: player.id,
+                    field: error.field_key(),
                 });
             }
         }
@@ -718,6 +734,13 @@ pub enum StateValidationError {
     /// The next event sequence has exhausted its range, so the next event
     /// would wrap to zero and break strictly increasing ordering.
     EventSequenceExhausted,
+    /// A stored custom race has a field outside its recovered range.
+    InvalidRace {
+        /// Player carrying the race.
+        player: PlayerId,
+        /// First offending field key.
+        field: &'static str,
+    },
 }
 
 impl fmt::Display for StateValidationError {
@@ -759,6 +782,11 @@ impl fmt::Display for StateValidationError {
             Self::EventSequenceExhausted => {
                 write!(formatter, "next event sequence exhausted its range")
             }
+            Self::InvalidRace { player, field } => write!(
+                formatter,
+                "player {} has an invalid race field {field}",
+                player.raw()
+            ),
         }
     }
 }
@@ -983,7 +1011,7 @@ impl<'a> CanonicalReader<'a> {
     }
 }
 
-fn encode_string(out: &mut Vec<u8>, value: &str) {
+pub(crate) fn encode_string(out: &mut Vec<u8>, value: &str) {
     encode_len(out, value.len());
     out.extend_from_slice(value.as_bytes());
 }
@@ -994,6 +1022,13 @@ impl CanonicalEncode for Player {
         encode_string(out, &self.name);
         out.push(self.role.code());
         out.push(u8::from(self.ready));
+        match &self.race {
+            Some(race) => {
+                out.push(1);
+                race.encode_canonical(out);
+            }
+            None => out.push(0),
+        }
     }
 }
 
@@ -1009,11 +1044,17 @@ impl Player {
             })
         })?;
         let ready = reader.read_bool("player.ready")?;
+        let race = if reader.read_bool("player.race.present")? {
+            Some(crate::race::RaceSpec::decode_canonical(reader)?)
+        } else {
+            None
+        };
         Ok(Self {
             id,
             name,
             role,
             ready,
+            race,
         })
     }
 }

@@ -18,8 +18,13 @@ PR4 owns the deterministic state machine shared by later subsystems:
 - a desktop turn worker that owns the session and reports progress, one
   completed snapshot or one typed failure.
 
-No economy, research, combat, movement, race, AI-policy or persistence rule is
-implemented here.
+No economy, research, combat, movement, race-point arithmetic, AI-policy or
+persistence rule is implemented here.
+
+PR5 adds an optional validated race to each player slot and to canonical state.
+`CORE_API_VERSION` and `STATE_FORMAT_VERSION` are now 2. The race contract is
+documented in [`../rules/race-builder.md`](../rules/race-builder.md); PR6 fills
+the field during new-game setup, and PR16 owns save-file persistence.
 
 ## Identifiers and arithmetic
 

@@ -37,6 +37,7 @@ fn fixture() -> Fixture {
             name: "Human".to_owned(),
             role: PlayerRole::Human,
             ready: false,
+            race: None,
         },
     );
     let rival = state.allocate_player_id().expect("player id");
@@ -47,6 +48,7 @@ fn fixture() -> Fixture {
             name: "Turindrones".to_owned(),
             role: PlayerRole::Computer,
             ready: false,
+            race: None,
         },
     );
 

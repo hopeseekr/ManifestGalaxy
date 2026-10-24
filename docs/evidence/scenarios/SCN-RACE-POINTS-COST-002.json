@@ -46,9 +46,9 @@
       "rgRaceAdvDisPts[14] = {-235, -25, -159, -201, 40, -240, -155, 160, 240, 255, 325, 180, 70, 30}.",
       "rgRaceDisEnvPts[6] = {150, 330, 540, 780, 1050, 1380} for net cheaper research fields.",
       "Growth bonus by rate: 1-5 pay (6-g)*4200; 6 pays 3600; 7 pays 2250; 8 pays 600; 9 pays 225; 10-20 pay 0.",
-      "Growth remap: 1..5 -> g; 6..13 -> 5+2*(g-5); 14..19 -> 29+3*(g-13); 20 -> 45.",
+      "Growth remap: 1..5 -> g; 6..13 -> 5+2*(g-5); 14..19 -> 21+3*(g-13); 20 -> 45.",
       "Resource generation curve: <=7 pays 2400; 8 pays 1260; 9 pays 600; 10 pays 0; 11-25 pays -120*(R-10).",
-      "Net research cost: 130*d^2 for d>0 with add-backs at d=5 and d=6; rgRaceDisEnvPts for d<0.",
+      "Research-cost values: 0 = Costs 75% extra, 1 = standard, 2 = Costs 50% less; cCur = sum(value-1). Net research cost: 130*cCur^2 for cCur>0 with add-backs at 5 and 6; rgRaceDisEnvPts for cCur<0.",
       "Alternate Reality replaces both efficiency blocks with a flat +210.",
       "The 50-point leftover cap in create.c:1284 is real, not a label."
     ]

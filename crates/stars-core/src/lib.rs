@@ -12,6 +12,7 @@
 
 pub mod model;
 pub mod orders;
+pub mod race;
 pub mod rng;
 pub mod turn;
 pub mod view;
@@ -20,7 +21,10 @@ pub mod view;
 ///
 /// Bump this when a state or order contract changes incompatibly. It is not a
 /// save-file format version; persistence is introduced in PR16.
-pub const CORE_API_VERSION: u32 = 1;
+///
+/// PR5 added the optional validated race to a player slot, which changes the
+/// player contract and canonical state shape.
+pub const CORE_API_VERSION: u32 = 2;
 
 /// A stable identifier for an entity in the game state.
 ///
@@ -67,6 +71,6 @@ mod tests {
 
     #[test]
     fn core_contract_version_is_explicit() {
-        assert_eq!(CORE_API_VERSION, 1);
+        assert_eq!(CORE_API_VERSION, 2);
     }
 }

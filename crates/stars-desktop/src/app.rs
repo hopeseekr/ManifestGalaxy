@@ -14,10 +14,17 @@ use crate::preview::{
     PreviewStar,
 };
 use crate::shell::ShellModel;
+use crate::ui::RaceBuilderState;
 use crate::worker::{RequestId, SyntheticJob, WorkerError, WorkerHandle, WorkerMessage};
 
 /// Window title used by the native application.
 pub const APP_TITLE: &str = "Stars! Remake - Foundation Shell";
+
+/// Application-wide text-size multiplier.
+///
+/// This enlarges every text style in the game, not only the custom-race
+/// builder. It is independent of the user-adjustable UI zoom factor.
+pub const GLOBAL_FONT_SCALE: f32 = 1.7;
 
 const STATUS_REPAINT_INTERVAL: Duration = Duration::from_millis(50);
 const SYNTHETIC_STEP_DELAY: Duration = Duration::from_millis(28);
@@ -31,6 +38,9 @@ pub struct StarsApp {
     ui_scale: f32,
     fail_next_run: bool,
     show_about: bool,
+    race_builder: RaceBuilderState,
+    show_race_builder: bool,
+    text_style_applied: bool,
 }
 
 impl StarsApp {
@@ -51,6 +61,9 @@ impl StarsApp {
             ui_scale: 1.0,
             fail_next_run: false,
             show_about: false,
+            race_builder: RaceBuilderState::new(),
+            show_race_builder: false,
+            text_style_applied: false,
         })
     }
 
@@ -58,6 +71,18 @@ impl StarsApp {
     #[must_use]
     pub const fn shell(&self) -> &ShellModel {
         &self.shell
+    }
+
+    /// Access the headless custom-race builder. Intended for integration and
+    /// tests; the new-game form in PR6 consumes a validated race.
+    #[must_use]
+    pub const fn race_builder(&self) -> &RaceBuilderState {
+        &self.race_builder
+    }
+
+    /// Opens the custom-race builder, if it is not already open.
+    pub fn open_race_builder(&mut self) {
+        self.show_race_builder = true;
     }
 
     /// Access the current UI scale factor.
@@ -77,6 +102,7 @@ impl StarsApp {
     /// tests can run the same layout through an `egui::Context` without a
     /// window or graphics device.
     pub fn draw(&mut self, ui: &mut egui::Ui) {
+        self.apply_global_text_scale(ui);
         self.drain_worker_messages();
         self.handle_shortcuts(ui.ctx());
         self.apply_ui_scale(ui.ctx());
@@ -85,6 +111,7 @@ impl StarsApp {
         self.show_status(ui);
         self.show_inspector(ui);
         self.show_map(ui);
+        self.show_race_builder_window(ui.ctx());
         self.show_about(ui.ctx());
 
         if self.shell.activity().is_running() {
@@ -143,6 +170,18 @@ impl StarsApp {
         }
     }
 
+    fn apply_global_text_scale(&mut self, ui: &mut egui::Ui) {
+        if self.text_style_applied {
+            return;
+        }
+        let style = scaled_global_style(ui.style().as_ref().clone());
+        ui.set_style(style);
+        ui.ctx().all_styles_mut(|context_style| {
+            *context_style = scaled_global_style(context_style.clone())
+        });
+        self.text_style_applied = true;
+    }
+
     fn apply_ui_scale(&self, ctx: &egui::Context) {
         if (ctx.zoom_factor() - self.ui_scale).abs() > f32::EPSILON {
             ctx.set_zoom_factor(self.ui_scale);
@@ -153,6 +192,14 @@ impl StarsApp {
         egui::Panel::top("menu_bar").show(ui, |ui| {
             egui::MenuBar::new().ui(ui, |ui| {
                 ui.menu_button("File", |ui| {
+                    if ui
+                        .add(egui::Button::new("Custom Race Builder..."))
+                        .clicked()
+                    {
+                        self.show_race_builder = true;
+                        ui.close();
+                    }
+                    ui.separator();
                     if ui
                         .add(egui::Button::new("Exit").shortcut_text("Ctrl+Q"))
                         .clicked()
@@ -241,6 +288,29 @@ impl StarsApp {
                         .snapshot()
                         .map_or(0, PreviewSnapshot::star_count)
                 ));
+
+                ui.add_space(8.0);
+                ui.separator();
+                ui.label("Custom race");
+                match self.race_builder.validated_race() {
+                    Some(race) => {
+                        ui.label(format!(
+                            "{} ({})",
+                            race.name,
+                            race.primary.abbreviation()
+                        ));
+                        ui.label("Validated and ready for the new-game form.");
+                    }
+                    None => {
+                        ui.label("No validated race yet.");
+                    }
+                }
+                if ui
+                    .add(egui::Button::new("Open custom race builder").min_size(egui::vec2(0.0, 28.0)))
+                    .clicked()
+                {
+                    self.show_race_builder = true;
+                }
 
                 ui.add_space(8.0);
                 if ui
@@ -356,6 +426,25 @@ impl StarsApp {
         });
     }
 
+    fn show_race_builder_window(&mut self, ctx: &egui::Context) {
+        if !self.show_race_builder {
+            return;
+        }
+
+        let mut open = self.show_race_builder;
+        egui::Window::new("Custom Race Builder")
+            .open(&mut open)
+            .resizable(true)
+            .default_width(820.0)
+            .default_height(760.0)
+            .min_width(560.0)
+            .min_height(480.0)
+            .show(ctx, |ui| {
+                self.race_builder.draw(ui);
+            });
+        self.show_race_builder = open;
+    }
+
     fn show_about(&mut self, ctx: &egui::Context) {
         egui::Window::new("About the foundation shell")
             .open(&mut self.show_about)
@@ -376,6 +465,18 @@ impl StarsApp {
                 ui.label("Rendering: egui/eframe with the wgpu backend.");
             });
     }
+}
+
+fn scaled_global_style(mut style: egui::Style) -> egui::Style {
+    for font in style.text_styles.values_mut() {
+        font.size = (font.size * GLOBAL_FONT_SCALE).round();
+    }
+    style.spacing.item_spacing.y = (style.spacing.item_spacing.y * 1.15).max(4.0);
+    style.spacing.button_padding = egui::vec2(
+        style.spacing.button_padding.x * 1.1,
+        style.spacing.button_padding.y * 1.1,
+    );
+    style
 }
 
 fn display_request(request: Option<RequestId>) -> String {
@@ -412,5 +513,25 @@ fn paint_star(painter: &egui::Painter, position: egui::Pos2, star: PreviewStar) 
 impl eframe::App for StarsApp {
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
         self.draw(ui);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use eframe::egui;
+
+    #[test]
+    fn global_text_scale_is_substantially_larger() {
+        let base = egui::Style::default();
+        let scaled = super::scaled_global_style(base.clone());
+        for (text_style, font) in &base.text_styles {
+            let scaled_font = scaled.text_styles.get(text_style).expect("text style");
+            assert!(
+                scaled_font.size >= font.size * 1.6,
+                "{text_style:?}: {} is not substantially larger than {}",
+                scaled_font.size,
+                font.size
+            );
+        }
     }
 }

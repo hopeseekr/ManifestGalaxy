@@ -7,8 +7,10 @@
 
 pub mod app;
 pub mod preview;
+pub mod race_file;
 pub mod shell;
 pub mod turn_worker;
+pub mod ui;
 pub mod worker;
 
 pub use app::StarsApp;

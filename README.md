@@ -7,13 +7,15 @@ must be backed by evidence, not invented.
 
 ## Current status
 
-PR1 (binary evidence) and PR2 (rules specification and controlled scenarios)
-are integrated on `trunk`. PR3 added the Rust workspace and a resizable desktop
-foundation shell. PR4 adds deterministic game-state and turn-processing
-contracts on branch `pr4-simulation-contracts`.
+PR1 (binary evidence), PR2 (rules specification and controlled scenarios), PR3
+(the Rust workspace and desktop foundation) and PR4 (deterministic state and
+turn-processing contracts) are integrated on `trunk`. PR5 adds the complete
+custom-race builder and the recovered advantage-point calculation on branch
+`pr5-custom-race-builder`.
 
-The desktop shell still contains no gameplay rules, economy, AI policy,
-persistence, network code, browser target or original game assets. It provides:
+Runtime trait effects, economy, AI policy, universe generation, persistence,
+network code, browser targets and original game assets are still absent. The
+desktop shell provides:
 
 - a windowed egui/eframe shell with a menu, resizable map area, inspector and
   status area;
@@ -28,15 +30,21 @@ persistence, network code, browser target or original game assets. It provides:
 - a headless shell model that ignores stale results and retains the last
   accepted snapshot when a worker request fails.
 
-PR4 adds deterministic core contracts for stable typed identifiers, ordered
-`GameState`, validated `OrderBatch` commits, `PlayerView` filtering,
+PR4 provides deterministic core contracts for stable typed identifiers,
+ordered `GameState`, validated `OrderBatch` commits, `PlayerView` filtering,
 `TurnOutcome` events, versioned RNG streams and canonical state encoding. A
 desktop turn worker owns the authoritative session and reports ordered phase
 progress, one completed snapshot or one typed failure. The phase order and RNG
 are designed remake choices because the original order and RNG are unrecovered;
 see [docs/contracts/simulation-contracts.md](docs/contracts/simulation-contracts.md).
-Only administrative order intake and the terminal snapshot phase are
-implemented; all gameplay phases are explicit not-implemented no-ops.
+
+PR5 adds all 10 primary and 14 lesser traits, habitability, growth, the seven
+recovered efficiency attributes, research-cost choices, structured validation,
+a named advantage-point breakdown and a six-step race wizard. The reference
+Humanoids anchor evaluates to the decompilation's documented 25 displayed
+points. Trait selections are builder-only until their runtime owners in
+PR6-PR13 land; the exclusion matrix and lesser-checkbox mapping remain open. See
+[docs/rules/race-builder.md](docs/rules/race-builder.md).
 
 ## Prerequisites
 
@@ -67,6 +75,8 @@ Run the required checks from the repository root:
 cargo fmt --all -- --check
 cargo check --workspace --all-targets
 cargo clippy --workspace --all-targets -- -D warnings
+cargo test -p stars-core --test race_builder
+cargo test -p stars-desktop --test race_editor
 cargo test -p stars-desktop --test shell
 cargo test -p stars-core --test simulation_contracts
 cargo test -p stars-desktop --test turn_worker
