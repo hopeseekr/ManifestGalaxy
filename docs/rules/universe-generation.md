@@ -59,6 +59,12 @@ subset:
   discovers `.json` files under `races/`, allows an explicit path, and validates
   the file again before it can be used.
 
+Victory thresholds are presented as sliders. Planet percentage, exceeding the
+nearest rival and capital-ship count move in five-point increments; the score
+threshold moves in 1,000-point increments; production capacity is displayed in
+thousands and moves in 10-thousand steps; the year threshold moves in ten-year
+steps. These are interface increments, not changes to the documented ranges.
+
 The original basic dialog also exposes predefined races, the tutorial and the
 player race dropdown. Predefined-race presets and the tutorial are excluded by
 the product plan; the custom-race builder supplies the human race.

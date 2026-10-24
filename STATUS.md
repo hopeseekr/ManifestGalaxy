@@ -13,7 +13,9 @@ PR6 adds:
 - typed `UniverseSettings` for the complete recovered advanced wizard: five
   galaxy sizes, four densities, four player-position choices, Galaxy Clumping,
   all six advanced options, Turindrones opponent count, four proficiency levels,
-  seven victory conditions, must-meet count, minimum years and an explicit seed;
+  seven victory-condition sliders with five-point planet/rival/capital-ship
+  steps, 1,000-point score steps and production capacity in thousands;
+- must-meet count, minimum years and an explicit seed;
 - deterministic planet generation using the recovered span, count, density,
   separation and clumping formulas from `stars-decompile/create.c`, including
   bounded integer coordinates and the 999-planet cap;

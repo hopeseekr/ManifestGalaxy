@@ -928,49 +928,80 @@ impl NewGameState {
                 let kind = VictoryConditionKind::ALL[index];
                 let condition = &mut self.settings.victory.conditions[index];
                 let mut enabled = condition.enabled();
-                ui.horizontal(|ui| {
+                ui.horizontal_wrapped(|ui| {
                     if ui.checkbox(&mut enabled, kind.label()).changed() {
                         condition.set_enabled(enabled);
                     }
                     let (minimum, maximum) = VictoryCondition::primary_range(kind);
-                    let mut value = condition.primary_threshold();
-                    if ui
-                        .add_enabled(
-                            enabled,
-                            egui::DragValue::new(&mut value).range(minimum..=maximum),
-                        )
-                        .changed()
-                    {
-                        condition.set_primary_threshold(value);
-                    }
-                    if let VictoryCondition::AttainsTechnology { fields, .. } = condition {
+                    let step = VictoryCondition::primary_step(kind);
+                    if kind == VictoryConditionKind::AttainsTechnology {
+                        let VictoryCondition::AttainsTechnology { level, fields, .. } = condition
+                        else {
+                            return;
+                        };
+                        let mut level_value = *level;
+                        let level_min = u8::try_from(minimum).unwrap_or(8);
+                        let level_max = u8::try_from(maximum).unwrap_or(26);
+                        if ui
+                            .add_enabled(
+                                enabled,
+                                egui::Slider::new(&mut level_value, level_min..=level_max)
+                                    .step_by(f64::from(step))
+                                    .custom_formatter(|value, _| {
+                                        format!("level {}", slider_u16(value))
+                                    }),
+                            )
+                            .changed()
+                        {
+                            *level = level_value;
+                        }
                         let mut field_count = *fields;
                         if ui
                             .add_enabled(
                                 enabled,
-                                egui::DragValue::new(&mut field_count).range(2..=6),
+                                egui::Slider::new(&mut field_count, 2..=6)
+                                    .step_by(1.0)
+                                    .custom_formatter(|value, _| {
+                                        format!("{} fields", slider_u16(value))
+                                    }),
                             )
                             .changed()
                         {
                             *fields = field_count;
                         }
+                    } else {
+                        let mut value = condition.primary_threshold();
+                        if ui
+                            .add_enabled(
+                                enabled,
+                                egui::Slider::new(&mut value, minimum..=maximum)
+                                    .step_by(f64::from(step))
+                                    .custom_formatter(move |raw, _| {
+                                        victory_threshold_text(kind, slider_u16(raw))
+                                    }),
+                            )
+                            .changed()
+                        {
+                            condition.set_primary_threshold(value);
+                        }
                     }
                 });
             }
             let enabled_count = self.settings.victory.enabled_count();
-            ui.horizontal(|ui| {
-                ui.label("Conditions that must be met");
-                ui.add(
-                    egui::DragValue::new(&mut self.settings.victory.must_meet)
-                        .range(0..=enabled_count),
-                );
-            });
-            ui.horizontal(|ui| {
-                ui.label("Minimum game years");
-                ui.add(
-                    egui::DragValue::new(&mut self.settings.victory.minimum_years).range(30..=500),
-                );
-            });
+            if self.settings.victory.must_meet > enabled_count {
+                self.settings.victory.must_meet = enabled_count;
+            }
+            ui.add_enabled(
+                enabled_count > 0,
+                egui::Slider::new(&mut self.settings.victory.must_meet, 0..=enabled_count)
+                    .step_by(1.0)
+                    .text("conditions that must be met"),
+            );
+            ui.add(
+                egui::Slider::new(&mut self.settings.victory.minimum_years, 30..=500)
+                    .step_by(10.0)
+                    .text("minimum game years"),
+            );
 
             ui.add_space(8.0);
             ui.heading("Human race");
@@ -1097,6 +1128,24 @@ impl NewGameState {
 #[must_use]
 pub fn stage_label(stage: UniverseGenerationStage) -> &'static str {
     stage.label()
+}
+
+fn victory_threshold_text(kind: VictoryConditionKind, value: u16) -> String {
+    match kind {
+        VictoryConditionKind::OwnsPercentPlanets => format!("{value}% of planets"),
+        VictoryConditionKind::AttainsTechnology => format!("level {value}"),
+        VictoryConditionKind::Score => format!("{value} points"),
+        VictoryConditionKind::ExceedsNearest => format!("{value}% above nearest rival"),
+        VictoryConditionKind::ProductionCapacity => format!("{value}k resource capacity"),
+        VictoryConditionKind::CapitalShips => format!("{value} capital ships"),
+        VictoryConditionKind::Turns => format!("{value} years"),
+    }
+}
+
+#[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+fn slider_u16(value: f64) -> u16 {
+    let rounded = value.round();
+    if rounded <= 0.0 { 0 } else { rounded as u16 }
 }
 
 #[cfg(test)]

@@ -479,20 +479,27 @@ impl VictoryCondition {
         }
     }
 
-    /// Sets the primary threshold, clamped to its documented range.
+    /// Sets the primary threshold, clamped to its documented range and rounded
+    /// to the nearest slider increment.
     pub fn set_primary_threshold(&mut self, value: u16) {
+        let kind = self.kind();
+        let (minimum, maximum) = Self::primary_range(kind);
+        let step = Self::primary_step(kind);
+        let clamped = value.clamp(minimum, maximum);
+        let quantized = (minimum + (clamped - minimum + step / 2) / step * step).min(maximum);
+
         match self {
             Self::OwnsPercentPlanets { percent, .. } => {
-                *percent = u8::try_from(value.clamp(20, 100)).unwrap_or(100);
+                *percent = u8::try_from(quantized).unwrap_or(100);
             }
             Self::AttainsTechnology { level, .. } => {
-                *level = u8::try_from(value.clamp(8, 26)).unwrap_or(26);
+                *level = u8::try_from(quantized).unwrap_or(26);
             }
-            Self::Score { score, .. } => *score = value.clamp(1_000, 20_000),
-            Self::ExceedsNearest { percent, .. } => *percent = value.clamp(20, 300),
-            Self::ProductionCapacity { capacity, .. } => *capacity = value.clamp(10, 500),
-            Self::CapitalShips { count, .. } => *count = value.clamp(10, 300),
-            Self::Turns { years, .. } => *years = value.clamp(30, 900),
+            Self::Score { score, .. } => *score = quantized,
+            Self::ExceedsNearest { percent, .. } => *percent = quantized,
+            Self::ProductionCapacity { capacity, .. } => *capacity = quantized,
+            Self::CapitalShips { count, .. } => *count = quantized,
+            Self::Turns { years, .. } => *years = quantized,
         }
     }
 
@@ -507,6 +514,27 @@ impl VictoryCondition {
             VictoryConditionKind::ProductionCapacity => (10, 500),
             VictoryConditionKind::CapitalShips => (10, 300),
             VictoryConditionKind::Turns => (30, 900),
+        }
+    }
+
+    /// Slider increment for a kind.
+    ///
+    /// Planet percentage and the two score-comparison thresholds use the
+    /// requested five-point increments. Score uses the recovered 1,000-point
+    /// step. Production capacity is displayed in thousands and advances in
+    /// 10-thousand steps, matching the recovered `GetVCVal()` conversion.
+    /// Capital ships use five-point increments as requested even though the
+    /// recovered spinner advanced in tens.
+    #[must_use]
+    pub const fn primary_step(kind: VictoryConditionKind) -> u16 {
+        match kind {
+            VictoryConditionKind::OwnsPercentPlanets => 5,
+            VictoryConditionKind::AttainsTechnology => 1,
+            VictoryConditionKind::Score => 1_000,
+            VictoryConditionKind::ExceedsNearest => 5,
+            VictoryConditionKind::ProductionCapacity => 10,
+            VictoryConditionKind::CapitalShips => 5,
+            VictoryConditionKind::Turns => 10,
         }
     }
 
@@ -855,6 +883,55 @@ mod tests {
                 assert_eq!(settings.planet_count(), count, "{size:?} {density:?}");
             }
         }
+    }
+
+    #[test]
+    fn victory_slider_steps_match_the_requested_increments() {
+        use super::{VictoryCondition, VictoryConditionKind};
+
+        assert_eq!(
+            VictoryCondition::primary_step(VictoryConditionKind::OwnsPercentPlanets),
+            5
+        );
+        assert_eq!(
+            VictoryCondition::primary_step(VictoryConditionKind::ExceedsNearest),
+            5
+        );
+        assert_eq!(
+            VictoryCondition::primary_step(VictoryConditionKind::CapitalShips),
+            5
+        );
+        assert_eq!(
+            VictoryCondition::primary_step(VictoryConditionKind::Score),
+            1_000
+        );
+        assert_eq!(
+            VictoryCondition::primary_step(VictoryConditionKind::ProductionCapacity),
+            10
+        );
+        assert_eq!(
+            VictoryCondition::primary_step(VictoryConditionKind::Turns),
+            10
+        );
+
+        let mut planets = VictoryCondition::OwnsPercentPlanets {
+            enabled: true,
+            percent: 20,
+        };
+        planets.set_primary_threshold(23);
+        assert_eq!(planets.primary_threshold(), 25);
+        let mut ships = VictoryCondition::CapitalShips {
+            enabled: true,
+            count: 10,
+        };
+        ships.set_primary_threshold(12);
+        assert_eq!(ships.primary_threshold(), 10);
+        let mut score = VictoryCondition::Score {
+            enabled: true,
+            score: 1_000,
+        };
+        score.set_primary_threshold(5_600);
+        assert_eq!(score.primary_threshold(), 6_000);
     }
 
     #[test]

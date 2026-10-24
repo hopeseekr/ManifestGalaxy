@@ -50,6 +50,9 @@ persistence remain with later PRs.
 - The form discovers saved race JSON files, loads and revalidates them, and uses
   an explicitly loaded file until the user clears it. A failed race-file load
   retains both the current race and the current universe.
+- Victory conditions use sliders with the requested increments: five points for
+  planet percentage, nearest-rival percentage and capital ships; 1,000 points
+  for score; production capacity displayed in thousands with 10-thousand steps.
 - The generation worker reports progress checkpoints, one completed universe or
   a typed failure, and rejects stale request identifiers.
 - The PR7 fixture is pinned by seed, settings, planet count and homeworld IDs.
