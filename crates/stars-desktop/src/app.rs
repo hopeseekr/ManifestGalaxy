@@ -20,6 +20,12 @@ use crate::worker::{RequestId, SyntheticJob, WorkerError, WorkerHandle, WorkerMe
 /// Window title used by the native application.
 pub const APP_TITLE: &str = "Stars! Remake - Foundation Shell";
 
+/// Application-wide text-size multiplier.
+///
+/// This enlarges every text style in the game, not only the custom-race
+/// builder. It is independent of the user-adjustable UI zoom factor.
+pub const GLOBAL_FONT_SCALE: f32 = 1.7;
+
 const STATUS_REPAINT_INTERVAL: Duration = Duration::from_millis(50);
 const SYNTHETIC_STEP_DELAY: Duration = Duration::from_millis(28);
 
@@ -34,6 +40,7 @@ pub struct StarsApp {
     show_about: bool,
     race_builder: RaceBuilderState,
     show_race_builder: bool,
+    text_style_applied: bool,
 }
 
 impl StarsApp {
@@ -56,6 +63,7 @@ impl StarsApp {
             show_about: false,
             race_builder: RaceBuilderState::new(),
             show_race_builder: false,
+            text_style_applied: false,
         })
     }
 
@@ -94,6 +102,7 @@ impl StarsApp {
     /// tests can run the same layout through an `egui::Context` without a
     /// window or graphics device.
     pub fn draw(&mut self, ui: &mut egui::Ui) {
+        self.apply_global_text_scale(ui);
         self.drain_worker_messages();
         self.handle_shortcuts(ui.ctx());
         self.apply_ui_scale(ui.ctx());
@@ -159,6 +168,18 @@ impl StarsApp {
         if quit {
             ctx.send_viewport_cmd(egui::ViewportCommand::Close);
         }
+    }
+
+    fn apply_global_text_scale(&mut self, ui: &mut egui::Ui) {
+        if self.text_style_applied {
+            return;
+        }
+        let style = scaled_global_style(ui.style().as_ref().clone());
+        ui.set_style(style);
+        ui.ctx().all_styles_mut(|context_style| {
+            *context_style = scaled_global_style(context_style.clone())
+        });
+        self.text_style_applied = true;
     }
 
     fn apply_ui_scale(&self, ctx: &egui::Context) {
@@ -446,6 +467,18 @@ impl StarsApp {
     }
 }
 
+fn scaled_global_style(mut style: egui::Style) -> egui::Style {
+    for font in style.text_styles.values_mut() {
+        font.size = (font.size * GLOBAL_FONT_SCALE).round();
+    }
+    style.spacing.item_spacing.y = (style.spacing.item_spacing.y * 1.15).max(4.0);
+    style.spacing.button_padding = egui::vec2(
+        style.spacing.button_padding.x * 1.1,
+        style.spacing.button_padding.y * 1.1,
+    );
+    style
+}
+
 fn display_request(request: Option<RequestId>) -> String {
     request.map_or_else(|| "none".to_owned(), |value| value.to_string())
 }
@@ -480,5 +513,25 @@ fn paint_star(painter: &egui::Painter, position: egui::Pos2, star: PreviewStar) 
 impl eframe::App for StarsApp {
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
         self.draw(ui);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use eframe::egui;
+
+    #[test]
+    fn global_text_scale_is_substantially_larger() {
+        let base = egui::Style::default();
+        let scaled = super::scaled_global_style(base.clone());
+        for (text_style, font) in &base.text_styles {
+            let scaled_font = scaled.text_styles.get(text_style).expect("text style");
+            assert!(
+                scaled_font.size >= font.size * 1.6,
+                "{text_style:?}: {} is not substantially larger than {}",
+                scaled_font.size,
+                font.size
+            );
+        }
     }
 }

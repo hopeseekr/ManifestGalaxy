@@ -116,12 +116,6 @@ pub struct RaceBuilderState {
     focused_text_field: Option<&'static str>,
 }
 
-/// Scale applied to the builder's text styles.
-///
-/// The builder is information-dense; a larger scale keeps the wizard readable
-/// without changing the application-wide UI zoom.
-pub const BUILDER_FONT_SCALE: f32 = 1.7;
-
 impl Default for RaceBuilderState {
     fn default() -> Self {
         Self::new()
@@ -277,18 +271,15 @@ impl RaceBuilderState {
 
     /// Draws the builder.
     pub fn draw(&mut self, ui: &mut egui::Ui) {
-        let style = scaled_builder_style(ui.style().as_ref().clone());
-        ui.set_style(style);
-
         self.handle_shortcuts(ui.ctx());
         self.clear_stale_validation();
 
         self.show_header(ui);
         ui.separator();
 
-        // Reserve room for the two-row footer at the enlarged text size so the
-        // navigation controls are never pushed below the visible window.
-        let footer_reserve = 90.0 * BUILDER_FONT_SCALE;
+        // Reserve room for the two-row footer at the enlarged application text
+        // size so navigation is never pushed below the visible window.
+        let footer_reserve = 150.0;
         let scroll_height = (ui.available_height() - footer_reserve).max(80.0);
         egui::ScrollArea::vertical()
             .max_height(scroll_height)
@@ -711,18 +702,6 @@ impl RaceBuilderState {
     }
 }
 
-fn scaled_builder_style(mut style: egui::Style) -> egui::Style {
-    for font in style.text_styles.values_mut() {
-        font.size = (font.size * BUILDER_FONT_SCALE).round();
-    }
-    style.spacing.item_spacing.y = (style.spacing.item_spacing.y * 1.4).max(6.0);
-    style.spacing.button_padding = egui::vec2(
-        style.spacing.button_padding.x * 1.2,
-        style.spacing.button_padding.y * 1.2,
-    );
-    style
-}
-
 fn field_id(name: &'static str) -> egui::Id {
     egui::Id::new(("race_builder_text", name))
 }
@@ -790,21 +769,6 @@ mod tests {
     use super::{RaceBuilderState, RacePage, field_id};
     use eframe::egui;
     use stars_core::race::{LesserTrait, PrimaryTrait, ReferenceHabitability, validate_race};
-
-    #[test]
-    fn builder_text_styles_are_substantially_larger() {
-        let base = egui::Style::default();
-        let scaled = super::scaled_builder_style(base.clone());
-        for (text_style, font) in &base.text_styles {
-            let scaled_font = scaled.text_styles.get(text_style).expect("text style");
-            assert!(
-                scaled_font.size >= font.size * 1.6,
-                "{text_style:?}: {} is not substantially larger than {}",
-                scaled_font.size,
-                font.size
-            );
-        }
-    }
 
     #[test]
     fn focusing_a_text_field_selects_all_of_its_text() {
