@@ -9,7 +9,9 @@ The machine-readable rule inventory is [`rule-index.json`](rule-index.json).
 The narrative ledger is [`rule-ledger.md`](rule-ledger.md). Turn-order
 dependencies and unresolved phase relationships are in
 [`turn-order.md`](turn-order.md), and the tracked blockers are in
-[`gap-ledger.md`](gap-ledger.md).
+[`gap-ledger.md`](gap-ledger.md). PR6's recovered universe formulas, wizard
+inventory and Turindrones race configuration are in
+[`universe-generation.md`](universe-generation.md).
 
 Controlled operator scenarios live in
 [`../evidence/scenarios/`](../evidence/scenarios/). They are measurement

@@ -14,7 +14,7 @@ use crate::preview::{
     PreviewStar,
 };
 use crate::shell::ShellModel;
-use crate::ui::RaceBuilderState;
+use crate::ui::{NewGameState, RaceBuilderState};
 use crate::worker::{RequestId, SyntheticJob, WorkerError, WorkerHandle, WorkerMessage};
 
 /// Window title used by the native application.
@@ -40,6 +40,9 @@ pub struct StarsApp {
     show_about: bool,
     race_builder: RaceBuilderState,
     show_race_builder: bool,
+    new_game: NewGameState,
+    show_new_game: bool,
+    current_title: String,
     text_style_applied: bool,
 }
 
@@ -63,6 +66,9 @@ impl StarsApp {
             show_about: false,
             race_builder: RaceBuilderState::new(),
             show_race_builder: false,
+            new_game: NewGameState::new(),
+            show_new_game: false,
+            current_title: APP_TITLE.to_owned(),
             text_style_applied: false,
         })
     }
@@ -85,6 +91,31 @@ impl StarsApp {
         self.show_race_builder = true;
     }
 
+    /// Access the headless new-game form. Intended for tests.
+    #[must_use]
+    pub const fn new_game(&self) -> &NewGameState {
+        &self.new_game
+    }
+
+    /// Mutable access to the headless new-game form. Intended for tests.
+    pub fn new_game_mut(&mut self) -> &mut NewGameState {
+        &mut self.new_game
+    }
+
+    /// Title currently applied to the native window.
+    ///
+    /// Starts as [`APP_TITLE`] and includes the committed game name once a
+    /// universe has been generated.
+    #[must_use]
+    pub fn window_title(&self) -> &str {
+        &self.current_title
+    }
+
+    /// Opens the new-game form.
+    pub fn open_new_game(&mut self) {
+        self.show_new_game = true;
+    }
+
     /// Access the current UI scale factor.
     #[must_use]
     pub const fn ui_scale(&self) -> f32 {
@@ -104,6 +135,8 @@ impl StarsApp {
     pub fn draw(&mut self, ui: &mut egui::Ui) {
         self.apply_global_text_scale(ui);
         self.drain_worker_messages();
+        self.new_game.drain_messages();
+        self.sync_window_title(ui.ctx());
         self.handle_shortcuts(ui.ctx());
         self.apply_ui_scale(ui.ctx());
 
@@ -112,10 +145,22 @@ impl StarsApp {
         self.show_inspector(ui);
         self.show_map(ui);
         self.show_race_builder_window(ui.ctx());
+        self.show_new_game_window(ui.ctx());
         self.show_about(ui.ctx());
 
-        if self.shell.activity().is_running() {
+        if self.shell.activity().is_running() || self.new_game.activity().is_generating() {
             ui.ctx().request_repaint_after(STATUS_REPAINT_INTERVAL);
+        }
+    }
+
+    fn sync_window_title(&mut self, ctx: &egui::Context) {
+        let title = self.new_game.game_name().map_or_else(
+            || APP_TITLE.to_owned(),
+            |game_name| format!("Stars! Remake - {game_name}"),
+        );
+        if title != self.current_title {
+            self.current_title = title.clone();
+            ctx.send_viewport_cmd(egui::ViewportCommand::Title(title));
         }
     }
 
@@ -192,6 +237,10 @@ impl StarsApp {
         egui::Panel::top("menu_bar").show(ui, |ui| {
             egui::MenuBar::new().ui(ui, |ui| {
                 ui.menu_button("File", |ui| {
+                    if ui.add(egui::Button::new("New Game...")).clicked() {
+                        self.open_new_game();
+                        ui.close();
+                    }
                     if ui
                         .add(egui::Button::new("Custom Race Builder..."))
                         .clicked()
@@ -310,6 +359,26 @@ impl StarsApp {
                     .clicked()
                 {
                     self.show_race_builder = true;
+                }
+
+                ui.add_space(8.0);
+                ui.label("New game");
+                if let Some(universe) = self.new_game.universe() {
+                    ui.label(format!(
+                        "\"{}\" - {} planets, {} players, seed {}",
+                        universe.settings.game_name.trim(),
+                        universe.planet_count(),
+                        universe.state.players.len(),
+                        universe.settings.seed
+                    ));
+                } else {
+                    ui.label("No generated universe yet.");
+                }
+                if ui
+                    .add(egui::Button::new("Open new-game setup").min_size(egui::vec2(0.0, 28.0)))
+                    .clicked()
+                {
+                    self.show_new_game = true;
                 }
 
                 ui.add_space(8.0);
@@ -443,6 +512,31 @@ impl StarsApp {
                 self.race_builder.draw(ui);
             });
         self.show_race_builder = open;
+    }
+
+    fn show_new_game_window(&mut self, ctx: &egui::Context) {
+        if !self.show_new_game {
+            return;
+        }
+
+        if !self.new_game.race_files_loaded() {
+            self.new_game.refresh_race_files();
+        }
+        self.new_game
+            .set_builder_race(self.race_builder.validated_race().cloned());
+
+        let mut open = self.show_new_game;
+        egui::Window::new("New Game Setup")
+            .open(&mut open)
+            .resizable(true)
+            .default_width(860.0)
+            .default_height(800.0)
+            .min_width(600.0)
+            .min_height(460.0)
+            .show(ctx, |ui| {
+                self.new_game.draw(ui);
+            });
+        self.show_new_game = open;
     }
 
     fn show_about(&mut self, ctx: &egui::Context) {

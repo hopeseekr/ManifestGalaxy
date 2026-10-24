@@ -21,10 +21,12 @@ PR4 owns the deterministic state machine shared by later subsystems:
 No economy, research, combat, movement, race-point arithmetic, AI-policy or
 persistence rule is implemented here.
 
-PR5 adds an optional validated race to each player slot and to canonical state.
-`CORE_API_VERSION` and `STATE_FORMAT_VERSION` are now 2. The race contract is
-documented in [`../rules/race-builder.md`](../rules/race-builder.md); PR6 fills
-the field during new-game setup, and PR16 owns save-file persistence.
+PR5 adds an optional validated race to each player slot, and PR6 adds generated
+planet details plus each player's starting technology. `CORE_API_VERSION` and
+`STATE_FORMAT_VERSION` are now 3. The race contract is documented in
+[`../rules/race-builder.md`](../rules/race-builder.md); the universe contract is
+documented in [`../rules/universe-generation.md`](../rules/universe-generation.md).
+PR16 owns save-file persistence.
 
 ## Identifiers and arithmetic
 
@@ -138,6 +140,12 @@ contract used by replay and future persistence. The layout is:
        | last batch       | event sequence
        | players          | designs            | planets | fleets
 ```
+
+Version 3 adds each player's six starting technology levels and each planet's
+environment, mineral concentration, surface minerals, population, factories,
+mines, defenses, homeworld flag and starbase flag. Positions remain integers;
+no floating-point value is stored. The generator and its evidence are in
+[`../rules/universe-generation.md`](../rules/universe-generation.md).
 
 All integers are little-endian. Collections are length-prefixed `u32` counts in
 stable identifier order. Strings are length-prefixed UTF-8. The encoder and

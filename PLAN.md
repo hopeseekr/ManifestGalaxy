@@ -145,7 +145,7 @@ The prerequisite for each PR after PR1 is its predecessor's authorized integrati
 | [x] | [PR3: rust foundation](PLAN-pr3-description.md) | Added the Rust workspace and desktop application foundation. |
 | [x] | [PR4: simulation contracts](PLAN-pr4-description.md) | Added deterministic game state and turn-processing contracts. |
 | [x] | [PR5: custom race builder](PLAN-pr5-description.md) | Implemented the custom race builder and point calculations. |
-| [ ] | [PR6: universe setup](PLAN-pr6-description.md) | Implemented universe generation and new-game setup. |
+| [x] | [PR6: universe setup](PLAN-pr6-description.md) | Implemented universe generation and new-game setup. |
 | [ ] | [PR7: map and reports](PLAN-pr7-description.md) | Added the star map and empire management interface. |
 | [ ] | [PR8: planet economy](PLAN-pr8-description.md) | Implemented planetary population and economic production. |
 | [ ] | [PR9: research and designs](PLAN-pr9-description.md) | Implemented research and ship design. |

@@ -269,6 +269,7 @@ fn a_validated_race_round_trips_in_authoritative_state() {
             role: PlayerRole::Human,
             ready: false,
             race: Some(funded_race()),
+            starting_technology: [0; 6],
         },
     );
     let planet_id = state.allocate_planet_id().expect("planet id");
@@ -280,6 +281,15 @@ fn a_validated_race_round_trips_in_authoritative_state() {
             position: GalacticPosition::new(0, 0),
             owner: Some(player_id),
             visibility: EntityVisibility::OwnerOnly,
+            environment: stars_core::model::PlanetEnvironment::new(50, 50, 50),
+            mineral_concentration: [100; 3],
+            surface_minerals: [100; 3],
+            population: 25_000,
+            factories: 10,
+            mines: 10,
+            defenses: 10,
+            homeworld: true,
+            starbase: true,
         },
     );
 
@@ -329,6 +339,7 @@ fn invalid_races_cannot_enter_loaded_state() {
             role: PlayerRole::Human,
             ready: false,
             race: Some(race),
+            starting_technology: [0; 6],
         },
     );
 
@@ -406,6 +417,7 @@ fn player_race_field_is_optional_for_computer_slots() {
         role: PlayerRole::Computer,
         ready: false,
         race: None,
+        starting_technology: [0; 6],
     };
     assert!(player.race.is_none());
     let _ = PlanetId::from_raw(1);

@@ -43,7 +43,7 @@ lead.
 | `RULE-RACE-GROWTH-001` | Habitable range, growth rate and maximum population | documented-only | Help topics 283-285, 42, 349 | PR5, PR8 | `SCN-RACE-GROWTH-001` |
 | `RULE-RACE-RESEARCH-COST-001` | Research cost choices and all-fields starting tech | documented-only | Help topic 287; dialog `#151` six three-choice radio groups | PR5, PR9 | `SCN-RACE-RESEARCH-001` |
 | `RULE-RACE-TURINDRONES-NAMES-001` | Opponent-name sequence contains Turindrones | statically-derived | Segment 35 relative `0xa06`, file `0x55846` | PR14 | `SCN-TURINDRONES-LIST-001` |
-| `RULE-RACE-TURINDRONES-CONFIG-001` | Turindrones race and AI configuration | unknown | Name located only; no linked configuration | PR14 | `SCN-TURINDRONES-001` |
+| `RULE-RACE-TURINDRONES-CONFIG-001` | Turindrones race and AI configuration | unknown | Name at segment 35 relative `0xa06`; four race records recovered from `stars-decompile/create.c` `vrgplrComp[1]` (PR6), AI policy still unrecovered | PR6, PR14 | `SCN-TURINDRONES-001` |
 
 Step 1 fields visible in decoded dialog `#146`: race name, plural name,
 password, portrait/emblem buttons, and a "Spend up to 50 leftover advantage
@@ -236,6 +236,15 @@ cap or only a template label is unknown.
 | `RULE-UNIVERSE-START-001` | Year 2400 start and common home-world inventory | documented-only | Help topics 314, 41; game starts in 2400 | PR6, PR15 | `SCN-UNIVERSE-001` |
 | `RULE-UNIVERSE-DIFFICULTY-001` | Difficulty changes opponent count/skill | documented-only | Help topic 226 | PR6, PR14 | `SCN-UNIVERSE-001` |
 
+PR6 implementation evidence: the generation arithmetic for these rules is
+statically derived from `stars-decompile/create.c` (`GenerateWorld()` and
+`InitNewGamePlr()`), a later 2.60j RC3 build. The declared statuses above stay
+`documented-only` because the source is not the supplied `stars26i.exe` and no
+original execution exists. [`universe-generation.md`](universe-generation.md)
+records every formula, the help/decompilation Packed-count difference and the
+remaining gaps. The four Turindrones race records are recovered from
+`vrgplrComp[1]`; the AI policy remains unknown.
+
 Documented setup facts:
 
 - Universe spans are 400, 800, 1,200, 1,600 and 2,000 light years for Tiny
@@ -424,7 +433,7 @@ are unknown. `SCN-COMBAT-DAMAGE-001` is a measurement plan, not a formula.
 | Rule ID | Subject | Status | Evidence | Downstream | Scenario |
 |---|---|---|---|---|---|
 | `RULE-RACE-TURINDRONES-NAMES-001` | Opponent-name sequence includes Turindrones | statically-derived | Segment 35 relative `0xa06`, file `0x55846` | PR14 | `SCN-TURINDRONES-LIST-001` |
-| `RULE-RACE-TURINDRONES-CONFIG-001` | Turindrones race/AI configuration | unknown | Name located only; no linked table or code path | PR14 | `SCN-TURINDRONES-001` |
+| `RULE-RACE-TURINDRONES-CONFIG-001` | Turindrones race/AI configuration | unknown | Name located; four race records recovered from `stars-decompile/create.c` `vrgplrComp[1]` by PR6; AI policy still unrecovered | PR6, PR14 | `SCN-TURINDRONES-001` |
 | `RULE-AI-ADVANTAGE-001` | AI advantage points vary by difficulty | documented-only | Help topics 347, 348 | PR14 | `SCN-AI-001` |
 | `RULE-AI-TURINDRONES-001` | Turindrones planning policy and memory | unknown | Not recovered | PR14 | `SCN-TURINDRONES-001` |
 

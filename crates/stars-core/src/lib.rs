@@ -15,6 +15,7 @@ pub mod orders;
 pub mod race;
 pub mod rng;
 pub mod turn;
+pub mod universe;
 pub mod view;
 
 /// Version of the public core contract.
@@ -22,9 +23,10 @@ pub mod view;
 /// Bump this when a state or order contract changes incompatibly. It is not a
 /// save-file format version; persistence is introduced in PR16.
 ///
-/// PR5 added the optional validated race to a player slot, which changes the
-/// player contract and canonical state shape.
-pub const CORE_API_VERSION: u32 = 2;
+/// PR5 added the optional validated race to a player slot, and PR6 adds
+/// generated planet details and starting technology. Both change the player or
+/// planet contract and canonical state shape.
+pub const CORE_API_VERSION: u32 = 3;
 
 /// A stable identifier for an entity in the game state.
 ///
@@ -71,6 +73,6 @@ mod tests {
 
     #[test]
     fn core_contract_version_is_explicit() {
-        assert_eq!(CORE_API_VERSION, 2);
+        assert_eq!(CORE_API_VERSION, 3);
     }
 }
