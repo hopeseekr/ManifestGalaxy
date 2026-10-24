@@ -113,6 +113,7 @@ pub struct RaceBuilderState {
     cached_spec: Option<RaceSpec>,
     cached_evaluation: Option<RaceEvaluation>,
     validated: Option<RaceSpec>,
+    focused_text_field: Option<&'static str>,
 }
 
 impl Default for RaceBuilderState {
@@ -132,6 +133,7 @@ impl RaceBuilderState {
             cached_spec: None,
             cached_evaluation: None,
             validated: None,
+            focused_text_field: None,
         }
     }
 
@@ -190,6 +192,7 @@ impl RaceBuilderState {
         self.cached_spec = None;
         self.cached_evaluation = None;
         self.validated = None;
+        self.focused_text_field = None;
     }
 
     /// Evaluates the current draft, if a primary trait is selected.
@@ -414,24 +417,36 @@ impl RaceBuilderState {
 
     fn show_basic(&mut self, ui: &mut egui::Ui) {
         ui.label("Race name");
-        ui.add(
-            egui::TextEdit::singleline(&mut self.draft.name)
-                .desired_width(260.0)
-                .hint_text("Required"),
+        text_field(
+            ui,
+            "name",
+            &mut self.draft.name,
+            &mut self.focused_text_field,
+            260.0,
+            "Required",
+            false,
         )
         .on_hover_text("Stored in the recovered 32-byte name field.");
         ui.label("Plural name");
-        ui.add(
-            egui::TextEdit::singleline(&mut self.draft.plural_name)
-                .desired_width(260.0)
-                .hint_text("Required"),
+        text_field(
+            ui,
+            "plural_name",
+            &mut self.draft.plural_name,
+            &mut self.focused_text_field,
+            260.0,
+            "Required",
+            false,
         )
         .on_hover_text("Used for multi-planet empire labels.");
         ui.label("Race-file password");
-        ui.add(
-            egui::TextEdit::singleline(&mut self.draft.password)
-                .desired_width(260.0)
-                .password(true),
+        text_field(
+            ui,
+            "password",
+            &mut self.draft.password,
+            &mut self.focused_text_field,
+            260.0,
+            "",
+            true,
         )
         .on_hover_text(
             "Local race-file field from the recovered wizard. It is not a security boundary and is never logged.",
@@ -794,6 +809,50 @@ impl RaceBuilderState {
     }
 }
 
+fn field_id(name: &'static str) -> egui::Id {
+    egui::Id::new(("race_builder_text", name))
+}
+
+fn text_field(
+    ui: &mut egui::Ui,
+    id_name: &'static str,
+    text: &mut String,
+    focused_field: &mut Option<&'static str>,
+    desired_width: f32,
+    hint: &str,
+    password: bool,
+) -> egui::Response {
+    let id = field_id(id_name);
+    let mut edit = egui::TextEdit::singleline(text)
+        .id(id)
+        .desired_width(desired_width)
+        .hint_text(hint);
+    if password {
+        edit = edit.password(true);
+    }
+    let response = ui.add(edit);
+    if response.has_focus() {
+        if *focused_field != Some(id_name) {
+            select_all_text(ui, id, text);
+        }
+        *focused_field = Some(id_name);
+    } else if *focused_field == Some(id_name) {
+        *focused_field = None;
+    }
+    response
+}
+
+fn select_all_text(ui: &egui::Ui, id: egui::Id, text: &str) {
+    let mut state = egui::TextEdit::load_state(ui.ctx(), id).unwrap_or_default();
+    state
+        .cursor
+        .set_char_range(Some(egui::text::CCursorRange::two(
+            egui::text::CCursor::default(),
+            egui::text::CCursor::new(text.chars().count()),
+        )));
+    state.store(ui.ctx(), id);
+}
+
 fn band_summary(band: HabitabilityRange) -> String {
     if band.immune {
         "immune".to_owned()
@@ -824,8 +883,37 @@ fn signed_i64(value: i64) -> String {
 
 #[cfg(test)]
 mod tests {
-    use super::{RaceBuilderState, RacePage};
+    use super::{RaceBuilderState, RacePage, field_id};
+    use eframe::egui;
     use stars_core::race::{LesserTrait, PrimaryTrait, ReferenceHabitability, validate_race};
+
+    #[test]
+    fn focusing_a_text_field_selects_all_of_its_text() {
+        let context = egui::Context::default();
+        let mut builder = RaceBuilderState::new();
+        builder.draft_mut().name = "Alpha".to_owned();
+        let id = field_id("name");
+        context.memory_mut(|memory| memory.request_focus(id));
+
+        let input = egui::RawInput {
+            screen_rect: Some(egui::Rect::from_min_size(
+                egui::Pos2::ZERO,
+                egui::vec2(900.0, 700.0),
+            )),
+            ..Default::default()
+        };
+        let output = context.run_ui(input.clone(), |ui| builder.draw(ui));
+        output.drop_without_applying_deltas();
+        // Focus requested before the first pass becomes observable on the next
+        // pass, so render twice before inspecting the selection.
+        let output = context.run_ui(input, |ui| builder.draw(ui));
+        output.drop_without_applying_deltas();
+
+        let state = egui::TextEdit::load_state(&context, id).expect("text edit state");
+        let range = state.cursor.char_range().expect("selection");
+        assert_eq!(range.as_sorted_char_range().start.0, 0);
+        assert_eq!(range.as_sorted_char_range().end.0, 5);
+    }
 
     #[test]
     fn draft_edits_are_kept_when_stepping_backward() {
