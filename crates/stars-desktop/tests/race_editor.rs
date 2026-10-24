@@ -6,8 +6,8 @@
 use eframe::egui;
 
 use stars_core::race::{
-    LesserTrait, RaceDraft, RaceField, RaceSpec, ReferenceHabitability, ResearchCost,
-    evaluate_race, validate_race,
+    HabitabilityRange, LesserTrait, RaceDraft, RaceField, RaceSpec, ReferenceHabitability,
+    ResearchCost, evaluate_race, validate_race,
 };
 use stars_desktop::ui::{RaceBuilderState, RacePage};
 
@@ -206,6 +206,22 @@ fn finish_rejects_an_overspent_race_and_reports_the_advantage_point_field() {
     assert_eq!(errors[0].field(), RaceField::AdvantagePoints);
     assert!(builder.validated_race().is_none());
     assert_eq!(builder.errors(), errors);
+}
+
+#[test]
+fn finish_rejects_a_habitability_band_narrower_than_five_points() {
+    let mut builder = RaceBuilderState::new();
+    *builder.draft_mut() = RaceDraft::from_spec(&RaceSpec::humanoids_anchor());
+    builder.draft_mut().habitability[1] = HabitabilityRange::new(40, 44);
+
+    let errors = builder.finish().expect_err("band is too narrow");
+    assert!(errors.iter().any(|error| {
+        error.field() == RaceField::Temperature
+            && matches!(
+                error,
+                stars_core::race::RaceValidationError::HabitabilitySpanTooSmall { minimum: 5, .. }
+            )
+    }));
 }
 
 #[test]

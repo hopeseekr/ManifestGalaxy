@@ -11,9 +11,9 @@ use crate::race::habitability::HabitabilityModel;
 use crate::race::points::{RaceEvaluation, evaluate_race};
 use crate::race::spec::{
     EMBLEM_MAX, ENVIRONMENT_MAX, FACTORY_COST_BOUNDS, FACTORY_OPERATION_BOUNDS,
-    FACTORY_PRODUCTION_BOUNDS, GROWTH_MAX, GROWTH_MIN, MINE_COST_BOUNDS, MINE_OPERATION_BOUNDS,
-    MINE_PRODUCTION_BOUNDS, RACE_NAME_MAX_BYTES, RESOURCE_GENERATION_BOUNDS, RaceSpec,
-    ResearchCost,
+    FACTORY_PRODUCTION_BOUNDS, GROWTH_MAX, GROWTH_MIN, HABITABILITY_MIN_SPAN, MINE_COST_BOUNDS,
+    MINE_OPERATION_BOUNDS, MINE_PRODUCTION_BOUNDS, RACE_NAME_MAX_BYTES, RESOURCE_GENERATION_BOUNDS,
+    RaceSpec, ResearchCost,
 };
 
 /// A builder field that can carry a validation error.
@@ -133,6 +133,17 @@ pub enum RaceValidationError {
         /// Offending bound.
         value: u8,
     },
+    /// A non-immune environmental band is narrower than the builder minimum.
+    HabitabilitySpanTooSmall {
+        /// Axis index.
+        axis: usize,
+        /// Lower bound.
+        min: u8,
+        /// Upper bound.
+        max: u8,
+        /// Required minimum width.
+        minimum: u8,
+    },
     /// An efficiency attribute is outside its recovered range.
     AttributeOutOfRange {
         /// Offending field.
@@ -160,13 +171,13 @@ impl RaceValidationError {
             Self::BlankName { field } | Self::NameTooLong { field, .. } => *field,
             Self::EmblemOutOfRange { .. } => RaceField::Emblem,
             Self::GrowthOutOfRange { .. } => RaceField::GrowthRate,
-            Self::HabitabilityInverted { axis, .. } | Self::HabitabilityOutOfRange { axis, .. } => {
-                match axis {
-                    0 => RaceField::Gravity,
-                    1 => RaceField::Temperature,
-                    _ => RaceField::Radiation,
-                }
-            }
+            Self::HabitabilityInverted { axis, .. }
+            | Self::HabitabilityOutOfRange { axis, .. }
+            | Self::HabitabilitySpanTooSmall { axis, .. } => match axis {
+                0 => RaceField::Gravity,
+                1 => RaceField::Temperature,
+                _ => RaceField::Radiation,
+            },
             Self::AttributeOutOfRange { field, .. } => *field,
             Self::NegativeBalance { .. } => RaceField::AdvantagePoints,
         }
@@ -205,6 +216,15 @@ impl fmt::Display for RaceValidationError {
             Self::HabitabilityOutOfRange { axis, value } => write!(
                 formatter,
                 "environment axis {axis} value {value} exceeds {ENVIRONMENT_MAX}"
+            ),
+            Self::HabitabilitySpanTooSmall {
+                axis,
+                min,
+                max,
+                minimum,
+            } => write!(
+                formatter,
+                "environment axis {axis} range {min}..{max} is narrower than {minimum}"
             ),
             Self::AttributeOutOfRange {
                 field,
@@ -258,6 +278,13 @@ pub fn validate_race_fields(spec: &RaceSpec) -> Vec<RaceValidationError> {
                 axis,
                 min: band.min,
                 max: band.max,
+            });
+        } else if !band.immune && band.max - band.min < HABITABILITY_MIN_SPAN {
+            errors.push(RaceValidationError::HabitabilitySpanTooSmall {
+                axis,
+                min: band.min,
+                max: band.max,
+                minimum: HABITABILITY_MIN_SPAN,
             });
         }
     }

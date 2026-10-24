@@ -19,6 +19,11 @@ pub const ENVIRONMENT_MAX: u8 = 100;
 pub const GROWTH_MIN: u8 = 1;
 /// Highest accepted growth rate in percent per year.
 pub const GROWTH_MAX: u8 = 20;
+/// Smallest allowed width of a non-immune environmental band.
+///
+/// This is a designed builder constraint requested for the remake, not a
+/// recovered original rule. It prevents zero-width or nearly zero-width bands.
+pub const HABITABILITY_MIN_SPAN: u8 = 5;
 /// Maximum race or plural name length in bytes, from the 32-byte `PLAYER`
 /// name fields including their terminator.
 pub const RACE_NAME_MAX_BYTES: usize = 31;

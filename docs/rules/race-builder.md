@@ -32,7 +32,7 @@ decompilation's own default record, not from an observation.
 | Leftover target | `leftover` | Step 1; five documented choices, conversion owned by PR6 |
 | Primary trait | `primary` | Step 2; exactly one, `RaceAttribute` order |
 | Lesser traits | `lesser` | Step 3; zero or more, recovered bit order |
-| Gravity/temperature/radiation band | `habitability[0..2]` | Step 4; `0..=100`, `min <= max`, optional immunity |
+| Gravity/temperature/radiation band | `habitability[0..2]` | Step 4; `0..=100`, `min <= max`, at least 5 points wide, optional immunity |
 | Ideal environment point | derived midpoint | `BoundsCheckPlayer()` forces the midpoint; the wizard exposes the band and immunity, not a separate ideal control |
 | Growth rate | `growth_rate` | Step 4; help documents `1..=20` |
 | Colonists per resource | `resource_generation` | `rsResGen`, `7..=25` |

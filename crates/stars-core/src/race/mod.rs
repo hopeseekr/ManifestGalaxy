@@ -22,8 +22,8 @@ pub use habitability::{
 };
 pub use points::{PointTerm, RaceEvaluation, evaluate_race, rule_id};
 pub use spec::{
-    AttributeBounds, Efficiency, HabitabilityRange, LeftoverAllocation, RaceDraft, RaceSpec,
-    ResearchCost, ResearchSettings,
+    AttributeBounds, Efficiency, HABITABILITY_MIN_SPAN, HabitabilityRange, LeftoverAllocation,
+    RaceDraft, RaceSpec, ResearchCost, ResearchSettings,
 };
 pub use traits::{
     CostEvidence, LESSER_EFFECT_COVERAGE, LesserTrait, PRIMARY_EFFECT_COVERAGE, PrimaryTrait,

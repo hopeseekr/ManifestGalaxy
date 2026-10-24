@@ -188,6 +188,35 @@ fn overspent_budget_is_rejected_with_the_advantage_point_field() {
 }
 
 #[test]
+fn habitability_band_requires_at_least_five_points() {
+    let mut race = RaceSpec::humanoids_anchor();
+    race.habitability[0] = stars_core::race::HabitabilityRange::new(20, 24);
+    let errors = validate_race_fields(&race);
+    assert!(errors.iter().any(|error| {
+        error.field() == RaceField::Gravity
+            && matches!(
+                error,
+                RaceValidationError::HabitabilitySpanTooSmall { minimum: 5, .. }
+            )
+    }));
+
+    race.habitability[0] = stars_core::race::HabitabilityRange::new(20, 25);
+    assert!(
+        validate_race_fields(&race)
+            .iter()
+            .all(|error| error.field() != RaceField::Gravity)
+    );
+
+    // Immunity ignores the stored band width.
+    race.habitability[0] = stars_core::race::HabitabilityRange::immune_with_bounds(20, 21);
+    assert!(
+        validate_race_fields(&race)
+            .iter()
+            .all(|error| error.field() != RaceField::Gravity)
+    );
+}
+
+#[test]
 fn legal_boundary_values_are_accepted() {
     let mut race = RaceSpec::humanoids_anchor();
     race.name = "A".repeat(31);

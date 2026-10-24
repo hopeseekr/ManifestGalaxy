@@ -8,8 +8,9 @@
 use eframe::egui;
 
 use stars_core::race::{
-    HabitabilityRange, LeftoverAllocation, LesserTrait, PointTerm, RaceDraft, RaceEvaluation,
-    RaceSpec, RaceValidationError, ReferenceHabitability, ResearchCost, validate_race,
+    HABITABILITY_MIN_SPAN, HabitabilityRange, LeftoverAllocation, LesserTrait, PointTerm,
+    RaceDraft, RaceEvaluation, RaceSpec, RaceValidationError, ReferenceHabitability, ResearchCost,
+    validate_race,
 };
 
 pub use stars_core::race::spec::{
@@ -487,27 +488,25 @@ impl RaceBuilderState {
                     ui.label(egui::RichText::new(*name).strong());
                     ui.checkbox(&mut self.draft.habitability[axis].immune, "Immune");
                 });
-                ui.add_enabled_ui(!self.draft.habitability[axis].immune, |ui| {
+
+                let band = &mut self.draft.habitability[axis];
+                ui.add_enabled_ui(!band.immune, |ui| {
                     ui.horizontal(|ui| {
-                        ui.label("Minimum");
-                        ui.add(
-                            egui::DragValue::new(&mut self.draft.habitability[axis].min)
-                                .range(0..=100)
-                                .speed(1),
-                        );
-                        ui.label("Maximum");
-                        ui.add(
-                            egui::DragValue::new(&mut self.draft.habitability[axis].max)
-                                .range(0..=100)
-                                .speed(1),
-                        );
+                        ui.monospace(format!("{:>3}", band.min));
+                        range_slider(ui, axis, &mut band.min, &mut band.max);
+                        ui.monospace(format!("{:>3}", band.max));
                     });
+                    ui.label(format!(
+                        "Range {}..{}  |  midpoint {}  |  width {}",
+                        band.min,
+                        band.max,
+                        band.ideal(),
+                        band.max - band.min
+                    ));
                 });
-                let band = self.draft.habitability[axis];
+
                 if band.immune {
                     ui.label("Ideal: immune");
-                } else {
-                    ui.label(format!("Ideal midpoint: {}", band.ideal()));
                 }
             });
         }
@@ -702,6 +701,156 @@ impl RaceBuilderState {
     }
 }
 
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+enum RangeHandle {
+    #[default]
+    Minimum,
+    Maximum,
+}
+
+fn range_slider(ui: &mut egui::Ui, axis: usize, min: &mut u8, max: &mut u8) -> egui::Response {
+    let id = ui.make_persistent_id(("habit_range", axis));
+    let width = ui.available_width().clamp(220.0, 520.0);
+    let (rect, response) =
+        ui.allocate_exact_size(egui::vec2(width, 38.0), egui::Sense::click_and_drag());
+
+    let enabled = ui.is_enabled();
+    let track = egui::Rect::from_min_max(
+        egui::pos2(rect.left() + 12.0, rect.center().y - 4.0),
+        egui::pos2(rect.right() - 12.0, rect.center().y + 4.0),
+    );
+    let handle_key = id.with("active_handle");
+    let mut active = ui
+        .data(|data| data.get_temp::<RangeHandle>(handle_key))
+        .unwrap_or_default();
+
+    let value_at = |x: f32| -> u8 {
+        let fraction = ((x - track.left()) / track.width()).clamp(0.0, 1.0);
+        (fraction * 100.0).round() as u8
+    };
+
+    if enabled {
+        if response.drag_started() || response.clicked() {
+            if let Some(position) = response.interact_pointer_pos() {
+                let minimum_x = value_x(track, *min);
+                let maximum_x = value_x(track, *max);
+                active = if (position.x - minimum_x).abs() <= (position.x - maximum_x).abs() {
+                    RangeHandle::Minimum
+                } else {
+                    RangeHandle::Maximum
+                };
+                ui.data_mut(|data| data.insert_temp(handle_key, active));
+                set_range_handle(min, max, active, value_at(position.x));
+            }
+        } else if response.dragged()
+            && let Some(position) = response.interact_pointer_pos()
+        {
+            active = ui
+                .data(|data| data.get_temp::<RangeHandle>(handle_key))
+                .unwrap_or(active);
+            set_range_handle(min, max, active, value_at(position.x));
+        }
+
+        if response.has_focus() {
+            let mut delta = 0_i16;
+            ui.input_mut(|input| {
+                if input.consume_key(egui::Modifiers::NONE, egui::Key::ArrowLeft)
+                    || input.consume_key(egui::Modifiers::NONE, egui::Key::ArrowDown)
+                {
+                    delta -= 1;
+                }
+                if input.consume_key(egui::Modifiers::NONE, egui::Key::ArrowRight)
+                    || input.consume_key(egui::Modifiers::NONE, egui::Key::ArrowUp)
+                {
+                    delta += 1;
+                }
+            });
+            if delta != 0 {
+                active = ui
+                    .data(|data| data.get_temp::<RangeHandle>(handle_key))
+                    .unwrap_or(active);
+                let current = match active {
+                    RangeHandle::Minimum => *min,
+                    RangeHandle::Maximum => *max,
+                };
+                let next = (i16::from(current) + delta).clamp(0, 100) as u8;
+                set_range_handle(min, max, active, next);
+            }
+        }
+    }
+
+    let visuals = ui.visuals();
+    let painter = ui.painter_at(rect);
+    let track_color = if enabled {
+        visuals.widgets.inactive.bg_fill
+    } else {
+        visuals.widgets.noninteractive.bg_fill
+    };
+    let filled_color = if enabled {
+        visuals.selection.bg_fill
+    } else {
+        visuals.widgets.noninteractive.bg_stroke.color
+    };
+    painter.rect_filled(track, 4.0, track_color);
+
+    let minimum_x = value_x(track, *min);
+    let maximum_x = value_x(track, *max);
+    let filled = egui::Rect::from_min_max(
+        egui::pos2(minimum_x, track.top()),
+        egui::pos2(maximum_x, track.bottom()),
+    );
+    painter.rect_filled(filled, 4.0, filled_color);
+
+    for (value, is_active) in [
+        (*min, active == RangeHandle::Minimum),
+        (*max, active == RangeHandle::Maximum),
+    ] {
+        let x = value_x(track, value);
+        let center = egui::pos2(x, rect.center().y);
+        let handle_color = if !enabled {
+            visuals.widgets.noninteractive.fg_stroke.color
+        } else if is_active || response.has_focus() {
+            visuals.widgets.active.bg_fill
+        } else {
+            visuals.widgets.inactive.bg_fill
+        };
+        painter.circle_filled(center, 9.0, handle_color);
+        painter.circle_stroke(
+            center,
+            9.0,
+            egui::Stroke::new(1.5, visuals.widgets.active.fg_stroke.color),
+        );
+    }
+
+    if response.has_focus() {
+        painter.rect_stroke(
+            rect.shrink(2.0),
+            4.0,
+            egui::Stroke::new(1.0, visuals.selection.stroke.color),
+            egui::StrokeKind::Inside,
+        );
+    }
+
+    response
+}
+
+fn value_x(track: egui::Rect, value: u8) -> f32 {
+    track.left() + track.width() * (f32::from(value) / 100.0)
+}
+
+fn set_range_handle(min: &mut u8, max: &mut u8, handle: RangeHandle, value: u8) {
+    match handle {
+        RangeHandle::Minimum => {
+            let upper = max.saturating_sub(HABITABILITY_MIN_SPAN);
+            *min = value.min(upper);
+        }
+        RangeHandle::Maximum => {
+            let lower = min.saturating_add(HABITABILITY_MIN_SPAN).min(100);
+            *max = value.max(lower).min(100);
+        }
+    }
+}
+
 fn field_id(name: &'static str) -> egui::Id {
     egui::Id::new(("race_builder_text", name))
 }
@@ -769,6 +918,20 @@ mod tests {
     use super::{RaceBuilderState, RacePage, field_id};
     use eframe::egui;
     use stars_core::race::{LesserTrait, PrimaryTrait, ReferenceHabitability, validate_race};
+
+    #[test]
+    fn range_handle_enforces_the_five_point_gap() {
+        let mut min = 20_u8;
+        let mut max = 30_u8;
+        super::set_range_handle(&mut min, &mut max, super::RangeHandle::Minimum, 29);
+        assert_eq!((min, max), (25, 30));
+
+        super::set_range_handle(&mut min, &mut max, super::RangeHandle::Maximum, 20);
+        assert_eq!((min, max), (25, 30));
+
+        super::set_range_handle(&mut min, &mut max, super::RangeHandle::Maximum, 90);
+        assert_eq!((min, max), (25, 90));
+    }
 
     #[test]
     fn focusing_a_text_field_selects_all_of_its_text() {
