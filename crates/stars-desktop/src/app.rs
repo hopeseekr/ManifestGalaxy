@@ -13,8 +13,11 @@ use crate::preview::{
     DEFAULT_PREVIEW_COLUMNS, DEFAULT_PREVIEW_ROWS, PREVIEW_COORDINATE_SCALE, PreviewSnapshot,
     PreviewStar,
 };
+use stars_core::turn::GameSession;
+use stars_core::view::PlayerView;
+
 use crate::shell::ShellModel;
-use crate::ui::{NewGameState, RaceBuilderState};
+use crate::ui::{MapState, NewGameState, OrderDraft, RaceBuilderState, ReportState, inspector};
 use crate::worker::{RequestId, SyntheticJob, WorkerError, WorkerHandle, WorkerMessage};
 
 /// Window title used by the native application.
@@ -44,6 +47,12 @@ pub struct StarsApp {
     show_new_game: bool,
     current_title: String,
     text_style_applied: bool,
+    session: Option<GameSession>,
+    view: Option<PlayerView>,
+    game_key: Option<(Option<RequestId>, u64)>,
+    map: MapState,
+    reports: ReportState,
+    orders: OrderDraft,
 }
 
 impl StarsApp {
@@ -70,6 +79,12 @@ impl StarsApp {
             show_new_game: false,
             current_title: APP_TITLE.to_owned(),
             text_style_applied: false,
+            session: None,
+            view: None,
+            game_key: None,
+            map: MapState::new(),
+            reports: ReportState::new(),
+            orders: OrderDraft::new(),
         })
     }
 
@@ -100,6 +115,30 @@ impl StarsApp {
     /// Mutable access to the headless new-game form. Intended for tests.
     pub fn new_game_mut(&mut self) -> &mut NewGameState {
         &mut self.new_game
+    }
+
+    /// The committed player view shown by the map and reports.
+    #[must_use]
+    pub const fn view(&self) -> Option<&PlayerView> {
+        self.view.as_ref()
+    }
+
+    /// The map's linked selection and projection state.
+    #[must_use]
+    pub const fn map(&self) -> &MapState {
+        &self.map
+    }
+
+    /// The report filter and sort state.
+    #[must_use]
+    pub const fn reports(&self) -> &ReportState {
+        &self.reports
+    }
+
+    /// The pending administrative order draft.
+    #[must_use]
+    pub const fn orders(&self) -> &OrderDraft {
+        &self.orders
     }
 
     /// Title currently applied to the native window.
@@ -136,12 +175,14 @@ impl StarsApp {
         self.apply_global_text_scale(ui);
         self.drain_worker_messages();
         self.new_game.drain_messages();
+        self.sync_game_view();
         self.sync_window_title(ui.ctx());
         self.handle_shortcuts(ui.ctx());
         self.apply_ui_scale(ui.ctx());
 
         self.show_menu(ui);
         self.show_status(ui);
+        self.show_reports(ui);
         self.show_inspector(ui);
         self.show_map(ui);
         self.show_race_builder_window(ui.ctx());
@@ -150,6 +191,48 @@ impl StarsApp {
 
         if self.shell.activity().is_running() || self.new_game.activity().is_generating() {
             ui.ctx().request_repaint_after(STATUS_REPAINT_INTERVAL);
+        }
+    }
+
+    fn sync_game_view(&mut self) {
+        let Some(universe) = self.new_game.universe() else {
+            if self.view.is_some() {
+                self.session = None;
+                self.view = None;
+                self.game_key = None;
+                self.map.clear_interaction();
+            }
+            return;
+        };
+        let key = (
+            self.new_game.last_accepted_request(),
+            universe.settings.seed,
+        );
+        if self.game_key == Some(key) && self.view.is_some() {
+            return;
+        }
+
+        self.game_key = Some(key);
+        match GameSession::new(universe.state.clone()) {
+            Ok(session) => match session.view_for(universe.human) {
+                Ok(view) => {
+                    self.session = Some(session);
+                    self.view = Some(view);
+                    self.map = MapState::new();
+                    self.reports = ReportState::new();
+                    self.orders = OrderDraft::new();
+                }
+                Err(error) => {
+                    log::warn!("could not build the player view: {error}");
+                    self.session = None;
+                    self.view = None;
+                }
+            },
+            Err(error) => {
+                log::warn!("could not create a session for the generated game: {error}");
+                self.session = None;
+                self.view = None;
+            }
         }
     }
 
@@ -306,7 +389,35 @@ impl StarsApp {
         });
     }
 
+    fn show_reports(&mut self, ui: &mut egui::Ui) {
+        let Some(view) = self.view.clone() else {
+            return;
+        };
+        egui::Panel::left("reports")
+            .resizable(true)
+            .default_size(360.0)
+            .min_size(230.0)
+            .max_size(560.0)
+            .show(ui, |ui| {
+                ui.heading("Reports");
+                ui.label(format!(
+                    "{} | turn {} | year {}",
+                    view.player_name, view.turn, view.year
+                ));
+                ui.separator();
+                let before = self.map.selection();
+                self.reports.draw(ui, &view, self.map.selection_mut());
+                if self.map.selection() != before {
+                    self.map.focus_selection(&view);
+                }
+            });
+    }
+
     fn show_inspector(&mut self, ui: &mut egui::Ui) {
+        if self.view.is_some() {
+            self.show_management_inspector(ui);
+            return;
+        }
         egui::Panel::right("inspector")
             .resizable(true)
             .default_size(290.0)
@@ -420,8 +531,52 @@ impl StarsApp {
             });
     }
 
-    fn show_map(&self, ui: &mut egui::Ui) {
+    fn show_management_inspector(&mut self, ui: &mut egui::Ui) {
+        let Some(view) = self.view.clone() else {
+            return;
+        };
+        let mut validate = false;
+        egui::Panel::right("management_inspector")
+            .resizable(true)
+            .default_size(340.0)
+            .min_size(250.0)
+            .max_size(520.0)
+            .show(ui, |ui| {
+                egui::ScrollArea::vertical()
+                    .auto_shrink([false, false])
+                    .show(ui, |ui| {
+                        inspector::draw(ui, &view, self.map.selection());
+                        ui.add_space(8.0);
+                        ui.separator();
+                        validate = self.orders.draw(ui, &view, self.map.selection());
+
+                        ui.add_space(8.0);
+                        ui.separator();
+                        ui.label("Display");
+                        ui.add(
+                            egui::Slider::new(&mut self.ui_scale, 0.75..=2.5)
+                                .step_by(0.05)
+                                .text("UI scale"),
+                        );
+                        ui.label(format!("Current scale: {:.0}%", self.ui_scale * 100.0));
+                        ui.label(
+                            "Panels are resizable. The map keeps logical coordinates when the \
+                             window, DPI or text scale changes.",
+                        );
+                    });
+            });
+
+        if validate && let Some(session) = &self.session {
+            let _ = self.orders.validate(&view, session);
+        }
+    }
+
+    fn show_map(&mut self, ui: &mut egui::Ui) {
         egui::CentralPanel::default().show(ui, |ui| {
+            if let Some(view) = self.view.clone() {
+                self.map.draw(ui, &view);
+                return;
+            }
             let desired_size = ui.available_size();
             let (response, painter) = ui.allocate_painter(desired_size, egui::Sense::hover());
             let rect = response.rect;

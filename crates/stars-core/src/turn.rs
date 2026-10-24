@@ -581,6 +581,20 @@ impl GameSession {
         PlayerView::build(&self.state, player, &self.last_events)
     }
 
+    /// Validates one order batch without changing authoritative state.
+    ///
+    /// Draft editors use this to show core validation errors before a batch is
+    /// submitted. A successful check does not reserve identifiers or consume
+    /// RNG, so a later commit repeats the same checks atomically.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`OrderError`] for a stale, duplicated, unauthorized or
+    /// dangling-reference batch.
+    pub fn validate_orders(&self, batch: &OrderBatch) -> Result<(), OrderError> {
+        validate_batch(&self.state, batch).map(|_| ())
+    }
+
     /// Validates and atomically commits one order batch.
     ///
     /// # Errors
