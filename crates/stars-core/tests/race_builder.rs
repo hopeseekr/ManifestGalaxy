@@ -299,10 +299,59 @@ fn a_validated_race_round_trips_in_authoritative_state() {
 #[test]
 fn unsupported_core_contract_and_state_versions_are_rejected() {
     let fixture = GameState::new(2400, 1);
+
     let mut bytes = fixture.encode_canonical();
     // State format version is at bytes 4..6 in the canonical envelope.
     bytes[4] = 0xff;
     assert!(GameState::decode_canonical(&bytes).is_err());
+
+    let mut contract_bytes = fixture.encode_canonical();
+    // Core contract version is at bytes 6..10 in the canonical envelope.
+    contract_bytes[6] = 0xff;
+    let error = GameState::decode_canonical(&contract_bytes).expect_err("contract version");
+    assert!(matches!(
+        error.kind(),
+        stars_core::model::StateDecodeErrorKind::UnsupportedContractVersion(_)
+    ));
+}
+
+#[test]
+fn invalid_races_cannot_enter_loaded_state() {
+    let mut state = GameState::new(2400, 7);
+    let player_id = state.allocate_player_id().expect("player id");
+    let mut race = funded_race();
+    race.growth_rate = 0;
+    state.players.insert(
+        player_id,
+        Player {
+            id: player_id,
+            name: "Broken".to_owned(),
+            role: PlayerRole::Human,
+            ready: false,
+            race: Some(race),
+        },
+    );
+
+    assert!(matches!(
+        state.validate_integrity(),
+        Err(stars_core::model::StateValidationError::InvalidRace {
+            field: "growth_rate",
+            ..
+        })
+    ));
+    assert!(GameState::decode_canonical(&state.encode_canonical()).is_err());
+
+    let player = state.players.get_mut(&player_id).expect("player");
+    let race = player.race.as_mut().expect("race");
+    race.growth_rate = 1;
+    race.habitability[0] = stars_core::race::HabitabilityRange::new(90, 10);
+    assert!(matches!(
+        state.validate_integrity(),
+        Err(stars_core::model::StateValidationError::InvalidRace {
+            field: "gravity",
+            ..
+        })
+    ));
 }
 
 #[test]

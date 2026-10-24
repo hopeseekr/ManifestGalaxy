@@ -111,7 +111,9 @@ impl HabitabilityRange {
         if self.immune {
             -1
         } else {
-            (self.min + (self.max - self.min) / 2) as i8
+            // The midpoint is computed in `i16` so an inverted draft band
+            // cannot underflow `u8` while the editor is being drawn.
+            (self.min as i16 + (self.max as i16 - self.min as i16) / 2) as i8
         }
     }
 
@@ -514,6 +516,14 @@ mod tests {
         assert_eq!(immune.ideal(), -1);
         assert_eq!(immune.effective_min(), -1);
         assert_eq!(immune.effective_max(), -1);
+    }
+
+    #[test]
+    fn ideal_of_an_inverted_draft_band_does_not_underflow() {
+        // Editors can hold min > max while the user drags handles; the
+        // midpoint has no meaning then, but it must stay in the valid range.
+        let ideal = HabitabilityRange::new(90, 10).ideal();
+        assert!((0..=100).contains(&ideal));
     }
 
     #[test]

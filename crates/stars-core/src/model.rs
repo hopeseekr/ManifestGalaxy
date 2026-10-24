@@ -172,10 +172,11 @@ pub struct Player {
     pub role: PlayerRole,
     /// Whether this player has submitted orders for the current turn.
     pub ready: bool,
-    /// Validated custom race for a human slot.
+    /// Validated custom race for this player slot.
     ///
-    /// PR5 supplies the validated [`crate::race::RaceSpec`]; PR6 creates game
-    /// state with it. Computer opponents and unfinished setup slots use `None`.
+    /// PR5 supplies the human custom race; computer opponents receive theirs in
+    /// PR14. PR6 enforces per-role presence when a game is created. Unfinished
+    /// setup slots use `None`, and loading validates any race that is present.
     pub race: Option<crate::race::RaceSpec>,
 }
 
@@ -435,6 +436,14 @@ impl GameState {
                     kind: "player",
                     key: key.raw(),
                     entity: player.id.raw(),
+                });
+            }
+            if let Some(race) = &player.race
+                && let Some(error) = crate::race::validate_race_fields(race).into_iter().next()
+            {
+                return Err(StateValidationError::InvalidRace {
+                    player: player.id,
+                    field: error.field_key(),
                 });
             }
         }
@@ -725,6 +734,13 @@ pub enum StateValidationError {
     /// The next event sequence has exhausted its range, so the next event
     /// would wrap to zero and break strictly increasing ordering.
     EventSequenceExhausted,
+    /// A stored custom race has a field outside its recovered range.
+    InvalidRace {
+        /// Player carrying the race.
+        player: PlayerId,
+        /// First offending field key.
+        field: &'static str,
+    },
 }
 
 impl fmt::Display for StateValidationError {
@@ -766,6 +782,11 @@ impl fmt::Display for StateValidationError {
             Self::EventSequenceExhausted => {
                 write!(formatter, "next event sequence exhausted its range")
             }
+            Self::InvalidRace { player, field } => write!(
+                formatter,
+                "player {} has an invalid race field {field}",
+                player.raw()
+            ),
         }
     }
 }
