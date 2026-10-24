@@ -21,12 +21,16 @@ PR4 owns the deterministic state machine shared by later subsystems:
 No economy, research, combat, movement, race-point arithmetic, AI-policy or
 persistence rule is implemented here.
 
-PR5 adds an optional validated race to each player slot, and PR6 adds generated
-planet details plus each player's starting technology. `CORE_API_VERSION` and
-`STATE_FORMAT_VERSION` are now 3. The race contract is documented in
-[`../rules/race-builder.md`](../rules/race-builder.md); the universe contract is
-documented in [`../rules/universe-generation.md`](../rules/universe-generation.md).
-PR16 owns save-file persistence.
+PR5 adds an optional validated race to each player slot, PR6 adds generated
+planet details plus each player's starting technology, and PR7 exposes those
+existing facts through `PlayerView` together with a redacted own-race summary.
+`CORE_API_VERSION` is now 4; `STATE_FORMAT_VERSION` remains 3 because the
+canonical authoritative state encoding is unchanged. The race contract is
+documented in [`../rules/race-builder.md`](../rules/race-builder.md); the
+universe contract is documented in
+[`../rules/universe-generation.md`](../rules/universe-generation.md); the map and
+report contract is documented in
+[`map-and-reports.md`](map-and-reports.md). PR16 owns save-file persistence.
 
 ## Identifiers and arithmetic
 

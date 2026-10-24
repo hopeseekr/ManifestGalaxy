@@ -9,8 +9,9 @@ use std::fmt;
 
 use crate::model::{
     Design, DesignId, EntityVisibility, FleetId, FleetLocation, GalacticPosition, GameState,
-    Planet, PlanetId, PlayerId, PlayerRole,
+    Planet, PlanetEnvironment, PlanetId, PlayerId, PlayerRole,
 };
+use crate::race::{LesserTrait, PrimaryTrait};
 use crate::turn::GameEvent;
 
 /// One visible design in a player view.
@@ -24,7 +25,28 @@ pub struct DesignView {
     pub name: String,
 }
 
+/// Player-visible summary of the viewer's own race.
+///
+/// The password and other builder-editing fields are deliberately excluded.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct RaceView {
+    /// Singular race name.
+    pub name: String,
+    /// Plural race name.
+    pub plural_name: String,
+    /// Selected primary racial trait.
+    pub primary: PrimaryTrait,
+    /// Selected lesser racial traits in stable trait order.
+    pub lesser: Vec<LesserTrait>,
+    /// Starting technology in the six research fields.
+    pub starting_technology: [u8; 6],
+}
+
 /// One visible planet in a player view.
+///
+/// All detail fields describe the same authoritative planet that produced the
+/// visibility decision. When a later scanning PR hides a fact, it must omit the
+/// whole planet from the view rather than relying on the desktop to redact it.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct PlanetView {
     /// Stable identity.
@@ -35,6 +57,24 @@ pub struct PlanetView {
     pub position: GalacticPosition,
     /// Current owner, if visible.
     pub owner: Option<PlayerId>,
+    /// Generated environmental values.
+    pub environment: PlanetEnvironment,
+    /// Mineral concentration for ironium, boranium and germanium.
+    pub mineral_concentration: [u8; 3],
+    /// Surface minerals for ironium, boranium and germanium.
+    pub surface_minerals: [u32; 3],
+    /// Colonist population in individuals.
+    pub population: u32,
+    /// Completed factories.
+    pub factories: u32,
+    /// Completed mines.
+    pub mines: u32,
+    /// Completed planetary defenses.
+    pub defenses: u32,
+    /// Whether this is a player's primary starting world.
+    pub homeworld: bool,
+    /// Whether a starbase is present.
+    pub starbase: bool,
 }
 
 /// Visible location of a fleet.
@@ -80,6 +120,8 @@ pub struct PlayerView {
     pub player_name: String,
     /// Viewing player's controller role.
     pub role: PlayerRole,
+    /// The viewer's own race summary, if the slot has a race.
+    pub race: Option<RaceView>,
     /// Whether the viewer has submitted orders.
     pub ready: bool,
     /// Current year.
@@ -193,6 +235,10 @@ impl PlayerView {
             player,
             player_name: viewer.name.clone(),
             role: viewer.role,
+            race: viewer
+                .race
+                .as_ref()
+                .map(|race| race_view(race, viewer.starting_technology)),
             ready: viewer.ready,
             year: state.year,
             turn: state.turn,
@@ -233,12 +279,31 @@ fn design_view(design: &Design) -> DesignView {
     }
 }
 
+fn race_view(race: &crate::race::RaceSpec, starting_technology: [u8; 6]) -> RaceView {
+    RaceView {
+        name: race.name.clone(),
+        plural_name: race.plural_name.clone(),
+        primary: race.primary,
+        lesser: race.lesser.iter().copied().collect(),
+        starting_technology,
+    }
+}
+
 fn planet_view(planet: &Planet) -> PlanetView {
     PlanetView {
         id: planet.id,
         name: planet.name.clone(),
         position: planet.position,
         owner: planet.owner,
+        environment: planet.environment,
+        mineral_concentration: planet.mineral_concentration,
+        surface_minerals: planet.surface_minerals,
+        population: planet.population,
+        factories: planet.factories,
+        mines: planet.mines,
+        defenses: planet.defenses,
+        homeworld: planet.homeworld,
+        starbase: planet.starbase,
     }
 }
 

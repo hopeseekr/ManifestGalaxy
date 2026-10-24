@@ -146,7 +146,7 @@ The prerequisite for each PR after PR1 is its predecessor's authorized integrati
 | [x] | [PR4: simulation contracts](PLAN-pr4-description.md) | Added deterministic game state and turn-processing contracts. |
 | [x] | [PR5: custom race builder](PLAN-pr5-description.md) | Implemented the custom race builder and point calculations. |
 | [x] | [PR6: universe setup](PLAN-pr6-description.md) | Implemented universe generation and new-game setup. |
-| [ ] | [PR7: map and reports](PLAN-pr7-description.md) | Added the star map and empire management interface. |
+| [x] | [PR7: map and reports](PLAN-pr7-description.md) | Added the star map and empire management interface. |
 | [ ] | [PR8: planet economy](PLAN-pr8-description.md) | Implemented planetary population and economic production. |
 | [ ] | [PR9: research and designs](PLAN-pr9-description.md) | Implemented research and ship design. |
 | [ ] | [PR10: fleet orders](PLAN-pr10-description.md) | Implemented fleet movement and logistics orders. |
@@ -162,7 +162,7 @@ The prerequisite for each PR after PR1 is its predecessor's authorized integrati
 ## Milestones
 
 - [ ] Research readiness — PR1–PR2: reproducible inventory, rule/trait catalog, scenario format and explicit gaps.
-- [ ] Desktop vertical slice — PR3–PR7: deterministic contracts, validated builder, generated universe and usable map. PR7 may use labeled fixtures for later mechanics.
+- [x] Desktop vertical slice — PR3–PR7: deterministic contracts, validated builder, generated universe and usable map. PR7 may use labeled fixtures for later mechanics.
 - [ ] Complete playable session — PR8–PR15: economy, designs, fleets, intelligence, combat, all trait effects, Turindrones and victory. No persistence claim yet.
 - [ ] Durable and assessed game — PR16–PR17: versioned saves/recovery, continuation equivalence, measured performance and fidelity report.
 - [ ] Desktop delivery — PR18: actual offline smoke checks and packaged artifacts for supported targets.
