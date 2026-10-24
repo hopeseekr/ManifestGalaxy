@@ -9,7 +9,7 @@ use eframe::egui;
 
 use stars_core::race::{
     HabitabilityRange, LeftoverAllocation, LesserTrait, PointTerm, RaceDraft, RaceEvaluation,
-    RaceField, RaceSpec, RaceValidationError, ReferenceHabitability, ResearchCost, validate_race,
+    RaceSpec, RaceValidationError, ReferenceHabitability, ResearchCost, validate_race,
 };
 
 pub use stars_core::race::spec::{
@@ -316,16 +316,8 @@ impl RaceBuilderState {
         });
         ui.label(egui::RichText::new(self.page.title()).strong());
         if self.page == RacePage::Review {
-            ui.label(
-                "Review the complete race. Finish accepts only a race that passes core validation.",
-            );
+            ui.label("Review the complete race before finishing.");
         }
-        ui.label(
-            egui::RichText::new(
-                "Advantage points are recalculated from the core formula as fields change.",
-            )
-            .weak(),
-        );
     }
 
     fn show_footer(&mut self, ui: &mut egui::Ui) {
@@ -345,8 +337,7 @@ impl RaceBuilderState {
                         egui::RichText::new(format!("Advantage points: {displayed}"))
                             .strong()
                             .color(color),
-                    )
-                    .on_hover_text("Displayed balance. A completed race must be zero or greater.");
+                    );
                 }
                 None => {
                     ui.label(
@@ -357,7 +348,7 @@ impl RaceBuilderState {
             }
 
             ui.add_space(12.0);
-            if ui.button("Reset").on_hover_text("Ctrl+R").clicked() {
+            if ui.button("Reset").clicked() {
                 self.reset();
             }
         });
@@ -369,7 +360,6 @@ impl RaceBuilderState {
                     self.page != RacePage::Basic,
                     egui::Button::new("Back").min_size(egui::vec2(90.0, 28.0)),
                 )
-                .on_hover_text("PageUp or Alt+Left")
                 .clicked()
             {
                 self.back_page();
@@ -378,7 +368,6 @@ impl RaceBuilderState {
             if self.page == RacePage::Review {
                 if ui
                     .add(egui::Button::new("Finish").min_size(egui::vec2(110.0, 28.0)))
-                    .on_hover_text("Validate the race and pass it to the new-game flow")
                     .clicked()
                 {
                     let _ = self.finish();
@@ -391,7 +380,6 @@ impl RaceBuilderState {
                             .min_size(egui::vec2(190.0, 28.0))
                             .fill(ui.visuals().selection.bg_fill),
                     )
-                    .on_hover_text("PageDown or Alt+Right")
                     .clicked()
                 {
                     self.next_page();
@@ -423,10 +411,8 @@ impl RaceBuilderState {
             &mut self.draft.name,
             &mut self.focused_text_field,
             260.0,
-            "Required",
             false,
-        )
-        .on_hover_text("Stored in the recovered 32-byte name field.");
+        );
         ui.label("Plural name");
         text_field(
             ui,
@@ -434,10 +420,8 @@ impl RaceBuilderState {
             &mut self.draft.plural_name,
             &mut self.focused_text_field,
             260.0,
-            "Required",
             false,
-        )
-        .on_hover_text("Used for multi-planet empire labels.");
+        );
         ui.label("Race-file password");
         text_field(
             ui,
@@ -445,11 +429,7 @@ impl RaceBuilderState {
             &mut self.draft.password,
             &mut self.focused_text_field,
             260.0,
-            "",
             true,
-        )
-        .on_hover_text(
-            "Local race-file field from the recovered wizard. It is not a security boundary and is never logged.",
         );
 
         ui.add_space(8.0);
@@ -459,66 +439,30 @@ impl RaceBuilderState {
                 egui::DragValue::new(&mut self.draft.emblem)
                     .range(0..=EMBLEM_MAX)
                     .speed(1),
-            )
-            .on_hover_text("Emblem index from the recovered five-bit portrait field.");
+            );
         });
 
         ui.add_space(8.0);
         ui.label("Spend leftover advantage points on");
         for choice in LeftoverAllocation::ALL {
-            ui.radio_value(&mut self.draft.leftover, choice, choice.label())
-                .on_hover_text(
-                    "PR6 owns the conversion arithmetic; PR5 records the selection only.",
-                );
+            ui.radio_value(&mut self.draft.leftover, choice, choice.label());
         }
     }
 
     fn show_primary(&mut self, ui: &mut egui::Ui) {
-        ui.label(
-            "Exactly one primary trait is required. Selecting a trait does not claim its later \
-             runtime effect is implemented.",
-        );
+        ui.label("Exactly one primary trait is required.");
         for trait_value in stars_core::race::PrimaryTrait::ALL {
-            let cost = trait_value.point_cost_raw();
-            let label = format!(
-                "{} ({})  [{} raw]",
-                trait_value.name(),
-                trait_value.abbreviation(),
-                signed(cost)
-            );
-            ui.radio_value(&mut self.draft.primary, Some(trait_value), label)
-                .on_hover_text(format!(
-                    "{} costs are recovered from the primary trait table. Runtime effect: {}.",
-                    trait_value.name(),
-                    trait_value.effect_owner_prs().join(", ")
-                ));
+            let label = format!("{} ({})", trait_value.name(), trait_value.abbreviation());
+            ui.radio_value(&mut self.draft.primary, Some(trait_value), label);
         }
     }
 
     fn show_lesser(&mut self, ui: &mut egui::Ui) {
-        ui.label(
-            "Zero or more lesser traits are allowed. Exclusions were not recovered, so every \
-             priced combination is selectable.",
-        );
+        ui.label("Zero or more lesser traits are allowed.");
         for trait_value in LesserTrait::ALL {
             let mut selected = self.draft.lesser.contains(&trait_value);
-            let cost = trait_value.cost();
-            let label = format!(
-                "{} ({})  [{} raw, {}]",
-                trait_value.name(),
-                trait_value.abbreviation(),
-                signed(cost.raw),
-                cost.evidence.label()
-            );
-            if ui
-                .checkbox(&mut selected, label)
-                .on_hover_text(format!(
-                    "Cost evidence: {}. Runtime effect: {}.",
-                    cost.evidence.label(),
-                    trait_value.effect_owner_prs().join(", ")
-                ))
-                .changed()
-            {
+            let label = format!("{} ({})", trait_value.name(), trait_value.abbreviation());
+            if ui.checkbox(&mut selected, label).changed() {
                 if selected {
                     self.draft.lesser.insert(trait_value);
                 } else {
@@ -529,10 +473,8 @@ impl RaceBuilderState {
 
         if self.draft.lesser.len() > 4 {
             ui.label(
-                egui::RichText::new(
-                    "More than four lesser traits triggers the recovered count penalty.",
-                )
-                .color(egui::Color32::from_rgb(235, 190, 110)),
+                egui::RichText::new("More than four lesser traits triggers a point penalty.")
+                    .color(egui::Color32::from_rgb(235, 190, 110)),
             );
         }
     }
@@ -542,10 +484,7 @@ impl RaceBuilderState {
             ui.group(|ui| {
                 ui.horizontal(|ui| {
                     ui.label(egui::RichText::new(*name).strong());
-                    ui.checkbox(&mut self.draft.habitability[axis].immune, "Immune")
-                        .on_hover_text(
-                            "An immune axis has no band and contributes a fixed sample.",
-                        );
+                    ui.checkbox(&mut self.draft.habitability[axis].immune, "Immune");
                 });
                 ui.add_enabled_ui(!self.draft.habitability[axis].immune, |ui| {
                     ui.horizontal(|ui| {
@@ -576,8 +515,7 @@ impl RaceBuilderState {
         ui.add(
             egui::Slider::new(&mut self.draft.growth_rate, GROWTH_MIN..=GROWTH_MAX)
                 .text("Ideal growth rate"),
-        )
-        .on_hover_text("Recovered range is 1% to 20% per year. Low growth pays advantage points.");
+        );
     }
 
     fn show_efficiency(&mut self, ui: &mut egui::Ui) {
@@ -587,8 +525,7 @@ impl RaceBuilderState {
                 RESOURCE_GENERATION_BOUNDS.min..=RESOURCE_GENERATION_BOUNDS.max,
             )
             .text("Colonists per resource"),
-        )
-        .on_hover_text("Recovered rsResGen range.");
+        );
         ui.add(
             egui::Slider::new(
                 &mut self.draft.efficiency.factory_production,
@@ -610,8 +547,7 @@ impl RaceBuilderState {
             )
             .text("Factories operated per 10,000 colonists"),
         );
-        ui.checkbox(&mut self.draft.cheap_factories, "Cheap factory materials")
-            .on_hover_text("Recovered CheapFact flag; costs 175 raw third-points.");
+        ui.checkbox(&mut self.draft.cheap_factories, "Cheap factory materials");
 
         ui.separator();
         ui.add(
@@ -638,10 +574,7 @@ impl RaceBuilderState {
     }
 
     fn show_research(&mut self, ui: &mut egui::Ui) {
-        ui.label(
-            "Each field independently costs 50% less, standard, or 75% extra. The net count \
-             drives the recovered research-point curve.",
-        );
+        ui.label("Each field costs 50% less, standard, or 75% extra.");
         for (index, field) in stars_core::race::spec::RESEARCH_FIELD_NAMES
             .iter()
             .enumerate()
@@ -666,8 +599,7 @@ impl RaceBuilderState {
         ui.checkbox(
             &mut self.draft.research.tech3,
             "All fields start at technology 3",
-        )
-        .on_hover_text("Recovered Tech 3 flag; costs 180 raw third-points.");
+        );
     }
 
     fn show_review(&mut self, ui: &mut egui::Ui) {
@@ -714,11 +646,10 @@ impl RaceBuilderState {
         ui.add_space(8.0);
         ui.label(egui::RichText::new("Advantage-point breakdown").strong());
         egui::Grid::new("race_review_points")
-            .num_columns(3)
+            .num_columns(2)
             .striped(true)
             .show(ui, |ui| {
                 ui.label("Term");
-                ui.label("Rule");
                 ui.label("Raw");
                 ui.end_row();
                 let terms = self
@@ -726,7 +657,6 @@ impl RaceBuilderState {
                     .map_or_else(Vec::new, |evaluation| evaluation.terms.clone());
                 for term in terms.iter().filter(|term| term.raw != 0) {
                     ui.label(point_term_label(term));
-                    ui.label(term.rule_id);
                     ui.label(signed_i64(term.raw));
                     ui.end_row();
                 }
@@ -734,43 +664,12 @@ impl RaceBuilderState {
                     .evaluation()
                     .map_or((0, 0), |evaluation| (evaluation.raw, evaluation.displayed));
                 ui.label(egui::RichText::new("Total").strong());
-                ui.label("third-points / 3");
                 ui.label(
                     egui::RichText::new(format!("{} raw = {} AP", signed_i64(raw), displayed))
                         .strong(),
                 );
                 ui.end_row();
             });
-
-        if self.draft.lesser.len() > 4 {
-            ui.label(
-                egui::RichText::new(
-                    "More than four lesser traits: the count penalty is included above.",
-                )
-                .color(egui::Color32::from_rgb(235, 190, 110)),
-            );
-        }
-
-        if let Some(primary) = self.draft.primary {
-            ui.label(
-                egui::RichText::new(format!(
-                    "{} runtime effect is owned by {} and is not implemented in PR5.",
-                    primary.name(),
-                    primary.effect_owner_prs().join(", ")
-                ))
-                .weak(),
-            );
-        }
-        for trait_value in &self.draft.lesser {
-            ui.label(
-                egui::RichText::new(format!(
-                    "{} runtime effect is owned by {} and is not implemented in PR5.",
-                    trait_value.name(),
-                    trait_value.effect_owner_prs().join(", ")
-                ))
-                .weak(),
-            );
-        }
 
         if let Some(validated) = &self.validated {
             ui.label(
@@ -797,14 +696,7 @@ impl RaceBuilderState {
                 .color(egui::Color32::from_rgb(240, 130, 130)),
         );
         for error in &self.errors {
-            ui.label(format!("{}: {error}", error.field_key()))
-                .on_hover_text(match error.field() {
-                    RaceField::AdvantagePoints => {
-                        "Reduce advantages or add disadvantages until the balance is zero or greater."
-                    }
-                    RaceField::Primary => "Exactly one primary trait is required.",
-                    _ => "Correct this field and finish again.",
-                });
+            ui.label(format!("{}: {error}", error.field_key()));
         }
     }
 }
@@ -819,14 +711,12 @@ fn text_field(
     text: &mut String,
     focused_field: &mut Option<&'static str>,
     desired_width: f32,
-    hint: &str,
     password: bool,
 ) -> egui::Response {
     let id = field_id(id_name);
     let mut edit = egui::TextEdit::singleline(text)
         .id(id)
-        .desired_width(desired_width)
-        .hint_text(hint);
+        .desired_width(desired_width);
     if password {
         edit = edit.password(true);
     }
@@ -863,14 +753,6 @@ fn band_summary(band: HabitabilityRange) -> String {
 
 fn point_term_label(term: &PointTerm) -> &'static str {
     term.label
-}
-
-fn signed(value: i32) -> String {
-    if value >= 0 {
-        format!("+{value}")
-    } else {
-        value.to_string()
-    }
 }
 
 fn signed_i64(value: i64) -> String {
