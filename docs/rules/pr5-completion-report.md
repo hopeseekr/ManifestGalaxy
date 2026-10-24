@@ -54,8 +54,8 @@ remain with later PRs. PR5 now includes a focused validated-race JSON export.
   window proportions and accepts PageUp/PageDown and Ctrl+R.
 - A validated race round-trips through canonical state in the new optional
   `Player::race` field.
-- A validated race can be saved as versioned JSON on the review page and loaded
-  back through the validating decoder.
+- Finish saves a validated race as versioned JSON using an editable file name
+  prefilled from the race name; the decoder validates it again on load.
 
 ## Commands actually run
 

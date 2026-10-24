@@ -13,7 +13,7 @@ use stars_core::race::{
     validate_race,
 };
 
-use crate::race_file::{default_race_path, save_race_json};
+use crate::race_file::{save_race_json, suggested_race_file_name};
 
 pub use stars_core::race::spec::{
     EMBLEM_MAX, FACTORY_COST_BOUNDS, FACTORY_OPERATION_BOUNDS, FACTORY_PRODUCTION_BOUNDS,
@@ -119,6 +119,8 @@ pub struct RaceBuilderState {
     focused_text_field: Option<&'static str>,
     saved_race_path: Option<String>,
     save_error: Option<String>,
+    file_name: String,
+    file_name_custom: bool,
 }
 
 impl Default for RaceBuilderState {
@@ -141,6 +143,8 @@ impl RaceBuilderState {
             focused_text_field: None,
             saved_race_path: None,
             save_error: None,
+            file_name: suggested_race_file_name("New Race"),
+            file_name_custom: false,
         }
     }
 
@@ -218,6 +222,8 @@ impl RaceBuilderState {
         self.focused_text_field = None;
         self.saved_race_path = None;
         self.save_error = None;
+        self.file_name = suggested_race_file_name("New Race");
+        self.file_name_custom = false;
     }
 
     /// Evaluates the current draft, if a primary trait is selected.
@@ -267,14 +273,38 @@ impl RaceBuilderState {
         }
     }
 
-    /// Validates the race and saves it to the default `races/<name>.json` path.
+    /// Validates the race and saves it to the typed race file name.
+    ///
+    /// The destination is `races/<file_name>` under the current working
+    /// directory. The path is shown in the review page before saving.
     ///
     /// # Errors
     ///
-    /// Returns a human-readable message when validation or file writing fails.
+    /// Returns a human-readable message when validation, file-name validation
+    /// or file writing fails.
     pub fn save_json(&mut self) -> Result<(), String> {
-        let spec = self.validate_for_save()?;
-        self.save_json_to(&default_race_path(&spec))
+        self.validate_for_save()?;
+        let path = match self.race_save_path() {
+            Ok(path) => path,
+            Err(message) => {
+                self.save_error = Some(message.clone());
+                return Err(message);
+            }
+        };
+        self.save_json_to(&path)
+    }
+
+    /// The file name currently shown in the review page.
+    #[must_use]
+    pub fn race_file_name(&self) -> &str {
+        &self.file_name
+    }
+
+    fn race_save_path(&self) -> Result<std::path::PathBuf, String> {
+        let file_name = normalize_race_file_name(&self.file_name)?;
+        let directory = std::env::current_dir()
+            .map_err(|error| format!("cannot determine the save directory: {error}"))?;
+        Ok(directory.join("races").join(file_name))
     }
 
     /// Validates the race and saves it to an explicit path.
@@ -447,7 +477,7 @@ impl RaceBuilderState {
                     .add(egui::Button::new("Finish").min_size(egui::vec2(110.0, 28.0)))
                     .clicked()
                 {
-                    let _ = self.finish();
+                    let _ = self.save_json();
                 }
             } else {
                 let next_label = format!("Next: {}", self.page.next().title());
@@ -772,17 +802,36 @@ impl RaceBuilderState {
             });
 
         ui.separator();
-        ui.horizontal_wrapped(|ui| {
-            if ui.button("Save race as JSON").clicked() {
-                let _ = self.save_json();
+        if !self.file_name_custom {
+            let suggestion = suggested_race_file_name(&self.draft.name);
+            if self.file_name != suggestion {
+                self.file_name = suggestion;
             }
-            if let Some(path) = &self.saved_race_path {
-                ui.label(
-                    egui::RichText::new(format!("Saved to {path}"))
-                        .color(egui::Color32::from_rgb(120, 210, 140)),
-                );
+        }
+        ui.horizontal(|ui| {
+            ui.label("Race file name");
+            let response =
+                ui.add(egui::TextEdit::singleline(&mut self.file_name).desired_width(260.0));
+            if response.changed() {
+                self.file_name_custom = true;
             }
         });
+        match self.race_save_path() {
+            Ok(path) => {
+                ui.label(format!("Finish saves to {}", path.display()));
+            }
+            Err(message) => {
+                ui.label(
+                    egui::RichText::new(message).color(egui::Color32::from_rgb(240, 130, 130)),
+                );
+            }
+        }
+        if let Some(path) = &self.saved_race_path {
+            ui.label(
+                egui::RichText::new(format!("Saved to {path}"))
+                    .color(egui::Color32::from_rgb(120, 210, 140)),
+            );
+        }
         if let Some(error) = &self.save_error {
             ui.label(
                 egui::RichText::new(format!("Could not save race: {error}"))
@@ -970,6 +1019,31 @@ fn set_range_handle(min: &mut u8, max: &mut u8, handle: RangeHandle, value: u8) 
     }
 }
 
+fn normalize_race_file_name(input: &str) -> Result<String, String> {
+    let name = input.trim();
+    if name.is_empty() {
+        return Err("Enter a file name.".to_owned());
+    }
+    if name == "." || name == ".." || name.contains(['/', '\\']) {
+        return Err("File name must not contain path separators.".to_owned());
+    }
+    if name
+        .chars()
+        .any(|character| matches!(character, '<' | '>' | ':' | '"' | '|' | '?' | '*' | '\0'))
+    {
+        return Err("File name contains characters that are not allowed.".to_owned());
+    }
+
+    let mut name = name.to_owned();
+    if !name.to_ascii_lowercase().ends_with(".json") {
+        name.push_str(".json");
+    }
+    if name.len() > 120 {
+        return Err("File name is too long.".to_owned());
+    }
+    Ok(name)
+}
+
 fn field_id(name: &'static str) -> egui::Id {
     egui::Id::new(("race_builder_text", name))
 }
@@ -1080,6 +1154,29 @@ mod tests {
         let range = state.cursor.char_range().expect("selection");
         assert_eq!(range.as_sorted_char_range().start.0, 0);
         assert_eq!(range.as_sorted_char_range().end.0, 5);
+    }
+
+    #[test]
+    fn typed_race_file_name_controls_the_finish_destination() {
+        let mut builder = RaceBuilderState::new();
+        builder.file_name = "custom-race".to_owned();
+        let path = builder.race_save_path().expect("save path");
+        assert!(path.ends_with(std::path::Path::new("races/custom-race.json")));
+    }
+
+    #[test]
+    fn suggested_and_normalized_race_file_names_are_safe() {
+        assert_eq!(super::suggested_race_file_name("My Race!"), "my-race.json");
+        assert_eq!(
+            super::normalize_race_file_name("  My Race  ").expect("valid"),
+            "My Race.json"
+        );
+        assert_eq!(
+            super::normalize_race_file_name("race.JSON").expect("valid"),
+            "race.JSON"
+        );
+        assert!(super::normalize_race_file_name("../escape").is_err());
+        assert!(super::normalize_race_file_name("").is_err());
     }
 
     #[test]

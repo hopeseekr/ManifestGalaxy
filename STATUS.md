@@ -30,7 +30,8 @@ PR5 adds:
   summary;
 - the validated race in the optional `Player::race` field and canonical state
   encoding, with `CORE_API_VERSION` and `STATE_FORMAT_VERSION` bumped to 2;
-- a versioned JSON race export on the review page, validated again on load.
+- Finish-time versioned JSON race saving with an editable, suggested file name;
+  the decoder validates the race again on load.
 
 Runtime trait effects, universe generation, new-game setup and the full
 save/recovery system remain owned by PR6-PR16. No runtime trait effect is

@@ -301,10 +301,16 @@ pub fn load_race_json(path: &Path) -> Result<RaceSpec, RaceFileError> {
     decode_race_json(&text)
 }
 
+/// Returns a suggested JSON file name for a race name.
+#[must_use]
+pub fn suggested_race_file_name(race_name: &str) -> String {
+    format!("{}.json", file_slug(race_name))
+}
+
 /// Returns the default save path for a race name.
 #[must_use]
 pub fn default_race_path(spec: &RaceSpec) -> PathBuf {
-    PathBuf::from("races").join(format!("{}.json", file_slug(&spec.name)))
+    PathBuf::from("races").join(suggested_race_file_name(&spec.name))
 }
 
 fn file_slug(name: &str) -> String {
@@ -387,5 +393,6 @@ mod tests {
     fn slug_is_safe_for_a_file_name() {
         assert_eq!(file_slug("My Race!"), "my-race");
         assert_eq!(file_slug("___"), "race");
+        assert_eq!(super::suggested_race_file_name("My Race!"), "my-race.json");
     }
 }
